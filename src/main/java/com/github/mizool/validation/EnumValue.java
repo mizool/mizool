@@ -20,11 +20,11 @@ import javax.validation.Payload;
 @Documented
 public @interface EnumValue
 {
-    String message() default "{de.incub8.medium.technology.validation.constraints.EnumValue.message}";
+    String message() default "{com.github.mizool.validation.EnumValue.message}";
 
-    Class<?>[] groups() default {};
+    Class<?>[] groups() default { };
 
-    Class<? extends Payload>[] payload() default {};
+    Class<? extends Payload>[] payload() default { };
 
     Class<? extends Enum> value();
 }

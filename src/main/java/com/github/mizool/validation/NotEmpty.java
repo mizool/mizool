@@ -20,7 +20,7 @@ import javax.validation.Payload;
 @Documented
 public @interface NotEmpty
 {
-    String message() default "{de.incub8.dto.validation.constraints.NotEmpty.message}";
+    String message() default "{com.github.mizool.validation.NotEmpty.message}";
 
     Class<?>[] groups() default { };
 

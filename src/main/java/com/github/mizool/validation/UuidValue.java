@@ -20,7 +20,7 @@ import javax.validation.Payload;
 @Documented
 public @interface UuidValue
 {
-    String message() default "{de.incub8.dto.validation.constraints.UuidValue.message}";
+    String message() default "{com.github.mizool.validation.UuidValue.message}";
 
     Class<?>[] groups() default { };
 
