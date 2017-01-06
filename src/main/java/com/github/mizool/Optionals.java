@@ -15,7 +15,7 @@ public class Optionals
      * Used when a user directly requests or references an object, resulting in an ObjectNotFoundException if it does
      * not exist.
      */
-    public final <T> T unwrapUserRequestedObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
+    public static final <T> T unwrapUserRequestedObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
         if (!wrapped.isPresent())
         {
@@ -28,7 +28,7 @@ public class Optionals
      * Used when an object can be reasonably expected to exist, resulting in a DataInconsistencyException if it does not
      * exist.
      */
-    public final <T> T unwrapRequiredObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
+    public static final <T> T unwrapRequiredObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
         if (!wrapped.isPresent())
         {
