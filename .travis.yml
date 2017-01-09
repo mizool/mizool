@@ -1,1 +1,2 @@
 language: java
+before_install: cp toolchains.xml $HOME/.m2
