@@ -1,0 +1,6 @@
+language: java
+before_install: cp toolchains.xml $HOME/.m2
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
