@@ -17,6 +17,7 @@ public class CustomObjectMapperProvider implements ContextResolver<ObjectMapper>
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
         objectMapper.registerModule(new LocalDateTimeModule());
+        objectMapper.registerModule(new ZonedDateTimeModule());
     }
 
     @Override
