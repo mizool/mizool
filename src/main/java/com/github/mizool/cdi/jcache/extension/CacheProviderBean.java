@@ -15,6 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
+ *
+ *  Modified by incub8 Software Labs GmbH
  */
 package com.github.mizool.cdi.jcache.extension;
 
