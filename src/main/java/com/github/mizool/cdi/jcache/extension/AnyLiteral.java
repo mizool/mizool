@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- *  Modified by incub8 Software Labs GmbH
+ *  Modified 2017 by incub8 Software Labs GmbH
+ *  Modified 2017 by protel Hotelsoftware GmbH
  */
 package com.github.mizool.cdi.jcache.extension;
 
