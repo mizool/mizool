@@ -16,24 +16,23 @@
  */
 package com.github.mizool.jackson;
 
-import javax.inject.Inject;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
-@Provider
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
-public class CustomObjectMapperProvider implements ContextResolver<ObjectMapper>
+public class CustomObjectMapperProducer
 {
-    private final ObjectMapper objectMapper;
-
-    @Override
-    public ObjectMapper getContext(Class<?> type)
+    @Produces
+    @Singleton
+    public ObjectMapper produce()
     {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        objectMapper.registerModule(new LocalDateTimeModule());
+        objectMapper.registerModule(new ZonedDateTimeModule());
         return objectMapper;
     }
 }
