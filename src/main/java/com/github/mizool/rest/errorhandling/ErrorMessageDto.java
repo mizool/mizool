@@ -14,26 +14,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.jackson;
+package com.github.mizool.rest.errorhandling;
 
-import javax.inject.Inject;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+import lombok.Data;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@Provider
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
-public class CustomObjectMapperProvider implements ContextResolver<ObjectMapper>
+@Data
+public class ErrorMessageDto
 {
-    private final ObjectMapper objectMapper;
+    private final HashMap<String, Collection<ErrorDto>> errors;
 
-    @Override
-    public ObjectMapper getContext(Class<?> type)
+    ErrorMessageDto(Map<String, Collection<ErrorDto>> errors)
     {
-        return objectMapper;
+        this.errors = new HashMap<>(errors);
     }
 }

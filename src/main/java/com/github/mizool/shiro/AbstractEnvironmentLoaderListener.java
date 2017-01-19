@@ -27,7 +27,7 @@ import org.apache.shiro.web.env.WebEnvironment;
 
 public abstract class AbstractEnvironmentLoaderListener extends EnvironmentLoaderListener
 {
-    public abstract List<Realm> getRealms();
+    protected abstract List<Realm> getRealms();
 
     @Override
     protected WebEnvironment createEnvironment(ServletContext pServletContext)

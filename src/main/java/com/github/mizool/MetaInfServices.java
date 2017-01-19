@@ -14,26 +14,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.jackson;
+package com.github.mizool;
 
-import javax.inject.Inject;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import java.util.ServiceLoader;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-@Provider
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
-public class CustomObjectMapperProvider implements ContextResolver<ObjectMapper>
+public class MetaInfServices
 {
-    private final ObjectMapper objectMapper;
-
-    @Override
-    public ObjectMapper getContext(Class<?> type)
+    public static <S> Iterable<S> instances(Class<S> service)
     {
-        return objectMapper;
+        return ServiceLoader.load(service, service.getClassLoader());
     }
 }
