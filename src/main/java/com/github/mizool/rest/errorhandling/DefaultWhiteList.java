@@ -29,6 +29,7 @@ import com.github.mizool.exception.ConflictingEntityException;
 import com.github.mizool.exception.ObjectNotFoundException;
 import com.github.mizool.exception.PermissionDeniedException;
 import com.github.mizool.exception.UnprocessableEntityException;
+import com.github.mizool.exception.UnsupportedHttpFeatureException;
 import com.google.common.collect.ImmutableMap;
 
 @MetaInfServices
@@ -47,6 +48,7 @@ public class DefaultWhiteList implements WhiteList
             .put(AuthenticationRejectedException.class.getName(), HttpServletResponse.SC_UNAUTHORIZED)
             .put(PermissionDeniedException.class.getName(), HttpServletResponse.SC_FORBIDDEN)
             .put(UnprocessableEntityException.class.getName(), SC_UNPROCESSABLE_ENTITY)
+            .put(UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED)
             .build();
     }
 }
