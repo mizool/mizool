@@ -21,6 +21,7 @@ import javax.inject.Singleton;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
 public class CustomObjectMapperProducer
 {
@@ -33,6 +34,7 @@ public class CustomObjectMapperProducer
 
         objectMapper.registerModule(new LocalDateTimeModule());
         objectMapper.registerModule(new ZonedDateTimeModule());
+        objectMapper.registerModule(new GuavaModule());
         return objectMapper;
     }
 }
