@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.kohsuke.MetaInfServices;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.github.mizool.exception.AuthenticationMissingException;
 import com.github.mizool.exception.AuthenticationRejectedException;
 import com.github.mizool.exception.BadRequestException;
@@ -49,6 +50,7 @@ public class DefaultWhiteList implements WhiteList
             .put(PermissionDeniedException.class.getName(), HttpServletResponse.SC_FORBIDDEN)
             .put(UnprocessableEntityException.class.getName(), SC_UNPROCESSABLE_ENTITY)
             .put(UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED)
+            .put(JsonParseException.class.getName(), HttpServletResponse.SC_BAD_REQUEST)
             .build();
     }
 }
