@@ -31,11 +31,12 @@ public class Identifier<T> implements Serializable
     private static final String
         CHARACTERS_FOR_RANDOM_STRING
         = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final SecureRandom rnd = new SecureRandom();
+    private static final SecureRandom RANDOM = new SecureRandom();
 
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class BasicIdentifierBuilder<T>
+    public static class IdentifierBuilder<T>
     {
+        @NonNull
         private final Class<T> pojoClass;
 
         public Identifier<T> random()
@@ -49,28 +50,26 @@ public class Identifier<T> implements Serializable
         }
     }
 
-    private static String randomString(int len)
+    private static String randomString(int length)
     {
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++)
+        StringBuilder result = new StringBuilder(length);
+        for (int i = 0; i < length; i++)
         {
-            sb.append(CHARACTERS_FOR_RANDOM_STRING.charAt(rnd.nextInt(CHARACTERS_FOR_RANDOM_STRING.length())));
+            int characterIndex = RANDOM.nextInt(CHARACTERS_FOR_RANDOM_STRING.length());
+            result.append(CHARACTERS_FOR_RANDOM_STRING.charAt(characterIndex));
         }
-        return sb.toString();
+        return result.toString();
     }
 
-    public static <T> BasicIdentifierBuilder<T> forPojo(Class<T> pojoClass)
+    public static <T> IdentifierBuilder<T> forPojo(Class<T> pojoClass)
     {
-        return new BasicIdentifierBuilder<T>(pojoClass);
+        return new IdentifierBuilder<T>(pojoClass);
     }
 
+    @NonNull
     private final Class<T> pojoClass;
-    private final String id;
-
-    public String getValue()
-    {
-        return id;
-    }
+    @NonNull
+    private final String value;
 
     @Override
     public String toString()
