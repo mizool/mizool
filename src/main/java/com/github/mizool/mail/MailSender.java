@@ -31,7 +31,6 @@ import javax.mail.internet.MimeMessage;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 
 import com.github.mizool.Clock;
 import com.google.common.annotations.VisibleForTesting;
@@ -47,8 +46,7 @@ public class MailSender
 
     private final Clock clock;
 
-    @Resource
-    @Setter(value = AccessLevel.PROTECTED, onMethod = @__(@VisibleForTesting))
+    @Resource(type = javax.mail.Session.class, name = "mail/Session")
     private Session session;
 
     public void sendMail(Mail mail)
