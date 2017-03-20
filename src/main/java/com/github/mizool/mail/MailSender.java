@@ -17,7 +17,6 @@
 package com.github.mizool.mail;
 
 import java.io.UnsupportedEncodingException;
-import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.annotation.Resource;
@@ -34,6 +33,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import com.github.mizool.Clock;
 import com.google.common.annotations.VisibleForTesting;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
@@ -44,6 +44,8 @@ public class MailSender
 
     @VisibleForTesting
     protected static final String FROM_PERSONAL_PROPERTY_NAME = "from.personal";
+
+    private final Clock clock;
 
     @Resource
     @Setter(value = AccessLevel.PROTECTED, onMethod = @__(@VisibleForTesting))
@@ -60,7 +62,7 @@ public class MailSender
             message.setRecipients(
                 Message.RecipientType.TO, new Address[]{ new InternetAddress(mail.getAddress(), mail.getName()) });
             message.setSubject(mail.getSubject());
-            message.setSentDate(Date.from(ZonedDateTime.now().toInstant()));
+            message.setSentDate(Date.from(clock.getCurrentDateTime().toInstant()));
             message.setContent(mail.getContent(), "text/html");
             Transport.send(message);
         }
