@@ -157,6 +157,11 @@
                 <artifactId>lombok</artifactId>
                 <version>1.16.12</version>
             </dependency>
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>ST4</artifactId>
+                <version>4.0.7</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -210,6 +215,10 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>ST4</artifactId>
         </dependency>
     </dependencies>
 
