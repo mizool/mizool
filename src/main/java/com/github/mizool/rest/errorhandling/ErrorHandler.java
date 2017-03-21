@@ -94,7 +94,11 @@ public class ErrorHandler
     private ErrorResponse handleWhitelistedException(Throwable t, int statusCode)
     {
         log.debug("Whitelisted exception", t);
-        Map<String, String> parameters = createExceptionParameters(t);
+        Map<String, String> parameters = null;
+        if (exceptionCatalog.showStacktrace(t))
+        {
+            parameters = createExceptionParameters(t);
+        }
         ErrorDto error = new ErrorDto(t.getClass().getName(), parameters);
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
         return new ErrorResponse(statusCode, errorMessage);

@@ -17,30 +17,35 @@
 package com.github.mizool.rest.errorhandling;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Singleton;
 
 import com.github.mizool.MetaInfServices;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 @Singleton
 class ExceptionCatalog
 {
     private final Map<String, Integer> catalog;
+    private final Set<String> stacktraceCatalog;
 
     protected ExceptionCatalog()
     {
         Iterable<WhiteList> whiteLists = MetaInfServices.instances(WhiteList.class);
 
         ImmutableMap.Builder<String, Integer> catalogBuilder = ImmutableMap.builder();
-
+        ImmutableSet.Builder<String> stacktraceCatalogBuilder = ImmutableSet.builder();
         for (WhiteList whiteList : whiteLists)
         {
             catalogBuilder.putAll(whiteList.getEntries());
+            stacktraceCatalogBuilder.addAll(whiteList.getEntriesToShowWithStacktrace());
         }
 
         catalog = catalogBuilder.build();
+        stacktraceCatalog = stacktraceCatalogBuilder.build();
     }
 
     public Optional<Integer> lookup(Throwable t)
@@ -49,5 +54,11 @@ class ExceptionCatalog
         Integer statusCode = catalog.get(exceptionClassName);
         Optional<Integer> result = Optional.fromNullable(statusCode);
         return result;
+    }
+
+    public Boolean showStacktrace(Throwable t)
+    {
+        String exceptionClassName = t.getClass().getName();
+        return stacktraceCatalog.contains(exceptionClassName);
     }
 }

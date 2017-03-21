@@ -17,6 +17,7 @@
 package com.github.mizool.rest.errorhandling;
 
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,6 +33,7 @@ import com.github.mizool.exception.PermissionDeniedException;
 import com.github.mizool.exception.UnprocessableEntityException;
 import com.github.mizool.exception.UnsupportedHttpFeatureException;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 @MetaInfServices
 public class DefaultWhiteList implements WhiteList
@@ -52,5 +54,14 @@ public class DefaultWhiteList implements WhiteList
             .put(UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED)
             .put(JsonParseException.class.getName(), HttpServletResponse.SC_BAD_REQUEST)
             .build();
+    }
+
+    @Override
+    public Set<String> getEntriesToShowWithStacktrace()
+    {
+        return ImmutableSet.of(
+            BadRequestException.class.getName(),
+            UnprocessableEntityException.class.getName(),
+            JsonParseException.class.getName());
     }
 }

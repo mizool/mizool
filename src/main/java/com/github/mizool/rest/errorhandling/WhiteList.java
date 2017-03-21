@@ -17,8 +17,11 @@
 package com.github.mizool.rest.errorhandling;
 
 import java.util.Map;
+import java.util.Set;
 
 public interface WhiteList
 {
     Map<String, Integer> getEntries();
+
+    Set<String> getEntriesToShowWithStacktrace();
 }
