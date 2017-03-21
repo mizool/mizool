@@ -27,27 +27,25 @@ import com.google.common.collect.ImmutableMap;
 @Singleton
 class ExceptionCatalog
 {
-    private final Map<String, Integer> catalog;
+    private final Map<String, WhiteListEntry> catalog;
 
     protected ExceptionCatalog()
     {
         Iterable<WhiteList> whiteLists = MetaInfServices.instances(WhiteList.class);
 
-        ImmutableMap.Builder<String, Integer> catalogBuilder = ImmutableMap.builder();
-
-        for (WhiteList whiteList : whiteLists)
-        {
-            catalogBuilder.putAll(whiteList.getEntries());
-        }
+        ImmutableMap.Builder<String, WhiteListEntry> catalogBuilder = ImmutableMap.builder();
+        whiteLists.forEach(
+            whiteList -> whiteList.getEntries()
+                .forEach(entry -> catalogBuilder.put(entry.getExceptionClassName(), entry)));
 
         catalog = catalogBuilder.build();
     }
 
-    public Optional<Integer> lookup(Throwable t)
+    public Optional<WhiteListEntry> lookup(Throwable t)
     {
         String exceptionClassName = t.getClass().getName();
-        Integer statusCode = catalog.get(exceptionClassName);
-        Optional<Integer> result = Optional.fromNullable(statusCode);
+        WhiteListEntry whiteListEntry = catalog.get(exceptionClassName);
+        Optional<WhiteListEntry> result = Optional.fromNullable(whiteListEntry);
         return result;
     }
 }

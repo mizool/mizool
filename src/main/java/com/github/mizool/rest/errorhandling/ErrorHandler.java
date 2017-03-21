@@ -61,10 +61,10 @@ public class ErrorHandler
         Throwable cursor = throwable;
         while (cursor != null)
         {
-            Optional<Integer> statusCode = exceptionCatalog.lookup(cursor);
-            if (statusCode.isPresent())
+            Optional<WhiteListEntry> whiteListEntry = exceptionCatalog.lookup(cursor);
+            if (whiteListEntry.isPresent())
             {
-                result = handleWhitelistedException(cursor, statusCode.get());
+                result = handleWhitelistedException(cursor, whiteListEntry.get());
                 break;
             }
             else if (isAssignable(ConstraintViolationException.class, cursor))
@@ -91,13 +91,17 @@ public class ErrorHandler
         return throwableClass.isAssignableFrom(throwable.getClass());
     }
 
-    private ErrorResponse handleWhitelistedException(Throwable t, int statusCode)
+    private ErrorResponse handleWhitelistedException(Throwable t, WhiteListEntry whiteListEntry)
     {
         log.debug("Whitelisted exception", t);
-        Map<String, String> parameters = createExceptionParameters(t);
+        Map<String, String> parameters = null;
+        if (whiteListEntry.getShouldIncludeDetails())
+        {
+            parameters = createExceptionParameters(t);
+        }
         ErrorDto error = new ErrorDto(t.getClass().getName(), parameters);
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
-        return new ErrorResponse(statusCode, errorMessage);
+        return new ErrorResponse(whiteListEntry.getStatusCode(), errorMessage);
     }
 
     private ErrorResponse handleValidationError(ConstraintViolationException e)
