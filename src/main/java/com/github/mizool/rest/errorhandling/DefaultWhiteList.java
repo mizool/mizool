@@ -16,7 +16,6 @@
  */
 package com.github.mizool.rest.errorhandling;
 
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +31,6 @@ import com.github.mizool.exception.ObjectNotFoundException;
 import com.github.mizool.exception.PermissionDeniedException;
 import com.github.mizool.exception.UnprocessableEntityException;
 import com.github.mizool.exception.UnsupportedHttpFeatureException;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 @MetaInfServices
@@ -41,27 +39,24 @@ public class DefaultWhiteList implements WhiteList
     private static final int SC_UNPROCESSABLE_ENTITY = 422;
 
     @Override
-    public Map<String, Integer> getEntries()
+    public Set<WhiteListEntry> getEntries()
     {
-        return ImmutableMap.<String, Integer>builder()
-            .put(BadRequestException.class.getName(), HttpServletResponse.SC_BAD_REQUEST)
-            .put(ConflictingEntityException.class.getName(), HttpServletResponse.SC_CONFLICT)
-            .put(ObjectNotFoundException.class.getName(), HttpServletResponse.SC_NOT_FOUND)
-            .put(AuthenticationMissingException.class.getName(), HttpServletResponse.SC_UNAUTHORIZED)
-            .put(AuthenticationRejectedException.class.getName(), HttpServletResponse.SC_UNAUTHORIZED)
-            .put(PermissionDeniedException.class.getName(), HttpServletResponse.SC_FORBIDDEN)
-            .put(UnprocessableEntityException.class.getName(), SC_UNPROCESSABLE_ENTITY)
-            .put(UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED)
-            .put(JsonParseException.class.getName(), HttpServletResponse.SC_BAD_REQUEST)
+        return ImmutableSet.<WhiteListEntry>builder()
+            .add(new WhiteListEntry(BadRequestException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true))
+            .add(new WhiteListEntry(UnprocessableEntityException.class.getName(), SC_UNPROCESSABLE_ENTITY, true))
+            .add(new WhiteListEntry(JsonParseException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true))
+            .add(new WhiteListEntry(ConflictingEntityException.class.getName(), HttpServletResponse.SC_CONFLICT))
+            .add(new WhiteListEntry(ObjectNotFoundException.class.getName(), HttpServletResponse.SC_NOT_FOUND))
+            .add(
+                new WhiteListEntry(
+                    AuthenticationMissingException.class.getName(), HttpServletResponse.SC_UNAUTHORIZED))
+            .add(
+                new WhiteListEntry(
+                    AuthenticationRejectedException.class.getName(), HttpServletResponse.SC_UNAUTHORIZED))
+            .add(new WhiteListEntry(PermissionDeniedException.class.getName(), HttpServletResponse.SC_FORBIDDEN))
+            .add(
+                new WhiteListEntry(
+                    UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED))
             .build();
-    }
-
-    @Override
-    public Set<String> getEntriesToShowWithStacktrace()
-    {
-        return ImmutableSet.of(
-            BadRequestException.class.getName(),
-            UnprocessableEntityException.class.getName(),
-            JsonParseException.class.getName());
     }
 }
