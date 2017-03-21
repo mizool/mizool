@@ -24,13 +24,13 @@ import org.kohsuke.MetaInfServices;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.github.mizool.exception.AuthenticationMissingException;
-import com.github.mizool.exception.AuthenticationRejectedException;
 import com.github.mizool.exception.BadRequestException;
 import com.github.mizool.exception.ConflictingEntityException;
 import com.github.mizool.exception.ObjectNotFoundException;
 import com.github.mizool.exception.PermissionDeniedException;
 import com.github.mizool.exception.UnprocessableEntityException;
 import com.github.mizool.exception.UnsupportedHttpFeatureException;
+import com.github.mizool.shiro.AuthenticationRejectedException;
 import com.google.common.collect.ImmutableMap;
 
 @MetaInfServices
