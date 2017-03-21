@@ -14,9 +14,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.exception;
+package com.github.mizool.shiro;
 
-public class AuthenticationRejectedException extends RuntimeException
+import org.apache.shiro.authc.AuthenticationException;
+
+public class AuthenticationRejectedException extends AuthenticationException
 {
     public AuthenticationRejectedException()
     {
@@ -35,11 +37,5 @@ public class AuthenticationRejectedException extends RuntimeException
     public AuthenticationRejectedException(Throwable cause)
     {
         super(cause);
-    }
-
-    public AuthenticationRejectedException(
-        String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
-    {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
