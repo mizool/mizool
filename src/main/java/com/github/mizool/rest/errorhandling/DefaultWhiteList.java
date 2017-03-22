@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.kohsuke.MetaInfServices;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.github.mizool.exception.AuthenticationMissingException;
 import com.github.mizool.exception.AuthenticationRejectedException;
 import com.github.mizool.exception.BadRequestException;
@@ -45,6 +46,9 @@ public class DefaultWhiteList implements WhiteList
             .add(new WhiteListEntry(BadRequestException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true))
             .add(new WhiteListEntry(UnprocessableEntityException.class.getName(), SC_UNPROCESSABLE_ENTITY, true))
             .add(new WhiteListEntry(JsonParseException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true))
+            .add(
+                new WhiteListEntry(
+                    UnrecognizedPropertyException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true))
             .add(new WhiteListEntry(ConflictingEntityException.class.getName(), HttpServletResponse.SC_CONFLICT))
             .add(new WhiteListEntry(ObjectNotFoundException.class.getName(), HttpServletResponse.SC_NOT_FOUND))
             .add(
