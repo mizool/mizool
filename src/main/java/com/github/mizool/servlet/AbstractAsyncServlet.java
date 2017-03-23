@@ -15,6 +15,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import lombok.extern.slf4j.Slf4j;
+
+import org.apache.shiro.concurrent.SubjectAwareExecutorService;
+
+@Slf4j
 public abstract class AbstractAsyncServlet extends HttpServlet
 {
     private static final String DEFAULT_CORE_POOL_SIZE = "3";
@@ -23,6 +28,8 @@ public abstract class AbstractAsyncServlet extends HttpServlet
     private static final String DEFAULT_THREAD_KEEP_ALIVE_TIME_UNIT = "SECONDS";
     private final BlockingQueue<AsyncContext> requestQueue = new ArrayBlockingQueue<>(20000);
     private final BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(20000);
+
+    private final SubjectAwareExecutorService subjectAwareExecutorService;
 
     protected AbstractAsyncServlet()
     {
@@ -33,20 +40,23 @@ public abstract class AbstractAsyncServlet extends HttpServlet
             System.getProperty("async.servlet.thread.keep.alive.time", DEFAULT_THREAD_KEEP_ALIVE_TIME));
         TimeUnit keepAliveTimeUnit = TimeUnit.valueOf(
             System.getProperty("async.servlet.thread.keep.alive.time.unit", DEFAULT_THREAD_KEEP_ALIVE_TIME_UNIT));
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(20000);
 
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
             corePoolSize, maximumPoolSize, keepAliveTime, keepAliveTimeUnit, workQueue);
-        threadPoolExecutor.allowCoreThreadTimeOut(true);
+        threadPoolExecutor.allowCoreThreadTimeOut(false);
+        threadPoolExecutor.prestartAllCoreThreads();
+
+        subjectAwareExecutorService = new SubjectAwareExecutorService();
+        subjectAwareExecutorService.setTargetExecutorService(threadPoolExecutor);
     }
 
-    public abstract void work(ServletRequest request, ServletResponse response);
+    public abstract void work(ServletRequest request, ServletResponse response) throws IOException;
 
     protected void service(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException
     {
         requestQueue.add(request.startAsync());
-        workQueue.add(processRequest());
+        subjectAwareExecutorService.submit(processRequest());
     }
 
     private Runnable processRequest()
@@ -56,8 +66,16 @@ public abstract class AbstractAsyncServlet extends HttpServlet
             requestQueue.drainTo(requests);
             requests.parallelStream().forEach(
                 asyncContext -> {
-                    work(asyncContext.getRequest(), asyncContext.getResponse());
-                    asyncContext.complete();
+                    try
+                    {
+                        work(asyncContext.getRequest(), asyncContext.getResponse());
+                        asyncContext.complete();
+                    }
+                    catch (IOException e)
+                    {
+                        log.debug("Exception processing http request", e);
+                        requestQueue.add(asyncContext);
+                    }
                 });
         };
     }
