@@ -4,18 +4,17 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 
 public class DynamoDbProducer
 {
-    private final AmazonDynamoDBClient client;
+    private final AmazonDynamoDB client;
 
     @Inject
-    public DynamoDbProducer(Configuration configuration)
+    public DynamoDbProducer(AmazonDynamoDB client)
     {
-        client = new AmazonDynamoDBClient();
-        client.withRegion(configuration.getAwsRegion());
+        this.client = client;
     }
 
     @Produces
