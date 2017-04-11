@@ -11,4 +11,9 @@ public class Configuration
         String region = System.getProperty("aws.region", DEFAULT_REGION);
         return Regions.valueOf(region);
     }
+
+    public String getEndpoint()
+    {
+        return System.getProperty("aws.endpoint");
+    }
 }
