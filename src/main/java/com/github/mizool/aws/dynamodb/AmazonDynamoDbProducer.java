@@ -32,6 +32,10 @@ public class AmazonDynamoDbProducer
     {
         client = new AmazonDynamoDBClient();
         client.withRegion(configuration.getAwsRegion());
+        if (configuration.getEndpoint() != null)
+        {
+            client.withEndpoint(configuration.getEndpoint());
+        }
     }
 
     @Produces
