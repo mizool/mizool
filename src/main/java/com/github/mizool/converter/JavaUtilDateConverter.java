@@ -18,6 +18,7 @@ package com.github.mizool.converter;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class JavaUtilDateConverter
@@ -33,6 +34,17 @@ public class JavaUtilDateConverter
         return record;
     }
 
+    public Date fromPojo(ZonedDateTime pojo)
+    {
+        Date record = null;
+
+        if (pojo != null)
+        {
+            record = Date.from(pojo.withZoneSameLocal(ZoneId.systemDefault()).toInstant());
+        }
+        return record;
+    }
+
     public LocalDateTime toPojo(Date record)
     {
         LocalDateTime pojo = null;
@@ -40,6 +52,17 @@ public class JavaUtilDateConverter
         if (record != null)
         {
             pojo = LocalDateTime.ofInstant(record.toInstant(), ZoneId.systemDefault());
+        }
+        return pojo;
+    }
+
+    public ZonedDateTime fromPojo(Date record)
+    {
+        ZonedDateTime pojo = null;
+
+        if (record != null)
+        {
+            pojo = ZonedDateTime.ofInstant(record.toInstant(), ZoneId.systemDefault());
         }
         return pojo;
     }
