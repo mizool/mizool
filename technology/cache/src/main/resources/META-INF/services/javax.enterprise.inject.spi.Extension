@@ -1,0 +1,2 @@
+com.github.mizool.technology.cache.cdi.jcache.extension.ExtraJCacheExtension
+com.github.mizool.technology.cache.cdi.jcache.annotations.util.InterceptorExtension
