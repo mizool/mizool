@@ -16,9 +16,6 @@
  */
 package com.github.mizool.technology.cassandra;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -45,8 +42,7 @@ public class CassandraDataSource
 
     private MappingManager mappingManager;
 
-    @PostConstruct
-    public void postConstruct()
+    public void initialize()
     {
         this.cluster = Cluster.builder()
             .addContactPoints(parseAddressString(addresses))
@@ -71,8 +67,7 @@ public class CassandraDataSource
         return queryOptions;
     }
 
-    @PreDestroy
-    public void preDestroy()
+    public void destroy()
     {
         closeSession();
         closeCluster();

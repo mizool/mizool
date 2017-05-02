@@ -64,7 +64,7 @@
 
     <properties>
         <aws.sdk.version>1.11.75</aws.sdk.version>
-        <cassandra.driver.version>3.0.2</cassandra.driver.version>
+        <cassandra.driver.version>3.2.0</cassandra.driver.version>
         <encoding>UTF-8</encoding>
         <java.version>1.8</java.version>
         <maven.version.minimum>3.2.2</maven.version.minimum>
