@@ -16,30 +16,31 @@
  */
 package com.github.mizool.core.converter;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class JavaUtilDateConverter
 {
-    public Date fromPojo(LocalDateTime pojo)
+    public Date fromZonedDateTime(ZonedDateTime pojo)
     {
         Date record = null;
 
         if (pojo != null)
         {
-            record = Date.from(pojo.atZone(ZoneId.systemDefault()).toInstant());
+            record = Date.from(Instant.from(pojo));
         }
         return record;
     }
 
-    public LocalDateTime toPojo(Date record)
+    public ZonedDateTime toZonedDateTime(Date record)
     {
-        LocalDateTime pojo = null;
+        ZonedDateTime pojo = null;
 
         if (record != null)
         {
-            pojo = LocalDateTime.ofInstant(record.toInstant(), ZoneId.systemDefault());
+            pojo = ZonedDateTime.ofInstant(record.toInstant(), ZoneId.of("UTC"));
         }
         return pojo;
     }
