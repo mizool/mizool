@@ -18,6 +18,7 @@ package com.github.mizool.technology.cassandra;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
@@ -28,6 +29,7 @@ import com.datastax.driver.mapping.MappingManager;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
+@Slf4j
 public class CassandraDataSource
 {
     @Getter
@@ -44,6 +46,7 @@ public class CassandraDataSource
 
     public void initialize()
     {
+        log.debug("initializing CassandraDataSource");
         this.cluster = Cluster.builder()
             .addContactPoints(parseAddressString(addresses))
             .withQueryOptions(getQueryOptions())
@@ -69,6 +72,7 @@ public class CassandraDataSource
 
     public void destroy()
     {
+        log.debug("destroying CassandraDataSource");
         closeSession();
         closeCluster();
     }
