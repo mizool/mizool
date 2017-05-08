@@ -14,34 +14,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.core.converter;
+package com.github.mizool.technology.cassandra;
 
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
+import javax.annotation.Resource;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-public class JavaUtilDateConverter
+public class CassandraDataSourceContextListener implements ServletContextListener
 {
-    public Date fromZonedDateTime(ZonedDateTime pojo)
-    {
-        Date record = null;
+    @Resource(name = "cassandra")
+    private CassandraDataSource cassandraDataSource;
 
-        if (pojo != null)
-        {
-            record = Date.from(Instant.from(pojo));
-        }
-        return record;
+    @Override
+    public void contextInitialized(ServletContextEvent sce)
+    {
+        cassandraDataSource.initialize();
     }
 
-    public ZonedDateTime toZonedDateTime(Date record)
+    @Override
+    public void contextDestroyed(ServletContextEvent sce)
     {
-        ZonedDateTime pojo = null;
-
-        if (record != null)
-        {
-            pojo = ZonedDateTime.ofInstant(record.toInstant(), ZoneId.of("UTC"));
-        }
-        return pojo;
+        cassandraDataSource.destroy();
     }
 }
