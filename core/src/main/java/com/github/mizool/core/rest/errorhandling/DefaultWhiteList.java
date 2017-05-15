@@ -26,7 +26,7 @@ import com.github.mizool.core.exception.AuthenticationMissingException;
 import com.github.mizool.core.exception.AuthenticationRejectedException;
 import com.github.mizool.core.exception.BadRequestException;
 import com.github.mizool.core.exception.ConflictingEntityException;
-import com.github.mizool.core.exception.LockedException;
+import com.github.mizool.core.exception.LockedEntityException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.PermissionDeniedException;
 import com.github.mizool.core.exception.UnprocessableEntityException;
@@ -60,7 +60,7 @@ public class DefaultWhiteList implements WhiteList
             .add(
                 new WhiteListEntry(
                     UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED))
-            .add(new WhiteListEntry(LockedException.class.getName(), LOCKED))
+            .add(new WhiteListEntry(LockedEntityException.class.getName(), LOCKED))
             .build();
     }
 }

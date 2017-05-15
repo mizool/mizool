@@ -19,24 +19,24 @@ package com.github.mizool.core.exception;
 /**
  * Thrown when trying to manipulate a locked entity
  */
-public class LockedException extends RuntimeException
+public class LockedEntityException extends RuntimeException
 {
-    public LockedException()
+    public LockedEntityException()
     {
         super();
     }
 
-    public LockedException(String message, Throwable cause)
+    public LockedEntityException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public LockedException(String message)
+    public LockedEntityException(String message)
     {
         super(message);
     }
 
-    public LockedException(Throwable cause)
+    public LockedEntityException(Throwable cause)
     {
         super(cause);
     }
