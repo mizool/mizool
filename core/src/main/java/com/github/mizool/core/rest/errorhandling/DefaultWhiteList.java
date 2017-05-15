@@ -26,6 +26,7 @@ import com.github.mizool.core.exception.AuthenticationMissingException;
 import com.github.mizool.core.exception.AuthenticationRejectedException;
 import com.github.mizool.core.exception.BadRequestException;
 import com.github.mizool.core.exception.ConflictingEntityException;
+import com.github.mizool.core.exception.LockedEntityException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.PermissionDeniedException;
 import com.github.mizool.core.exception.UnprocessableEntityException;
@@ -36,12 +37,14 @@ import com.google.common.collect.ImmutableSet;
 public class DefaultWhiteList implements WhiteList
 {
     private static final int SC_UNPROCESSABLE_ENTITY = 422;
+    private static final int LOCKED = 423;
 
     @Override
     public Set<WhiteListEntry> getEntries()
     {
         return ImmutableSet.<WhiteListEntry>builder()
-            .add(new WhiteListEntry(BadRequestException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true)).add(
+            .add(new WhiteListEntry(BadRequestException.class.getName(), HttpServletResponse.SC_BAD_REQUEST, true))
+            .add(
                 new WhiteListEntry(UnprocessableEntityException.class.getName(), SC_UNPROCESSABLE_ENTITY, true))
             .add(
                 new WhiteListEntry(
@@ -57,6 +60,7 @@ public class DefaultWhiteList implements WhiteList
             .add(
                 new WhiteListEntry(
                     UnsupportedHttpFeatureException.class.getName(), HttpServletResponse.SC_NOT_IMPLEMENTED))
+            .add(new WhiteListEntry(LockedEntityException.class.getName(), LOCKED))
             .build();
     }
 }
