@@ -1,0 +1,42 @@
+== About Mizool
+_TODO_
+
+== Deployment to Maven Central
+
+Mizool is deployed to the Central repository via OSSRH using Travis CI. The setup is based on an
+http://www.debonair.io/post/maven-cd/[article on debonair.io] with the following deviations:
+
+* The folder `cd` is called `ci-resources` to make its purpose more obvious.
+* We used a Windows machine (except for encryption, see below)
+** The shell scripts in `ci-resources` were added with `git add --chmod=+x *.sh` to make them executable on Linux.
+* The profile `build-extras` does not include `maven-sources-plugin` as we always run it anyway. Also, the profile is
+  not active by default as it is activated explicitly in the deployment command.
+* Environment variables
+** When preparing the encrypted variables `OSSRH_JIRA_USERNAME` and `OSSRH_JIRA_PASSWORD`, we did *not* use actual JIRA
+   credentials. Instead, we used tokens. To fetch those, use OSSRH JIRA credentials to log in to
+   https://oss.sonatype.org/[OSSRH Nexus], view the user profile and select `User Token > Access`.
+** When GPG_PASSPHRASE included spaces, setting it via the Travis CLI or the Travis website resulted in the value being
+   truncated at the position of the first space character. We changed to a space-free passphrase.
+* File encryption
+** On Windows, encrypting files using either the Travis CLI or direct openssl invocations resulted in garbled
+   files that could not be decrypted. So the encryption was performed on a Linux box. As installation of the Travis CLI
+   failed, pure openssl was used instead.
+*** The password used is stored in an environment variable CODESIGNING_AES_PASSWORD in the Travis settings.
+*** The decryption command in `before-deploy` was adapted accordingly.
+* For the GPG import command, we specify the `--batch` and `--quiet` options to skip a warning regarding a preference
+  for an unsupported cipher.
+* In the article, there are several different maven invocations, which we combined into one for the following reasons:
+** Multiple maven invocations bring a slight overhead that must be justified. Furthermore, it makes the build logs
+   significantly more verbose.
+** The idea of the Travis `install` phase seems to be to install any necessary prerequisites before starting the real
+   build. This is not a good fit for Maven as it downloads each plugin during the respective phase of its build,
+   so there is no real "install dependencies without compiling" command.
+** Travis updates its cache after `script`, but before the `after_success` phase, so the plugins used by the maven
+   invocation during `after_success` were downloaded on each build.
+** Errors during deployment to the Central repository should break the build, so the deployment must happen in the
+   `script` phase.
+* The script names and the phases used for invoking them were changed to reflect the decision above.
+* The maven invocation for non-`master` builds was changed from `install` to `package`. The former would put the
+  build results into the local repository and hence the cache, which offers no advantage.
+* As the Travis docker images https://github.com/travis-ci/travis-ci/issues/2727[do not configure any Maven toolchains],
+  a suitable configuration file is installed by `before-build.sh`.
