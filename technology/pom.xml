@@ -17,5 +17,6 @@
         <module>aws</module>
         <module>cache</module>
         <module>cassandra-datasource</module>
+        <module>web</module>
     </modules>
 </project>
