@@ -33,16 +33,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mockito.ArgumentCaptor;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class TestCacheHeaderFilter
 {
-    private static final String PATH_TO_INDEX_HTML = "/index.html";
-    private static final String PATH_TO_ROOT_RESOURCE_FILES = "/resource.xml";
-    private static final String PATH_TO_SNAPSHOT_RESOURCES = "/1.0-SNAPSHOT/app.js";
-    private static final String PATH_TO_STATIC_ELEMENT_RESOURCES = "/1.0/app.js";
-    private static final String PATH_TO_WEBJARS = "/webjars/requirejs/2.1.20/require.js";
-
     private HttpServletRequest servletRequest;
     private HttpServletResponse servletResponse;
     private FilterChain filterChain;
@@ -55,6 +50,48 @@ public class TestCacheHeaderFilter
         servletResponse = mock(HttpServletResponse.class);
         filterChain = mock(FilterChain.class);
         cacheHeaderFilter = new CacheHeaderFilter();
+    }
+
+    @Test(dataProvider = "notCached")
+    public void testNotCached(String name, String path) throws IOException, ServletException
+    {
+        when(servletRequest.getServletPath()).thenReturn(path);
+        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
+        verifyNotCached(servletResponse);
+    }
+
+    @DataProvider
+    public Object[][] notCached()
+    {
+        return new Object[][]{
+            {
+                "Index Html", "/index.html"
+            }, {
+                "Root resources", "/resource.xml"
+            }, {
+                "Snapshot resources", "/1.0-SNAPSHOT/app.js"
+            }
+        };
+    }
+
+    @Test(dataProvider = "cachedForever")
+    public void testCachedForever(String name, String path) throws IOException, ServletException
+    {
+        when(servletRequest.getServletPath()).thenReturn(path);
+        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
+        verifyCachedForever(servletResponse);
+    }
+
+    @DataProvider
+    public Object[][] cachedForever()
+    {
+        return new Object[][]{
+            {
+                "Static resources", "/1.0/app.js"
+            }, {
+                "Webjars", "/webjars/requirejs/2.1.20/require.js"
+            }
+        };
     }
 
     private void verifyNotCached(HttpServletResponse servletResponse)
@@ -71,45 +108,5 @@ public class TestCacheHeaderFilter
         ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
         verify(servletResponse).setDateHeader(eq("Expires"), argumentCaptor.capture());
         assertThat(argumentCaptor.getValue()).isGreaterThan(0);
-    }
-
-    @Test
-    public void testWithIndexHtml() throws IOException, ServletException
-    {
-        when(servletRequest.getServletPath()).thenReturn(PATH_TO_INDEX_HTML);
-        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
-        verifyNotCached(servletResponse);
-    }
-
-    @Test
-    public void testWithRootResource() throws IOException, ServletException
-    {
-        when(servletRequest.getServletPath()).thenReturn(PATH_TO_ROOT_RESOURCE_FILES);
-        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
-        verifyNotCached(servletResponse);
-    }
-
-    @Test
-    public void testWithSnapshotResources() throws IOException, ServletException
-    {
-        when(servletRequest.getServletPath()).thenReturn(PATH_TO_SNAPSHOT_RESOURCES);
-        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
-        verifyNotCached(servletResponse);
-    }
-
-    @Test
-    public void testWithStaticElementResources() throws IOException, ServletException
-    {
-        when(servletRequest.getServletPath()).thenReturn(PATH_TO_STATIC_ELEMENT_RESOURCES);
-        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
-        verifyCachedForever(servletResponse);
-    }
-
-    @Test
-    public void testWithWebjarResources() throws IOException, ServletException
-    {
-        when(servletRequest.getServletPath()).thenReturn(PATH_TO_WEBJARS);
-        cacheHeaderFilter.doFilter(servletRequest, servletResponse, filterChain);
-        verifyCachedForever(servletResponse);
     }
 }
