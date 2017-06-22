@@ -1,7 +1,49 @@
 == About Mizool
 _TODO_
 
-== Deployment to Maven Central
+
+== How to make a release and deploy it to Central
+
+. Make sure you don't have any untracked or modified files in your working copy.
+
+. Update your working copy and start the release:
++
+----
+git fetch
+git checkout -B develop remotes/origin/develop --
+mvn jgitflow:release-start
+----
+
+. Wait for the https://travis-ci.org/[Travis] build for the `release/` branch to succeed.
+
+. Finish the release:
++
+----
+mvn jgitflow:release-finish
+----
++
+This will create a commit that sets the POM version on the `release/` branch, merges and then deletes that branch. The
+subsequent Travis build will fail because the branch was deleted, but you can safely ignore this. The `master` build
+should work fine.
+
+. Sometimes, the JGit-Flow plugin does not seem to push all branches. Verify `master` and `develop` are pushed:
++
+----
+git checkout master && git push
+git checkout develop && git push
+----
+
+. Wait for the Travis `master` build to succeed.
+
+. Log into https://oss.sonatype.org/ with your OSSRH credentials. Navigate to "Staging Repositories" and search for a
+repo called `comgithubmizool-XXXX`. Select it and click the `Release` button, then confirm the dialog.
+
+. The artifact should appear on Central within an hour or so. If you are impatient and want to check whether the release
+made it to Central, be aware that the https://search.maven.org/[search engine] seems to have a larger lag. Instead,
+check the https://repo.maven.apache.org/maven2/com/github/mizool/mizool/VERSION/[URL of the release on central].
+
+
+== Deployment setup details
 
 Mizool is deployed to the Central repository via OSSRH using Travis CI. The setup is based on an
 http://www.debonair.io/post/maven-cd/[article on debonair.io] with the following deviations:
@@ -15,13 +57,13 @@ http://www.debonair.io/post/maven-cd/[article on debonair.io] with the following
 ** When preparing the encrypted variables `OSSRH_JIRA_USERNAME` and `OSSRH_JIRA_PASSWORD`, we did *not* use actual JIRA
    credentials. Instead, we used tokens. To fetch those, use OSSRH JIRA credentials to log in to
    https://oss.sonatype.org/[OSSRH Nexus], view the user profile and select `User Token > Access`.
-** When GPG_PASSPHRASE included spaces, setting it via the Travis CLI or the Travis website resulted in the value being
+** When `GPG_PASSPHRASE` included spaces, setting it via the Travis CLI or the Travis website resulted in the value being
    truncated at the position of the first space character. We changed to a space-free passphrase.
 * File encryption
 ** On Windows, encrypting files using either the Travis CLI or direct openssl invocations resulted in garbled
    files that could not be decrypted. So the encryption was performed on a Linux box. As installation of the Travis CLI
    failed, pure openssl was used instead.
-*** The password used is stored in an environment variable CODESIGNING_AES_PASSWORD in the Travis settings.
+*** The password used is stored in an environment variable `CODESIGNING_AES_PASSWORD` in the Travis settings.
 *** The decryption command in `before-deploy` was adapted accordingly.
 * For the GPG import command, we specify the `--batch` and `--quiet` options to skip a warning regarding a preference
   for an unsupported cipher.
