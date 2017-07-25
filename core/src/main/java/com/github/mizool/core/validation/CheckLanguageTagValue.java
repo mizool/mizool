@@ -17,13 +17,17 @@
 package com.github.mizool.core.validation;
 
 import java.util.Locale;
+import java.util.Set;
 
 import javax.validation.ConstraintValidatorContext;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.ImmutableSet;
 
 public class CheckLanguageTagValue extends AbstractTypeMappingValidator<LanguageTagValue>
 {
+    private static final Set<String> LANGUAGE_CODES = ImmutableSet.copyOf(Locale.getISOLanguages());
+    private static final Set<String> COUNTRY_CODES = ImmutableSet.copyOf(Locale.getISOCountries());
+
     @Override
     public void initialize(LanguageTagValue notEmpty)
     {
@@ -34,16 +38,18 @@ public class CheckLanguageTagValue extends AbstractTypeMappingValidator<Language
         String validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         Locale locale = Locale.forLanguageTag(validationObject);
-        return validLanguageCode(locale.getLanguage()) && validCountryCode(locale.getCountry());
+        return isValidLanguage(locale) && isValidCountry(locale);
     }
 
-    private boolean validLanguageCode(String languageCode)
+    private boolean isValidLanguage(Locale locale)
     {
-        return Sets.newHashSet(Locale.getISOLanguages()).contains(languageCode);
+        String languageCode = locale.getLanguage();
+        return LANGUAGE_CODES.contains(languageCode);
     }
 
-    private boolean validCountryCode(String countryCode)
+    private boolean isValidCountry(Locale locale)
     {
-        return Sets.newHashSet(Locale.getISOCountries()).contains(countryCode);
+        String countryCode = locale.getCountry();
+        return COUNTRY_CODES.contains(countryCode);
     }
 }
