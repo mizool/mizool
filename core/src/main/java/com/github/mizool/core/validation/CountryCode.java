@@ -32,9 +32,9 @@ import javax.validation.Payload;
 
 @Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
 @Retention(RUNTIME)
-@Constraint(validatedBy = CheckCountryCodeValue.class)
+@Constraint(validatedBy = CheckCountryCode.class)
 @Documented
-public @interface CountryCodeValue
+public @interface CountryCode
 {
     String message() default "{com.github.mizool.core.validation.CountryCodeValue.message}";
 

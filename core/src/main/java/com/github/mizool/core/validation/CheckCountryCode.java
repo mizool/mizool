@@ -23,12 +23,12 @@ import javax.validation.ConstraintValidatorContext;
 
 import com.google.common.collect.ImmutableSet;
 
-public class CheckCountryCodeValue extends AbstractTypeMappingValidator<CountryCodeValue>
+public class CheckCountryCode extends AbstractTypeMappingValidator<CountryCode>
 {
     private static final Set<String> COUNTRY_CODES = ImmutableSet.copyOf(Locale.getISOCountries());
 
     @Override
-    public void initialize(CountryCodeValue notEmpty)
+    public void initialize(CountryCode notEmpty)
     {
     }
 
