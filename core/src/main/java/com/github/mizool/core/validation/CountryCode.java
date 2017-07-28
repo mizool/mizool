@@ -36,7 +36,7 @@ import javax.validation.Payload;
 @Documented
 public @interface CountryCode
 {
-    String message() default "{com.github.mizool.core.validation.CountryCodeValue.message}";
+    String message() default "{com.github.mizool.core.validation.CountryCode.message}";
 
     Class<?>[] groups() default { };
 
