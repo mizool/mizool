@@ -35,13 +35,14 @@ git checkout develop && git push
 
 . Wait for the Travis `master` build to succeed.
 
-. Log into https://oss.sonatype.org/ with your OSSRH credentials. Navigate to "Staging Repositories" and search for a
-repo called `comgithubmizool-XXXX`. Select it and click the `Release` button, then confirm the dialog.
-
 . The artifact should appear on Central within an hour or so. If you are impatient and want to check whether the release
 made it to Central, be aware that the https://search.maven.org/[search engine] seems to have a larger lag. Instead,
 check the https://repo.maven.apache.org/maven2/com/github/mizool/mizool/VERSION/[URL of the release on central].
 
+=== Troubleshooting
+
+If the Sonatype staging plugin reports errors, you can log into https://oss.sonatype.org/ with your OSSRH credentials to
+investigate the situation. Navigate to "Staging Repositories" and search for a repo called `comgithubmizool-XXXX`.
 
 == Deployment setup details
 
