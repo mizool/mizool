@@ -22,14 +22,14 @@ import lombok.NonNull;
 
 import com.github.mizool.core.exception.DataInconsistencyException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
+import com.github.mizool.core.exception.UnprocessableEntityException;
 import com.google.common.base.Optional;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Optionals
 {
     /**
-     * Used when a user directly requests or references an object, resulting in an ObjectNotFoundException if it does
-     * not exist.
+     * Used when a user directly requests an object, resulting in an ObjectNotFoundException if it does not exist.
      */
     public static final <T> T unwrapUserRequestedObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
@@ -49,6 +49,19 @@ public class Optionals
         if (!wrapped.isPresent())
         {
             throw new DataInconsistencyException(classOfT.getSimpleName() + " not found");
+        }
+        return wrapped.get();
+    }
+
+    /**
+     * Used when a user-submitted entity refers to another object, resulting in a UnprocessableEntityException if that
+     * object does not exist.
+     */
+    public static final <T> T unwrapUserMentionedObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
+    {
+        if (!wrapped.isPresent())
+        {
+            throw new UnprocessableEntityException(classOfT.getSimpleName() + " not found");
         }
         return wrapped.get();
     }
