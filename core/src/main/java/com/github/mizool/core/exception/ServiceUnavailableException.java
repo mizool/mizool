@@ -16,23 +16,23 @@
  */
 package com.github.mizool.core.exception;
 
-public class AuthenticationMissingException extends RuntimeException
+public class ServiceUnavailableException extends RuntimeException
 {
-    public AuthenticationMissingException()
+    public ServiceUnavailableException()
     {
     }
 
-    public AuthenticationMissingException(String message)
+    public ServiceUnavailableException(String message)
     {
         super(message);
     }
 
-    public AuthenticationMissingException(String message, Throwable cause)
+    public ServiceUnavailableException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public AuthenticationMissingException(Throwable cause)
+    public ServiceUnavailableException(Throwable cause)
     {
         super(cause);
     }
