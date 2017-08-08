@@ -36,10 +36,4 @@ public class AuthenticationRejectedException extends RuntimeException
     {
         super(cause);
     }
-
-    public AuthenticationRejectedException(
-        String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace)
-    {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
