@@ -17,6 +17,7 @@
 package com.github.mizool.core.converter;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
@@ -41,6 +42,28 @@ public class JavaUtilDateConverter
         if (record != null)
         {
             pojo = ZonedDateTime.ofInstant(record.toInstant(), ZoneId.of("UTC"));
+        }
+        return pojo;
+    }
+
+    public Date fromLocalDate(LocalDate pojo)
+    {
+        Date record = null;
+
+        if (pojo != null)
+        {
+            record = Date.from(Instant.from(pojo));
+        }
+        return record;
+    }
+
+    public LocalDate toLocalDate(Date record)
+    {
+        LocalDate pojo = null;
+
+        if (record != null)
+        {
+            pojo = LocalDate.from(record.toInstant());
         }
         return pojo;
     }
