@@ -11,7 +11,7 @@ import com.datastax.driver.mapping.Mapper.Option;
 import com.github.mizool.technology.cassandra.CassandraDataSource;
 import com.github.mizool.technology.cassandra.DefaultConsistencyLevel;
 
-class ConfigurationTagRecordMapperProducer
+class $className$MapperProducer
 {
     @Resource(name = "cassandra")
     private CassandraDataSource cassandra;
