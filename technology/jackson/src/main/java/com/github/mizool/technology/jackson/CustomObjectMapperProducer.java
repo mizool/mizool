@@ -32,6 +32,7 @@ public class CustomObjectMapperProducer
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
+        objectMapper.registerModule(new LocalDateModule());
         objectMapper.registerModule(new LocalDateTimeModule());
         objectMapper.registerModule(new ZonedDateTimeModule());
         objectMapper.registerModule(new GuavaModule());
