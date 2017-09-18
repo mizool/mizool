@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 public class LocalDateSerializer extends JsonSerializer<LocalDate>
 {
     @Override
-    public void serialize(LocalDate value, JsonGenerator gen, SerializerProvider serializers) throws IOException
+    public void serialize(LocalDate value, JsonGenerator generator, SerializerProvider serializers) throws IOException
     {
         String localDate = DateTimeFormatter.ISO_LOCAL_DATE.format(value);
-        gen.writeString(localDate);
+        generator.writeString(localDate);
     }
 }
