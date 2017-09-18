@@ -52,7 +52,7 @@ public class JavaUtilDateConverter
 
         if (pojo != null)
         {
-            record = Date.from(Instant.from(pojo));
+            record = Date.from(Instant.from(pojo.atStartOfDay(ZoneId.of("UTC"))));
         }
         return record;
     }
@@ -63,7 +63,7 @@ public class JavaUtilDateConverter
 
         if (record != null)
         {
-            pojo = LocalDate.from(record.toInstant());
+            pojo = LocalDate.from(record.toInstant().atZone(ZoneId.of("UTC")));
         }
         return pojo;
     }
