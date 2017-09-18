@@ -1,0 +1,30 @@
+delimiters "$","$"
+mapperProducerGenerator(packageName,className) ::= <<
+package $packageName$;
+
+import javax.annotation.Resource;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
+
+import com.datastax.driver.mapping.Mapper;
+import com.datastax.driver.mapping.Mapper.Option;
+import com.github.mizool.technology.cassandra.CassandraDataSource;
+import com.github.mizool.technology.cassandra.DefaultConsistencyLevel;
+
+class ConfigurationTagRecordMapperProducer
+{
+    @Resource(name = "cassandra")
+    private CassandraDataSource cassandra;
+
+    @Produces
+    @Singleton
+    public Mapper<$className$> produce()
+    {
+        Mapper<$className$> mapper = cassandra.mapper($className$.class);
+        mapper.setDefaultGetOptions(Option.consistencyLevel(DefaultConsistencyLevel.READ));
+        mapper.setDefaultSaveOptions(Option.consistencyLevel(DefaultConsistencyLevel.WRITE));
+        mapper.setDefaultDeleteOptions(Option.consistencyLevel(DefaultConsistencyLevel.WRITE));
+        return mapper;
+    }
+}
+>>
