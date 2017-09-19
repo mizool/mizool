@@ -16,25 +16,20 @@
  */
 package com.github.mizool.core.exception;
 
-import java.util.HashSet;
 import java.util.Set;
+
+import lombok.NonNull;
+
+import com.google.common.collect.ImmutableSet;
 
 public class RuleViolationException extends RuntimeException
 {
     private final Set<RuleViolation> ruleViolations;
 
-    public RuleViolationException(String message, Set<RuleViolation> ruleViolations)
+    public RuleViolationException(String message, @NonNull Set<RuleViolation> ruleViolations)
     {
         super(message);
-
-        if (ruleViolations == null)
-        {
-            this.ruleViolations = null;
-        }
-        else
-        {
-            this.ruleViolations = new HashSet<>(ruleViolations);
-        }
+        this.ruleViolations = ImmutableSet.copyOf(ruleViolations);
     }
 
     public RuleViolationException(Set<RuleViolation> ruleViolations)
