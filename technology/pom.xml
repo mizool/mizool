@@ -16,6 +16,7 @@
         <module>jackson</module>
         <module>aws</module>
         <module>cache</module>
+        <module>cassandra</module>
         <module>cassandra-datasource</module>
         <module>web</module>
     </modules>
