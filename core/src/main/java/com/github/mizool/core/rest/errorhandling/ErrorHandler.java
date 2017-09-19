@@ -28,6 +28,8 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.MethodNotAllowedException;
+import com.github.mizool.core.exception.RuleViolation;
+import com.github.mizool.core.exception.RuleViolationException;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
@@ -69,7 +71,11 @@ public class ErrorHandler
             }
             else if (isAssignable(ConstraintViolationException.class, cursor))
             {
-                result = handleValidationError((ConstraintViolationException) cursor);
+                result = handleConstraintValidationError((ConstraintViolationException) cursor);
+            }
+            else if (isAssignable(RuleViolationException.class, cursor))
+            {
+                result = handleRuleViolationError((RuleViolationException) cursor);
             }
             else if (isAssignable(ClientErrorException.class, cursor))
             {
@@ -104,16 +110,45 @@ public class ErrorHandler
         return new ErrorResponse(whiteListEntry.getStatusCode(), errorMessage);
     }
 
-    private ErrorResponse handleValidationError(ConstraintViolationException e)
+    private ErrorResponse handleConstraintValidationError(ConstraintViolationException e)
     {
         log.debug("Validation error", e);
         ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
         for (ConstraintViolation<?> violation : e.getConstraintViolations())
         {
-            recordViolation(violation, errors);
+            recordConstraintViolation(violation, errors);
         }
         ErrorMessageDto errorMessage = createErrorMessageDto(errors);
         return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
+    }
+
+    private void recordConstraintViolation(ConstraintViolation<?> violation, ListMultimap<String, ErrorDto> target)
+    {
+        String errorId = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
+
+        Path.Node lastProperty = Iterators.getLast(violation.getPropertyPath().iterator());
+        String propertyName = lastProperty.getName();
+
+        ErrorDto errorDto = new ErrorDto(errorId, null);
+        target.put(propertyName, errorDto);
+    }
+
+    private ErrorResponse handleRuleViolationError(RuleViolationException e)
+    {
+        log.debug("Rule violation error", e);
+        ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
+        for (RuleViolation violation : e.getRuleViolations())
+        {
+            recordRuleViolation(violation, errors);
+        }
+        ErrorMessageDto errorMessage = createErrorMessageDto(errors);
+        return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
+    }
+
+    private void recordRuleViolation(RuleViolation violation, ListMultimap<String, ErrorDto> target)
+    {
+        ErrorDto errorDto = new ErrorDto(violation.getErrorId(), null);
+        target.put(violation.getFieldName(), errorDto);
     }
 
     private ErrorResponse handleClientError(ClientErrorException e)
@@ -138,17 +173,6 @@ public class ErrorHandler
                 errorClass = defaultErrorClass;
         }
         return errorClass;
-    }
-
-    private void recordViolation(ConstraintViolation<?> violation, ListMultimap<String, ErrorDto> target)
-    {
-        String errorId = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
-
-        Path.Node lastProperty = Iterators.getLast(violation.getPropertyPath().iterator());
-        String propertyName = lastProperty.getName();
-
-        ErrorDto errorDto = new ErrorDto(errorId, null);
-        target.put(propertyName, errorDto);
     }
 
     private ErrorResponse handleUndefinedError(Throwable throwable)
