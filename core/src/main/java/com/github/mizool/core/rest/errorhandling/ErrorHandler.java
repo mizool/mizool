@@ -28,6 +28,8 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.MethodNotAllowedException;
+import com.github.mizool.core.exception.RuleViolationException;
+import com.github.mizool.core.exception.RuleViolation;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
@@ -75,6 +77,10 @@ public class ErrorHandler
             {
                 result = handleClientError((ClientErrorException) cursor);
             }
+            else if (isAssignable(RuleViolationException.class, cursor))
+            {
+                result = handleRuleViolationError((RuleViolationException) cursor);
+            }
             cursor = cursor.getCause();
         }
 
@@ -116,6 +122,18 @@ public class ErrorHandler
         return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
     }
 
+    private ErrorResponse handleRuleViolationError(RuleViolationException e)
+    {
+        log.debug("Rule violation error", e);
+        ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
+        for (RuleViolation violation : e.getRuleViolations())
+        {
+            recordRuleViolation(violation, errors);
+        }
+        ErrorMessageDto errorMessage = createErrorMessageDto(errors);
+        return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
+    }
+
     private ErrorResponse handleClientError(ClientErrorException e)
     {
         log.debug("Client error", e);
@@ -149,6 +167,12 @@ public class ErrorHandler
 
         ErrorDto errorDto = new ErrorDto(errorId, null);
         target.put(propertyName, errorDto);
+    }
+
+    private void recordRuleViolation(RuleViolation violation, ListMultimap<String, ErrorDto> target)
+    {
+        ErrorDto errorDto = new ErrorDto(violation.getErrorId(), null);
+        target.put(violation.getFieldName(), errorDto);
     }
 
     private ErrorResponse handleUndefinedError(Throwable throwable)

@@ -36,7 +36,6 @@ import javax.tools.JavaFileObject;
 import org.kohsuke.MetaInfServices;
 import org.stringtemplate.v4.ST;
 
-import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.st4.TemplateLoader;
 import com.google.common.collect.ImmutableSet;
 
@@ -84,16 +83,16 @@ public class MapperProducerProcessor extends AbstractProcessor
         String annotationName = MapperProducer.class.getSimpleName();
         if (annotatedElement.getKind() != ElementKind.CLASS)
         {
-            throw new CodeInconsistencyException("Only classes can be annotated with " + annotationName);
+            throw new IllegalArgumentException("Only classes can be annotated with " + annotationName);
         }
         TypeElement classElement = (TypeElement) annotatedElement;
         if (!classElement.getModifiers().contains(Modifier.PUBLIC))
         {
-            throw new CodeInconsistencyException("Only public classes can be annotated with " + annotationName);
+            throw new IllegalArgumentException("Only public classes can be annotated with " + annotationName);
         }
         if (classElement.getModifiers().contains(Modifier.ABSTRACT))
         {
-            throw new CodeInconsistencyException("Abstract classes can't be annotated with " + annotationName);
+            throw new IllegalArgumentException("Abstract classes can't be annotated with " + annotationName);
         }
     }
 
