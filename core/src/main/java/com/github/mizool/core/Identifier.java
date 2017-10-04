@@ -46,6 +46,10 @@ public class Identifier<T> implements Serializable
 
         public Identifier<T> of(@NonNull String value)
         {
+            if (value.isEmpty())
+            {
+                throw new IllegalArgumentException("Identifier value is empty");
+            }
             return new Identifier<T>(pojoClass, value);
         }
     }
