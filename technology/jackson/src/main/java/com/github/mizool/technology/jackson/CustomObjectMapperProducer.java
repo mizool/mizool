@@ -32,6 +32,7 @@ public class CustomObjectMapperProducer
     {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.registerModule(new GuavaModule());
