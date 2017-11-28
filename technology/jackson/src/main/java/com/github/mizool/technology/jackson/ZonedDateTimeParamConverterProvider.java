@@ -19,13 +19,12 @@ package com.github.mizool.technology.jackson;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import javax.ws.rs.ext.ParamConverter;
 import javax.ws.rs.ext.ParamConverterProvider;
 import javax.ws.rs.ext.Provider;
 
-import com.google.common.base.Strings;
+import com.github.mizool.core.converter.ZonedDateTimeConverter;
 
 @Provider
 public class ZonedDateTimeParamConverterProvider implements ParamConverterProvider
@@ -42,23 +41,13 @@ public class ZonedDateTimeParamConverterProvider implements ParamConverterProvid
                 @Override
                 public T fromString(String value)
                 {
-                    ZonedDateTime result = null;
-                    if (!Strings.isNullOrEmpty(value))
-                    {
-                        result = ZonedDateTime.from(DateTimeFormatter.ISO_ZONED_DATE_TIME.parse(value));
-                    }
-                    return rawType.cast(result);
+                    return rawType.cast(ZonedDateTimeConverter.fromString(value));
                 }
 
                 @Override
                 public String toString(T value)
                 {
-                    String result = null;
-                    if (value != null)
-                    {
-                        result = DateTimeFormatter.ISO_ZONED_DATE_TIME.format((ZonedDateTime) value);
-                    }
-                    return result;
+                    return ZonedDateTimeConverter.toString((ZonedDateTime) value);
                 }
             };
         }
