@@ -30,6 +30,8 @@ import javax.cache.annotation.CacheResolver;
 import javax.cache.annotation.CacheResolverFactory;
 import javax.cache.annotation.CacheResult;
 import javax.cache.configuration.MutableConfiguration;
+import javax.cache.expiry.CreatedExpiryPolicy;
+import javax.cache.expiry.Duration;
 import javax.cache.spi.CachingProvider;
 
 /**
@@ -73,7 +75,9 @@ public class DefaultCacheResolverFactory implements CacheResolverFactory {
 
     if (cache == null) {
       logger.warning("No Cache named '" + cacheName + "' was found in the CacheManager, a default cache will be created.");
-      cacheManager.createCache(cacheName, new MutableConfiguration<Object, Object>());
+      cacheManager.createCache(
+          cacheName,
+          new MutableConfiguration<Object, Object>().setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(Duration.TEN_MINUTES)));
       cache = cacheManager.getCache(cacheName);
     }
 
