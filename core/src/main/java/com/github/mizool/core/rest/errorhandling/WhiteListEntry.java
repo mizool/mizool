@@ -7,16 +7,16 @@ import lombok.Getter;
 public class WhiteListEntry
 {
     @Getter
-    private final String exceptionClassName;
+    private final Class<? extends Exception> exceptionClass;
 
     @Getter
     private final int statusCode;
 
     private final boolean shouldIncludeDetails;
 
-    public WhiteListEntry(String exceptionClassName, int statusCode)
+    public WhiteListEntry(Class<? extends Exception> exceptionClass, int statusCode)
     {
-        this.exceptionClassName = exceptionClassName;
+        this.exceptionClass = exceptionClass;
         this.statusCode = statusCode;
         this.shouldIncludeDetails = false;
     }
