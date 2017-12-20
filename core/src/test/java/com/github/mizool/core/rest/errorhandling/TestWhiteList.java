@@ -14,30 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.technology.jackson;
+package com.github.mizool.core.rest.errorhandling;
 
 import java.util.Set;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.kohsuke.MetaInfServices;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.github.mizool.core.rest.errorhandling.WhiteList;
-import com.github.mizool.core.rest.errorhandling.WhiteListEntry;
 import com.google.common.collect.ImmutableSet;
 
-@MetaInfServices(WhiteList.class)
-public class JacksonWhiteList implements WhiteList
+@MetaInfServices
+public class TestWhiteList implements WhiteList
 {
     @Override
     public Set<WhiteListEntry> getEntries()
     {
-        return ImmutableSet.<WhiteListEntry>builder().add(new WhiteListEntry(JsonParseException.class,
-            HttpServletResponse.SC_BAD_REQUEST,
-            true))
-            .add(new WhiteListEntry(UnrecognizedPropertyException.class, HttpServletResponse.SC_BAD_REQUEST, true))
+        return ImmutableSet.<WhiteListEntry>builder().add(new WhiteListEntry(FooException.class, 111, true))
+            .add(new WhiteListEntry(MoepException.class, 112))
             .build();
     }
 }
