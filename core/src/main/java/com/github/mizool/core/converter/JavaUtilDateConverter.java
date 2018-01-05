@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+@Deprecated()
 public class JavaUtilDateConverter
 {
     public Date fromZonedDateTime(ZonedDateTime pojo)
