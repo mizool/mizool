@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.technology.jcache.common;
+package com.github.mizool.technology.jcache.config;
 
-import javax.cache.Cache;
-import javax.cache.configuration.Configuration;
+import javax.cache.configuration.MutableConfiguration;
 
-public interface CacheManagerMethodsUsedByReferenceImplementation
+import lombok.Data;
+
+@Data
+public class CacheCreation<K, V>
 {
-    <K, V, C extends Configuration<K, V>> Cache<K, V> createCache(String cacheName, C configuration)
-        throws IllegalArgumentException;
-
-    <K, V> Cache<K, V> getCache(String cacheName);
+    private final String cacheName;
+    private final MutableConfiguration<K, V> configuration;
 }

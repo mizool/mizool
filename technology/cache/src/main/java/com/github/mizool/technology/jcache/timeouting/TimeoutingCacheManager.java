@@ -19,45 +19,43 @@ package com.github.mizool.technology.jcache.timeouting;
 import java.util.concurrent.Callable;
 
 import javax.cache.Cache;
-import javax.cache.CacheManager;
 import javax.cache.configuration.Configuration;
 import javax.enterprise.inject.Vetoed;
+import javax.inject.Inject;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
-import com.github.mizool.technology.jcache.common.CacheManagerMethodsUsedByReferenceImplementation;
+import com.github.mizool.technology.jcache.common.AbstractDelegatingCacheManager;
 
 /**
  * This class is {@link Vetoed} as it is not intended to be a CDI bean and/or to be injected on its own. It's rather a
  * decorator used in a specific way inside a producer.
  */
 @Slf4j
-@RequiredArgsConstructor
 @Vetoed
-public class TimeoutingCacheManager implements CacheManager
+public class TimeoutingCacheManager extends AbstractDelegatingCacheManager
 {
-    @Delegate(excludes = { CacheManagerMethodsUsedByReferenceImplementation.class })
-    @NonNull
-    private final CacheManager target;
-
-    @NonNull
     private final TimeoutingExecutor timeoutingExecutor;
+
+    @Inject
+    public TimeoutingCacheManager(@NonNull TimeoutingExecutor timeoutingExecutor)
+    {
+        this.timeoutingExecutor = timeoutingExecutor;
+    }
 
     @Override
     public <K, V, C extends Configuration<K, V>> Cache<K, V> createCache(String cacheName, C configuration)
         throws IllegalArgumentException
     {
-        Callable<Cache<K, V>> cacheCallable = () -> target.createCache(cacheName, configuration);
+        Callable<Cache<K, V>> cacheCallable = () -> super.createCache(cacheName, configuration);
         return getTimeoutingCache(cacheCallable);
     }
 
     @Override
     public <K, V> Cache<K, V> getCache(String cacheName)
     {
-        Callable<Cache<K, V>> cacheCallable = () -> target.getCache(cacheName);
+        Callable<Cache<K, V>> cacheCallable = () -> super.getCache(cacheName);
         return getTimeoutingCache(cacheCallable);
     }
 

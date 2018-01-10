@@ -17,32 +17,30 @@
 package com.github.mizool.technology.jcache.safe;
 
 import javax.cache.Cache;
-import javax.cache.CacheManager;
 import javax.cache.configuration.Configuration;
 import javax.enterprise.inject.Vetoed;
+import javax.inject.Inject;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
-import com.github.mizool.technology.jcache.common.CacheManagerMethodsUsedByReferenceImplementation;
+import com.github.mizool.technology.jcache.common.AbstractDelegatingCacheManager;
 
 /**
  * This class is {@link Vetoed} as it is not intended to be a CDI bean and/or to be injected on its own. It's rather a
  * decorator used in a specific way inside a producer.
  */
 @Slf4j
-@RequiredArgsConstructor
 @Vetoed
-class SafeCacheManager implements CacheManager
+class SafeCacheManager extends AbstractDelegatingCacheManager
 {
-    @Delegate(excludes = { CacheManagerMethodsUsedByReferenceImplementation.class })
-    @NonNull
-    private final CacheManager target;
-
-    @NonNull
     private final CacheWatchdog cacheWatchdog;
+
+    @Inject
+    SafeCacheManager(@NonNull CacheWatchdog cacheWatchdog)
+    {
+        this.cacheWatchdog = cacheWatchdog;
+    }
 
     @Override
     public <K, V, C extends Configuration<K, V>> Cache<K, V> createCache(String cacheName, C configuration)
@@ -55,7 +53,7 @@ class SafeCacheManager implements CacheManager
 
         try
         {
-            return new SafeCache<>(target.createCache(cacheName, configuration), cacheWatchdog);
+            return new SafeCache<>(super.createCache(cacheName, configuration), cacheWatchdog);
         }
         catch (RuntimeException e)
         {
@@ -75,7 +73,7 @@ class SafeCacheManager implements CacheManager
 
         try
         {
-            Cache<K, V> cache = target.getCache(cacheName);
+            Cache<K, V> cache = super.getCache(cacheName);
             if (cache != null)
             {
                 cache = new SafeCache<>(cache, cacheWatchdog);

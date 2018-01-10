@@ -22,25 +22,24 @@ import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.Specializes;
 import javax.inject.Inject;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
+import org.jsr107.ri.annotations.DefaultCacheResolverFactory;
 import org.jsr107.ri.annotations.cdi.CacheResolverFactoryProducer;
 import org.jsr107.ri.annotations.cdi.UsedByDefault;
-
-import com.github.mizool.technology.jcache.config.CacheConfiguration;
-import com.github.mizool.technology.jcache.config.ConfigurableCacheResolverFactory;
 
 /**
  * Allows to plug a CDI built {@link CacheManager} into the reference implementation.<br>
  * <br>
  * The default implementation retrieves the {@link CacheManager} in a static way.
  */
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class CdiCacheResolverFactoryProducer extends CacheResolverFactoryProducer
 {
     private final CacheManager cacheManager;
-    private final CacheConfiguration cacheConfiguration;
+
+    @Inject
+    CdiCacheResolverFactoryProducer(CacheManager cacheManager)
+    {
+        this.cacheManager = cacheManager;
+    }
 
     @Override
     @Produces
@@ -48,6 +47,6 @@ class CdiCacheResolverFactoryProducer extends CacheResolverFactoryProducer
     @Specializes
     public CacheResolverFactory produce()
     {
-        return new ConfigurableCacheResolverFactory(cacheManager, cacheConfiguration);
+        return new DefaultCacheResolverFactory(cacheManager);
     }
 }

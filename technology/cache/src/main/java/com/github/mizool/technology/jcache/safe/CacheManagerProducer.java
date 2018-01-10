@@ -19,6 +19,7 @@ package com.github.mizool.technology.jcache.safe;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
+import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
@@ -26,19 +27,24 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.github.mizool.technology.jcache.config.ConfigurableCacheManager;
 import com.github.mizool.technology.jcache.timeouting.TimeoutingCacheManager;
-import com.github.mizool.technology.jcache.timeouting.TimeoutingExecutor;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class CacheManagerProducer
 {
     @Produces
-    public CacheManager produce(CacheWatchdog cacheWatchdog, TimeoutingExecutor timeoutingExecutor)
+    public CacheManager produce(
+        CacheWatchdog cacheWatchdog,
+        Instance<SafeCacheManager> safeCacheManagers,
+        Instance<NoOpCacheManager> noOpCacheManagers,
+        Instance<TimeoutingCacheManager> timeoutingCacheManagers,
+        Instance<ConfigurableCacheManager> configurableCacheManagers)
     {
         if (cacheWatchdog.isCacheBroken())
         {
-            return new NoOpCacheManager();
+            return noOpCacheManagers.get();
         }
 
         try
@@ -46,7 +52,17 @@ class CacheManagerProducer
             CachingProvider provider = Caching.getCachingProvider();
             CacheManager cacheManager = provider.getCacheManager(provider.getDefaultURI(),
                 provider.getDefaultClassLoader());
-            return new SafeCacheManager(new TimeoutingCacheManager(cacheManager, timeoutingExecutor), cacheWatchdog);
+
+            TimeoutingCacheManager timeoutingCacheManager = timeoutingCacheManagers.get();
+            timeoutingCacheManager.setTarget(cacheManager);
+
+            SafeCacheManager safeCacheManager = safeCacheManagers.get();
+            safeCacheManager.setTarget(timeoutingCacheManager);
+
+            ConfigurableCacheManager configurableCacheManager = configurableCacheManagers.get();
+            configurableCacheManager.setTarget(safeCacheManager);
+
+            return configurableCacheManager;
         }
         catch (RuntimeException e)
         {
