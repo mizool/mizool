@@ -2,8 +2,8 @@ delimiters "$","$"
 
 mapperProducerGenerator(packageName,className) ::= <<
 $!
-  Copyright 2017 incub8 Software Labs GmbH
-  Copyright 2017 protel Hotelsoftware GmbH
+  Copyright 2017-2018 incub8 Software Labs GmbH
+  Copyright 2017-2018 protel Hotelsoftware GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -22,22 +22,26 @@ package $packageName$;
 import javax.annotation.Resource;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
+import javax.inject.Inject;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
 import com.datastax.driver.mapping.Mapper;
 import com.datastax.driver.mapping.Mapper.Option;
-import com.github.mizool.technology.cassandra.CassandraDataSource;
+import com.datastax.driver.mapping.MappingManager;
 import com.github.mizool.technology.cassandra.DefaultConsistencyLevel;
 
+@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class $className$MapperProducer
 {
-    @Resource(name = "cassandra")
-    private CassandraDataSource cassandra;
+    private final MappingManager mappingManager;
 
     @Produces
     @Singleton
     public Mapper<$className$> produce()
     {
-        Mapper<$className$> mapper = cassandra.mapper($className$.class);
+        Mapper<$className$> mapper = mappingManager.mapper($className$.class);
         mapper.setDefaultGetOptions(Option.consistencyLevel(DefaultConsistencyLevel.READ));
         mapper.setDefaultSaveOptions(Option.consistencyLevel(DefaultConsistencyLevel.WRITE));
         mapper.setDefaultDeleteOptions(Option.consistencyLevel(DefaultConsistencyLevel.WRITE));

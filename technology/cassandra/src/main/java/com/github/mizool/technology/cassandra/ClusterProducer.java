@@ -16,58 +16,41 @@
  */
 package com.github.mizool.technology.cassandra;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
+import javax.enterprise.inject.Disposes;
+import javax.enterprise.inject.Produces;
+import javax.inject.Singleton;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.QueryOptions;
-import com.datastax.driver.core.Session;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.datastax.driver.extras.codecs.jdk8.LocalDateCodec;
 import com.datastax.driver.extras.codecs.jdk8.LocalTimeCodec;
-import com.datastax.driver.mapping.Mapper;
-import com.datastax.driver.mapping.MappingManager;
+import com.github.mizool.core.exception.ConfigurationException;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 
-@Slf4j
-public class CassandraDataSource
+class ClusterProducer
 {
-    @Getter
-    @Setter
-    private String addresses;
+    private static final String CASSANDRA_CONTACT_POINTS_PROPERTY_NAME = "cassandra.contactpoints";
 
-    @Getter
-    private Cluster cluster;
-
-    @Getter
-    private Session session;
-
-    private MappingManager mappingManager;
-
-    public void initialize()
+    @Produces
+    @Singleton
+    public Cluster produce()
     {
-        log.debug("initializing CassandraDataSource");
-        this.cluster = Cluster.builder()
+        String addresses = System.getProperty(CASSANDRA_CONTACT_POINTS_PROPERTY_NAME);
+        if (addresses == null)
+        {
+            throw new ConfigurationException("No contact points for cassandra set");
+        }
+        Cluster cluster = Cluster.builder()
             .addContactPoints(parseAddressString(addresses))
             .withQueryOptions(getQueryOptions())
             .withMaxSchemaAgreementWaitSeconds(300)
             .build()
             .init();
-        registerJdk8TimeCodecs();
-        this.session = cluster.connect();
-        this.mappingManager = new MappingManager(session);
-    }
-
-    private void registerJdk8TimeCodecs()
-    {
-        this.cluster.getConfiguration()
-            .getCodecRegistry()
-            .register(InstantCodec.instance)
-            .register(LocalDateCodec.instance)
-            .register(LocalTimeCodec.instance);
+        registerJdk8TimeCodecs(cluster);
+        return cluster;
     }
 
     private String[] parseAddressString(String addresses)
@@ -78,32 +61,24 @@ public class CassandraDataSource
     private QueryOptions getQueryOptions()
     {
         QueryOptions queryOptions = new QueryOptions();
+
+        // Default to the safest consistency level in case a store class does not set one
         queryOptions.setConsistencyLevel(ConsistencyLevel.ALL);
 
         return queryOptions;
     }
 
-    public void destroy()
+    private void registerJdk8TimeCodecs(Cluster cluster)
     {
-        log.debug("destroying CassandraDataSource");
-        closeSession();
-        closeCluster();
+        cluster.getConfiguration()
+            .getCodecRegistry()
+            .register(InstantCodec.instance)
+            .register(LocalDateCodec.instance)
+            .register(LocalTimeCodec.instance);
     }
 
-    private void closeSession()
-    {
-        session.close();
-        session = null;
-    }
-
-    private void closeCluster()
+    public void dispose(@Disposes Cluster cluster)
     {
         cluster.close();
-        cluster = null;
-    }
-
-    public <T> Mapper<T> mapper(Class<T> clazz)
-    {
-        return mappingManager.mapper(clazz);
     }
 }
