@@ -1,6 +1,6 @@
 /**
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+ *  Copyright 2017-2018 incub8 Software Labs GmbH
+ *  Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+@Deprecated()
 public class JavaUtilDateConverter
 {
     public Date fromZonedDateTime(ZonedDateTime pojo)
