@@ -12,6 +12,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.mizool</groupId>
+            <artifactId>mizool-core</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.github.mizool.jcache</groupId>
             <artifactId>cache-annotations-ri-cdi</artifactId>
         </dependency>

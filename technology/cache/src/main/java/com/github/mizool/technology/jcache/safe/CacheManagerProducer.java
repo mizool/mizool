@@ -19,32 +19,30 @@ package com.github.mizool.technology.jcache.safe;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
-import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.github.mizool.core.NonDefault;
 import com.github.mizool.technology.jcache.config.ConfigurableCacheManager;
 import com.github.mizool.technology.jcache.timeouting.TimeoutingCacheManager;
 
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class CacheManagerProducer
 {
+    @Singleton
     @Produces
     public CacheManager produce(
         CacheWatchdog cacheWatchdog,
-        Instance<SafeCacheManager> safeCacheManagers,
-        Instance<NoOpCacheManager> noOpCacheManagers,
-        Instance<TimeoutingCacheManager> timeoutingCacheManagers,
-        Instance<ConfigurableCacheManager> configurableCacheManagers)
+        @NonDefault SafeCacheManager safeCacheManager,
+        @NonDefault NoOpCacheManager noOpCacheManager,
+        @NonDefault TimeoutingCacheManager timeoutingCacheManager,
+        @NonDefault ConfigurableCacheManager configurableCacheManager)
     {
         if (cacheWatchdog.isCacheBroken())
         {
-            return noOpCacheManagers.get();
+            return noOpCacheManager;
         }
 
         try
@@ -53,13 +51,8 @@ class CacheManagerProducer
             CacheManager cacheManager = provider.getCacheManager(provider.getDefaultURI(),
                 provider.getDefaultClassLoader());
 
-            TimeoutingCacheManager timeoutingCacheManager = timeoutingCacheManagers.get();
             timeoutingCacheManager.setTarget(cacheManager);
-
-            SafeCacheManager safeCacheManager = safeCacheManagers.get();
             safeCacheManager.setTarget(timeoutingCacheManager);
-
-            ConfigurableCacheManager configurableCacheManager = configurableCacheManagers.get();
             configurableCacheManager.setTarget(safeCacheManager);
 
             return configurableCacheManager;

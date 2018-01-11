@@ -18,18 +18,14 @@ package com.github.mizool.technology.jcache.safe;
 
 import javax.cache.Cache;
 import javax.cache.configuration.Configuration;
-import javax.enterprise.inject.Vetoed;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.github.mizool.core.NonDefault;
 import com.github.mizool.technology.jcache.common.AbstractDelegatingCacheManager;
 
-/**
- * This class is {@link Vetoed} as it is not intended to be a CDI bean and/or to be injected on its own. It's rather a
- * decorator used in a specific way inside a producer.
- */
 @Slf4j
-@Vetoed
+@NonDefault
 class NoOpCacheManager extends AbstractDelegatingCacheManager
 {
     @Override

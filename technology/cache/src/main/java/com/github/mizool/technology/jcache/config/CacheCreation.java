@@ -21,8 +21,8 @@ import javax.cache.configuration.MutableConfiguration;
 import lombok.Data;
 
 @Data
-public class CacheCreation<K, V>
+public class CacheCreation
 {
     private final String cacheName;
-    private final MutableConfiguration<K, V> configuration;
+    private final MutableConfiguration configuration;
 }
