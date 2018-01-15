@@ -45,9 +45,13 @@ public class TimeoutingExecutor
             Future<T> future = executorService.submit(callable);
             return future.get(TimeoutingExecutor.CACHE_TIMEOUT, TimeUnit.MILLISECONDS);
         }
-        catch (InterruptedException | ExecutionException | TimeoutException e)
+        catch (TimeoutException e)
         {
             throw new CacheTimeoutException(e);
+        }
+        catch (InterruptedException | ExecutionException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 
@@ -57,9 +61,13 @@ public class TimeoutingExecutor
         {
             executorService.submit(runnable).get(TimeoutingExecutor.CACHE_TIMEOUT, TimeUnit.MILLISECONDS);
         }
-        catch (InterruptedException | ExecutionException | TimeoutException e)
+        catch (TimeoutException e)
         {
             throw new CacheTimeoutException(e);
+        }
+        catch (InterruptedException | ExecutionException e)
+        {
+            throw new RuntimeException(e);
         }
     }
 }
