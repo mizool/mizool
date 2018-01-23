@@ -20,12 +20,21 @@ import lombok.experimental.UtilityClass;
 
 import org.slf4j.Logger;
 
+import com.github.mizool.technology.jcache.timeouting.CacheTimeoutException;
+
 @UtilityClass
 class SafeCacheLogHelper
 {
     public void log(String message, Exception e, Logger log)
     {
-        log.warn("{} - {}", message, e.getClass().getName());
+        if (e instanceof CacheTimeoutException)
+        {
+            log.warn("{} - {}", message, e.getClass().getName());
+        }
+        else if (e instanceof RuntimeException)
+        {
+            log.error("{} - {} at {}", message, e.getMessage(), e.getStackTrace()[0].toString());
+        }
         log.debug(message, e);
     }
 }
