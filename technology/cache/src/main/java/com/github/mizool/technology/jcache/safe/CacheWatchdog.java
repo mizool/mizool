@@ -16,31 +16,52 @@
  */
 package com.github.mizool.technology.jcache.safe;
 
+import javax.cache.CacheManager;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class CacheWatchdog
 {
     private static final String CACHE_RETRY_PERIOD_PROPERTY_NAME = "cache.retryPeriod";
     private static final long CACHE_RETRY_PERIOD = Long.parseLong(System.getProperty(CACHE_RETRY_PERIOD_PROPERTY_NAME,
         Long.toString(300000)));
 
-    private final CacheWatchdogTimestamp cacheWatchdogTimestamp;
-
-    @Inject
-    CacheWatchdog(CacheWatchdogTimestamp cacheWatchdogTimestamp)
-    {
-        this.cacheWatchdogTimestamp = cacheWatchdogTimestamp;
-    }
+    private final CacheWatchdogState cacheWatchdogState;
 
     public boolean isCacheBroken()
     {
-        return System.currentTimeMillis() - CACHE_RETRY_PERIOD <= cacheWatchdogTimestamp.getTimestamp();
+        return System.currentTimeMillis() - CACHE_RETRY_PERIOD <= cacheWatchdogState.getTimestamp();
+    }
+
+    public void resetCacheIfRequired(CacheManager cacheManager)
+    {
+        if (!isCacheBroken() && cacheWatchdogState.toggleCacheResetToNotRequired())
+        {
+            log.info("Caching coming back online, resetting all caches.");
+            try
+            {
+                for (String cacheName : cacheManager.getCacheNames())
+                {
+                    cacheManager.getCache(cacheName).removeAll();
+                }
+                log.info("All caches reset.");
+            }
+            catch (RuntimeException e)
+            {
+                log.warn("Error during cache reset: {}", e.getMessage());
+            }
+        }
     }
 
     public void cacheOperationFailed()
     {
-        cacheWatchdogTimestamp.setTimestamp(System.currentTimeMillis());
+        cacheWatchdogState.setTimestamp(System.currentTimeMillis());
+        cacheWatchdogState.toggleCacheResetToRequired();
     }
 }

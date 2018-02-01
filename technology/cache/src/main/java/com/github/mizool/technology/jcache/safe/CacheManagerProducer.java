@@ -59,7 +59,7 @@ class CacheManagerProducer
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error obtaining cache manager", e, log);
+            SafeCacheLogHelper.onObtainManager(e, log);
             cacheWatchdog.cacheOperationFailed();
             return new NoOpCacheManager();
         }
