@@ -1,18 +1,18 @@
 /**
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+ * Copyright 2017 incub8 Software Labs GmbH
+ * Copyright 2017 protel Hotelsoftware GmbH
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.github.mizool.core.rest.errorhandling;
 
@@ -20,9 +20,7 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
 import javax.ws.rs.ClientErrorException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +31,6 @@ import com.github.mizool.core.exception.RuleViolationException;
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 
@@ -44,16 +41,20 @@ public class ErrorHandler
     private static final int SC_UNPROCESSABLE_ENTITY = 422;
 
     private final ExceptionCatalog exceptionCatalog;
+    private final ConstraintViolationMapper constraintViolationMapper;
 
     public ErrorHandler()
     {
         this.exceptionCatalog = new ExceptionCatalog();
+        constraintViolationMapper = new ConstraintViolationMapper();
     }
 
     @Inject
-    protected ErrorHandler(ExceptionCatalog exceptionCatalog)
+    protected ErrorHandler(
+        ExceptionCatalog exceptionCatalog, ConstraintViolationMapper constraintViolationMapper)
     {
         this.exceptionCatalog = exceptionCatalog;
+        this.constraintViolationMapper = constraintViolationMapper;
     }
 
     public ErrorResponse handle(Throwable throwable)
@@ -113,24 +114,8 @@ public class ErrorHandler
     private ErrorResponse handleConstraintValidationError(ConstraintViolationException e)
     {
         log.debug("Validation error", e);
-        ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
-        for (ConstraintViolation<?> violation : e.getConstraintViolations())
-        {
-            recordConstraintViolation(violation, errors);
-        }
-        ErrorMessageDto errorMessage = createErrorMessageDto(errors);
+        ErrorMessageDto errorMessage = constraintViolationMapper.fromPojo(e.getConstraintViolations());
         return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
-    }
-
-    private void recordConstraintViolation(ConstraintViolation<?> violation, ListMultimap<String, ErrorDto> target)
-    {
-        String errorId = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
-
-        Path.Node lastProperty = Iterators.getLast(violation.getPropertyPath().iterator());
-        String propertyName = lastProperty.getName();
-
-        ErrorDto errorDto = new ErrorDto(errorId, null);
-        target.put(propertyName, errorDto);
     }
 
     private ErrorResponse handleRuleViolationError(RuleViolationException e)
@@ -141,7 +126,7 @@ public class ErrorHandler
         {
             recordRuleViolation(violation, errors);
         }
-        ErrorMessageDto errorMessage = createErrorMessageDto(errors);
+        ErrorMessageDto errorMessage = new ErrorMessageDto(errors.asMap());
         return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
     }
 
@@ -203,11 +188,6 @@ public class ErrorHandler
     {
         ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
         errors.put(GLOBAL_PROPERTY_KEY, error);
-        return createErrorMessageDto(errors);
-    }
-
-    private ErrorMessageDto createErrorMessageDto(ListMultimap<String, ErrorDto> errors)
-    {
         return new ErrorMessageDto(errors.asMap());
     }
 }
