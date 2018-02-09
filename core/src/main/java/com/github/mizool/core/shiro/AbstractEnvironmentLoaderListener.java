@@ -20,7 +20,8 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import org.apache.shiro.mgt.RealmSecurityManager;
+import org.apache.shiro.authz.Authorizer;
+import org.apache.shiro.mgt.AuthorizingSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.web.env.EnvironmentLoaderListener;
 import org.apache.shiro.web.env.WebEnvironment;
@@ -29,13 +30,16 @@ public abstract class AbstractEnvironmentLoaderListener extends EnvironmentLoade
 {
     protected abstract List<Realm> getRealms();
 
+    protected abstract Authorizer getAuthorizer();
+
     @Override
     protected WebEnvironment createEnvironment(ServletContext pServletContext)
     {
         WebEnvironment environment = super.createEnvironment(pServletContext);
-        RealmSecurityManager realmSecurityManager = (RealmSecurityManager) environment.getSecurityManager();
+        AuthorizingSecurityManager securityManager = (AuthorizingSecurityManager) environment.getSecurityManager();
+        securityManager.setRealms(getRealms());
+        securityManager.setAuthorizer(getAuthorizer());
 
-        realmSecurityManager.setRealms(getRealms());
         return environment;
     }
 }
