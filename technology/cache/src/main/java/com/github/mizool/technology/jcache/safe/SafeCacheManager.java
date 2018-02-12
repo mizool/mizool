@@ -49,11 +49,12 @@ class SafeCacheManager extends AbstractDelegatingCacheManager
 
         try
         {
+            cacheWatchdog.resetCacheIfRequired(getTarget());
             return new SafeCache<>(super.createCache(cacheName, configuration), cacheWatchdog);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error creating cache", e, log);
+            SafeCacheLogHelper.onCreate(cacheName, e, log);
             cacheWatchdog.cacheOperationFailed();
             return new NoOpCache<>();
         }
@@ -69,6 +70,7 @@ class SafeCacheManager extends AbstractDelegatingCacheManager
 
         try
         {
+            cacheWatchdog.resetCacheIfRequired(getTarget());
             Cache<K, V> cache = super.getCache(cacheName);
             if (cache != null)
             {
@@ -78,7 +80,7 @@ class SafeCacheManager extends AbstractDelegatingCacheManager
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error obtaining cache", e, log);
+            SafeCacheLogHelper.onObtain(cacheName, e, log);
             cacheWatchdog.cacheOperationFailed();
             return new NoOpCache<>();
         }

@@ -46,11 +46,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
+            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
             return target.get(key);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error getting from cache", e, log);
+            SafeCacheLogHelper.onGet(target.getName(), key.toString(), e, log);
             cacheWatchdog.cacheOperationFailed();
             return null;
         }
@@ -66,11 +67,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
+            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
             target.put(key, value);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error putting to cache", e, log);
+            SafeCacheLogHelper.onPut(target.getName(), key.toString(), e, log);
             cacheWatchdog.cacheOperationFailed();
         }
     }
@@ -85,11 +87,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
+            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
             return target.remove(key);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error removing from cache", e, log);
+            SafeCacheLogHelper.onRemove(target.getName(), key.toString(), e, log);
             cacheWatchdog.cacheOperationFailed();
             return false;
         }
@@ -105,11 +108,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
+            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
             target.removeAll();
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.log("Error removing all from cache", e, log);
+            SafeCacheLogHelper.onRemoveAll(target.getName(), e, log);
             cacheWatchdog.cacheOperationFailed();
         }
     }

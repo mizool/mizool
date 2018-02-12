@@ -20,12 +20,56 @@ import lombok.experimental.UtilityClass;
 
 import org.slf4j.Logger;
 
+import com.github.mizool.technology.jcache.timeouting.CacheTimeoutException;
+
 @UtilityClass
 class SafeCacheLogHelper
 {
-    public void log(String message, Exception e, Logger log)
+    public void onObtainManager(Exception e, Logger log)
     {
-        log.warn("{} - {}", message, e.getClass().getName());
-        log.debug(message, e);
+        log("cacheManager obtain failed", e, log);
+    }
+
+    public void onCreate(String cacheName, Exception e, Logger log)
+    {
+        log(cacheName + " cache create failed", e, log);
+    }
+
+    public void onObtain(String cacheName, Exception e, Logger log)
+    {
+        log(cacheName + " cache obtain failed", e, log);
+    }
+
+    public void onGet(String cacheName, String key, Exception e, Logger log)
+    {
+        log(cacheName + " cache get failed: " + key, e, log);
+    }
+
+    public void onPut(String cacheName, String key, Exception e, Logger log)
+    {
+        log(cacheName + " cache put failed: " + key, e, log);
+    }
+
+    public void onRemove(String cacheName, String key, Exception e, Logger log)
+    {
+        log(cacheName + " cache remove failed: " + key, e, log);
+    }
+
+    public void onRemoveAll(String cacheName, Exception e, Logger log)
+    {
+        log(cacheName + " cache remove all failed", e, log);
+    }
+
+    private void log(String message, Exception e, Logger log)
+    {
+        if (e instanceof CacheTimeoutException)
+        {
+            log.warn("{} - {}", message, e.getClass().getName());
+            log.debug(message, e);
+        }
+        else
+        {
+            log.warn("{} - {}", message, e);
+        }
     }
 }
