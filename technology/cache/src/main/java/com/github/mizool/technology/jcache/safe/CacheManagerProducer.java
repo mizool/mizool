@@ -19,6 +19,7 @@ package com.github.mizool.technology.jcache.safe;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
+import javax.enterprise.inject.Disposes;
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
@@ -63,5 +64,10 @@ class CacheManagerProducer
             cacheWatchdog.cacheOperationFailed();
             return new NoOpCacheManager();
         }
+    }
+
+    public void dispose(@Disposes CacheManager cacheManager)
+    {
+        cacheManager.close();
     }
 }
