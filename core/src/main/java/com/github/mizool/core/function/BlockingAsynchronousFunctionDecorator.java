@@ -25,11 +25,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
 /**
- * Decorates {@link java.util.function.Function}s that return
- * {@link com.google.common.util.concurrent.ListenableFuture}s. The application of the
- * {@link java.util.function.Function} is delayed if the {@code taskLimit}, specified during construction, is reached.
- * Delayed application is resumed when running {@link java.util.function.Function}s complete by invoking the callback on
- * the {@link com.google.common.util.concurrent.ListenableFuture}.
+ * Decorates {@link java.util.function.Function}s that return {@link com.google.common.util.concurrent.ListenableFuture}s.
+ * If the {@code taskLimit} is reached, the calling thread is blocked until one or more tasks complete by invoking the
+ * callback on the {@link com.google.common.util.concurrent.ListenableFuture}.
  *
  * @param <R> The type of the {@link com.google.common.util.concurrent.ListenableFuture} returned by the function.
  */
@@ -49,7 +47,6 @@ public class BlockingAsynchronousFunctionDecorator<T, R> implements Function<T, 
                 semaphore.notifyAll();
             }
         }
-
     }
 
     private final Function<T, ListenableFuture<R>> target;
@@ -60,8 +57,9 @@ public class BlockingAsynchronousFunctionDecorator<T, R> implements Function<T, 
     private final CompletionListener completionListener = new CompletionListener();
 
     /**
-     * Applies the {@code target} {@link java.util.function.Function} to the given argument. Application is delayed if
-     * the {@code taskLimit}, is reached.
+     * Applies the {@code target} {@link java.util.function.Function} to the given argument. If the {@code taskLimit} is
+     * reached, the calling thread is blocked until one or more tasks complete by invoking the
+     * callback on the {@link com.google.common.util.concurrent.ListenableFuture}.
      *
      * @param t The argument passed to the {@link java.util.function.Function}.
      *
