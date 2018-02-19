@@ -29,24 +29,23 @@ import com.github.mizool.core.exception.MethodNotAllowedException;
 import com.github.mizool.core.exception.RuleViolation;
 import com.github.mizool.core.exception.RuleViolationException;
 import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.SetMultimap;
 
 @Slf4j
 public class ErrorHandler
 {
-    private static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
     private static final int SC_UNPROCESSABLE_ENTITY = 422;
 
     private final ExceptionCatalog exceptionCatalog;
     private final ConstraintViolationMapper constraintViolationMapper;
+    private final ErrorMapper errorMapper;
 
     public ErrorHandler()
     {
         this.exceptionCatalog = new ExceptionCatalog();
         constraintViolationMapper = new ConstraintViolationMapper();
+        errorMapper = new ErrorMapper();
     }
 
     @Inject
@@ -55,6 +54,12 @@ public class ErrorHandler
     {
         this.exceptionCatalog = exceptionCatalog;
         this.constraintViolationMapper = constraintViolationMapper;
+        errorMapper = new ErrorMapper();
+    }
+
+    public ErrorMessageDto fromPojo(Throwable throwable)
+    {
+        return this.handle(throwable).getBody();
     }
 
     public ErrorResponse handle(Throwable throwable)
@@ -72,7 +77,7 @@ public class ErrorHandler
             }
             else if (isAssignable(ConstraintViolationException.class, cursor))
             {
-                result = handleConstraintValidationError((ConstraintViolationException) cursor);
+                result = handleConstraintViolationError((ConstraintViolationException) cursor);
             }
             else if (isAssignable(RuleViolationException.class, cursor))
             {
@@ -104,14 +109,14 @@ public class ErrorHandler
         Map<String, String> parameters = null;
         if (whiteListEntry.getShouldIncludeDetails())
         {
-            parameters = createExceptionParameters(t);
+            parameters = errorMapper.createExceptionParameters(t);
         }
         ErrorDto error = new ErrorDto(t.getClass().getName(), parameters);
-        ErrorMessageDto errorMessage = createErrorMessageDto(error);
+        ErrorMessageDto errorMessage = errorMapper.createErrorMessageDto(error);
         return new ErrorResponse(whiteListEntry.getStatusCode(), errorMessage);
     }
 
-    private ErrorResponse handleConstraintValidationError(ConstraintViolationException e)
+    private ErrorResponse handleConstraintViolationError(ConstraintViolationException e)
     {
         log.debug("Validation error", e);
         ErrorMessageDto errorMessage = constraintViolationMapper.fromPojo(e.getConstraintViolations());
@@ -121,16 +126,16 @@ public class ErrorHandler
     private ErrorResponse handleRuleViolationError(RuleViolationException e)
     {
         log.debug("Rule violation error", e);
-        ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
+        SetMultimap<String, ErrorDto> errors = HashMultimap.create();
         for (RuleViolation violation : e.getRuleViolations())
         {
             recordRuleViolation(violation, errors);
         }
-        ErrorMessageDto errorMessage = new ErrorMessageDto(errors.asMap());
+        ErrorMessageDto errorMessage = ErrorMessageDto.builder().errors(errors.asMap()).build();
         return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
     }
 
-    private void recordRuleViolation(RuleViolation violation, ListMultimap<String, ErrorDto> target)
+    private void recordRuleViolation(RuleViolation violation, SetMultimap<String, ErrorDto> target)
     {
         ErrorDto errorDto = new ErrorDto(violation.getErrorId(), null);
         target.put(violation.getFieldName(), errorDto);
@@ -142,7 +147,7 @@ public class ErrorHandler
         int statusCode = e.getResponse().getStatus();
         Class<? extends Exception> errorClass = determineErrorClass(statusCode, e.getClass());
         ErrorDto error = new ErrorDto(errorClass.getName(), null);
-        ErrorMessageDto errorMessage = createErrorMessageDto(error);
+        ErrorMessageDto errorMessage = errorMapper.createErrorMessageDto(error);
         return new ErrorResponse(statusCode, errorMessage);
     }
 
@@ -169,25 +174,15 @@ public class ErrorHandler
 
     private ErrorResponse createUndefinedErrorResponse(Throwable throwable)
     {
-        Map<String, String> parameters = createExceptionParameters(throwable);
-        ErrorDto error = new ErrorDto(ErrorDto.GENERIC_FIELD_KEY, parameters);
-
-        ErrorMessageDto errorMessage = createErrorMessageDto(error);
+        ErrorMessageDto errorMessage = createUndefinedErrorMessageDto(throwable);
         return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
     }
 
-    private Map<String, String> createExceptionParameters(Throwable throwable)
+    private ErrorMessageDto createUndefinedErrorMessageDto(Throwable throwable)
     {
-        Map<String, String> parameters = Maps.newHashMap();
-        parameters.put("Exception", throwable.getMessage());
-        parameters.put("RootCause", Throwables.getRootCause(throwable).getMessage());
-        return parameters;
-    }
+        Map<String, String> parameters = errorMapper.createExceptionParameters(throwable);
+        ErrorDto error = new ErrorDto(ErrorDto.GENERIC_FIELD_KEY, parameters);
 
-    private ErrorMessageDto createErrorMessageDto(ErrorDto error)
-    {
-        ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
-        errors.put(GLOBAL_PROPERTY_KEY, error);
-        return new ErrorMessageDto(errors.asMap());
+        return errorMapper.createErrorMessageDto(error);
     }
 }

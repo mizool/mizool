@@ -3,23 +3,23 @@ package com.github.mizool.core.rest.errorhandling;
 import javax.validation.ConstraintViolation;
 import javax.validation.Path;
 
-import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.ListMultimap;
+import com.google.common.collect.SetMultimap;
 
 public class ConstraintViolationMapper
 {
     public ErrorMessageDto fromPojo(Iterable<ConstraintViolation<?>> constraintViolations)
     {
-        ListMultimap<String, ErrorDto> errors = ArrayListMultimap.create();
+        SetMultimap<String, ErrorDto> errors = HashMultimap.create();
         for (ConstraintViolation<?> violation : constraintViolations)
         {
             recordConstraintViolation(violation, errors);
         }
-        return new ErrorMessageDto(errors.asMap());
+        return ErrorMessageDto.builder().errors(errors.asMap()).build();
     }
 
-    private void recordConstraintViolation(ConstraintViolation<?> violation, ListMultimap<String, ErrorDto> target)
+    private void recordConstraintViolation(ConstraintViolation<?> violation, SetMultimap<String, ErrorDto> target)
     {
         String errorId = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
 
