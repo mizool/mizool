@@ -22,6 +22,8 @@ import javax.inject.Singleton;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.datastax.driver.extras.codecs.jdk8.LocalDateCodec;
@@ -33,6 +35,14 @@ import com.google.common.collect.Iterables;
 class ClusterProducer
 {
     private static final String CASSANDRA_CONTACT_POINTS_PROPERTY_NAME = "cassandra.contactpoints";
+    private static final String CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL = "2048";
+    private static final String
+        CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL_PROPERTY_NAME
+        = "cassandra.max.requests.per.connection.local";
+    private static final String CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE = "512";
+    private static final String
+        CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME
+        = "cassandra.max.requests.per.connection.remote";
 
     @Produces
     @Singleton
@@ -47,6 +57,7 @@ class ClusterProducer
             .addContactPoints(parseAddressString(addresses))
             .withQueryOptions(getQueryOptions())
             .withMaxSchemaAgreementWaitSeconds(300)
+            .withPoolingOptions(getPoolingOptions())
             .build()
             .init();
         registerJdk8TimeCodecs(cluster);
@@ -75,6 +86,18 @@ class ClusterProducer
             .register(InstantCodec.instance)
             .register(LocalDateCodec.instance)
             .register(LocalTimeCodec.instance);
+    }
+
+    private PoolingOptions getPoolingOptions()
+    {
+        PoolingOptions poolingOptions = new PoolingOptions();
+        int maxRequestsPerConnectionLocal = Integer.parseInt(System.getProperty(CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL_PROPERTY_NAME,
+            CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL));
+        int maxRequestsPerConnectionRemote = Integer.parseInt(System.getProperty(CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME,
+            CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE));
+        poolingOptions.setMaxRequestsPerConnection(HostDistance.LOCAL, maxRequestsPerConnectionLocal);
+        poolingOptions.setMaxRequestsPerConnection(HostDistance.REMOTE, maxRequestsPerConnectionRemote);
+        return poolingOptions;
     }
 
     public void dispose(@Disposes Cluster cluster)
