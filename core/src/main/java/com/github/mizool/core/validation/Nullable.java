@@ -1,6 +1,6 @@
 /**
- * Copyright 2017 incub8 Software Labs GmbH
- * Copyright 2017 protel Hotelsoftware GmbH
+ * Copyright 2017-2018 incub8 Software Labs GmbH
+ * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
  */
 package com.github.mizool.core.validation;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -27,20 +24,12 @@ import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
-
-@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+/**
+ * This annotation is the opposite of {@link javax.validation.constraints.NotNull} and is intended to document that a field is optional
+ */
+@Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
-@Constraint(validatedBy = CheckLanguageTagValue.class)
 @Documented
-public @interface LanguageTagValue
+public @interface Nullable
 {
-    String message() default "{com.github.mizool.core.validation.LanguageTagValue.message}";
-
-    Class<?>[] groups() default {};
-
-    Class<? extends Payload>[] payload() default {};
-
-    boolean mandatory();
 }

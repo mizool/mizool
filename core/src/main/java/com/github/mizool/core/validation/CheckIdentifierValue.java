@@ -34,31 +34,33 @@ public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        boolean valid = false;
-        if (validationObject != null)
-        {
-            if (validationObject instanceof String)
-            {
-                valid = isValid((String) validationObject);
-            }
-            else if (validationObject instanceof List)
-            {
-                valid = isValid((List) validationObject);
-            }
-        }
-        else if (!mandatory)
-        {
-            valid = true;
-        }
-        return valid;
+        return isNullButOptional(validationObject) || isValidValue(validationObject);
     }
 
-    private boolean isValid(String validationObject)
+    private boolean isNullButOptional(Object validationObject)
+    {
+        return validationObject == null && !mandatory;
+    }
+
+    private boolean isValidValue(Object validationObject)
+    {
+        if (validationObject instanceof String)
+        {
+            return isValidValue((String) validationObject);
+        }
+        else if (validationObject instanceof List)
+        {
+            return isValidValue((List) validationObject);
+        }
+        return false;
+    }
+
+    private boolean isValidValue(String validationObject)
     {
         return !validationObject.isEmpty();
     }
 
-    private boolean isValid(List validationObject)
+    private boolean isValidValue(List validationObject)
     {
         boolean valid = true;
         for (Object value : validationObject)
