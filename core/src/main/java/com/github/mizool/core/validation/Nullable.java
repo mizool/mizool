@@ -16,10 +16,7 @@
  */
 package com.github.mizool.core.validation;
 
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -30,7 +27,7 @@ import java.lang.annotation.Target;
 /**
  * This annotation is the opposite of {@link javax.validation.constraints.NotNull} and is intended to document that a field is optional
  */
-@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER })
+@Target({ FIELD, PARAMETER })
 @Retention(RUNTIME)
 @Documented
 public @interface Nullable

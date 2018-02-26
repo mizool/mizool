@@ -1,6 +1,6 @@
 /**
- * Copyright 2017 incub8 Software Labs GmbH
- * Copyright 2017 protel Hotelsoftware GmbH
+ * Copyright 2017-2018 incub8 Software Labs GmbH
+ * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,21 +35,24 @@ public class CheckUuidValue implements ConstraintValidator<UuidValue, String>
     public final boolean isValid(
         String validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
+        return isNullButOptional(validationObject) || isValidValue(validationObject);
+    }
+
+    private Boolean isNullButOptional(String validationObject)
+    {
+        return validationObject == null && !mandatory;
+    }
+
+    private Boolean isValidValue(String validationObject)
+    {
         boolean valid = false;
-        if (validationObject != null)
+        try
         {
-            try
-            {
-                UUID.fromString(validationObject);
-                valid = true;
-            }
-            catch (IllegalArgumentException ignored)
-            {
-            }
-        }
-        else if (!mandatory)
-        {
+            UUID.fromString(validationObject);
             valid = true;
+        }
+        catch (IllegalArgumentException ignored)
+        {
         }
         return valid;
     }

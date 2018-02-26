@@ -1,6 +1,6 @@
 /**
- * Copyright 2017 incub8 Software Labs GmbH
- * Copyright 2017 protel Hotelsoftware GmbH
+ * Copyright 2017-2018 incub8 Software Labs GmbH
+ * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,15 +39,16 @@ public class CheckCountryCode implements ConstraintValidator<CountryCode, String
     @Override
     public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        boolean valid = false;
-        if (validationObject != null)
-        {
-            valid = !validationObject.isEmpty() && COUNTRY_CODES.contains(validationObject);
-        }
-        else if (!mandatory)
-        {
-            valid = true;
-        }
-        return valid;
+        return isNullButOptional(validationObject) || isValidValue(validationObject);
+    }
+
+    private Boolean isNullButOptional(String validationObject)
+    {
+        return validationObject == null && !mandatory;
+    }
+
+    private Boolean isValidValue(String validationObject)
+    {
+        return !validationObject.isEmpty() && COUNTRY_CODES.contains(validationObject);
     }
 }
