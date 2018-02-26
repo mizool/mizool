@@ -24,7 +24,6 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
-import com.datastax.driver.core.ProtocolVersion;
 import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.datastax.driver.extras.codecs.jdk8.LocalDateCodec;
@@ -38,10 +37,10 @@ class ClusterProducer
     private static final String CASSANDRA_CONTACT_POINTS_PROPERTY_NAME = "cassandra.contactpoints";
     private static final String
         CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL_PROPERTY_NAME
-        = "cassandra.max.requests.per.connection.local";
+        = "cassandra.maxRequestsPerConnection.local";
     private static final String
         CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME
-        = "cassandra.max.requests.per.connection.remote";
+        = "cassandra.maxRequestsPerConnection.remote";
 
     @Produces
     @Singleton
@@ -91,19 +90,22 @@ class ClusterProducer
     {
         PoolingOptions poolingOptions = new PoolingOptions();
 
-        int maxRequestsPerConnectionLocal = Integer.parseInt(System.getProperty(
-            CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL_PROPERTY_NAME,
-            PoolingOptions.DEFAULTS.get(ProtocolVersion.V3)
-                .get(PoolingOptions.MAX_REQUESTS_PER_CONNECTION_LOCAL_KEY)
-                .toString()));
-        int maxRequestsPerConnectionRemote = Integer.parseInt(System.getProperty(
-            CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME,
-            PoolingOptions.DEFAULTS.get(ProtocolVersion.V3)
-                .get(PoolingOptions.MAX_REQUESTS_PER_CONNECTION_REMOTE_KEY)
-                .toString()));
+        String maxRequestsPerConnectionLocal = System.getProperty(
+            CASSANDRA_MAX_REQUESTS_PER_CONNECTION_LOCAL_PROPERTY_NAME);
+        if (maxRequestsPerConnectionLocal != null)
+        {
+            poolingOptions.setMaxRequestsPerConnection(HostDistance.LOCAL,
+                Integer.parseInt(maxRequestsPerConnectionLocal));
+        }
 
-        poolingOptions.setMaxRequestsPerConnection(HostDistance.LOCAL, maxRequestsPerConnectionLocal);
-        poolingOptions.setMaxRequestsPerConnection(HostDistance.REMOTE, maxRequestsPerConnectionRemote);
+        String maxRequestsPerConnectionRemote = System.getProperty(
+            CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME);
+        if (maxRequestsPerConnectionRemote != null)
+        {
+            poolingOptions.setMaxRequestsPerConnection(HostDistance.REMOTE,
+                Integer.parseInt(maxRequestsPerConnectionRemote));
+        }
+
         return poolingOptions;
     }
 
