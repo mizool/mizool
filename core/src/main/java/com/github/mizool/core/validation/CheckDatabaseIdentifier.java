@@ -35,12 +35,12 @@ public class CheckDatabaseIdentifier implements ConstraintValidator<DatabaseIden
         return isNullButOptional(validationObject) || isValidValue(validationObject);
     }
 
-    private Boolean isNullButOptional(String validationObject)
+    private boolean isNullButOptional(String validationObject)
     {
         return validationObject == null && !mandatory;
     }
 
-    private Boolean isValidValue(String validationObject)
+    private boolean isValidValue(String validationObject)
     {
         return !validationObject.isEmpty() &&
             validationObject.matches("[a-zA-Z][a-zA-Z0-9_]*") &&

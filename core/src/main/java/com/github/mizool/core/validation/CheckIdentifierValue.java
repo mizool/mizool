@@ -37,12 +37,12 @@ public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue
         return isNullButOptional(validationObject) || isValidValue(validationObject);
     }
 
-    private Boolean isNullButOptional(Object validationObject)
+    private boolean isNullButOptional(Object validationObject)
     {
         return validationObject == null && !mandatory;
     }
 
-    private Boolean isValidValue(Object validationObject)
+    private boolean isValidValue(Object validationObject)
     {
         if (validationObject instanceof String)
         {

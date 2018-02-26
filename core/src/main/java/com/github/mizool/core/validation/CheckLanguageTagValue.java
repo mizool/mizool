@@ -42,12 +42,12 @@ public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagVal
         return isNullButOptional(validationObject) || isValidValue(validationObject);
     }
 
-    private Boolean isNullButOptional(String validationObject)
+    private boolean isNullButOptional(String validationObject)
     {
         return validationObject == null && !mandatory;
     }
 
-    private Boolean isValidValue(String validationObject)
+    private boolean isValidValue(String validationObject)
     {
         Locale locale = Locale.forLanguageTag(validationObject);
         return !validationObject.isEmpty() && isValidLanguage(locale) && isValidCountry(locale);

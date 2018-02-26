@@ -42,12 +42,12 @@ public class CheckCountryCode implements ConstraintValidator<CountryCode, String
         return isNullButOptional(validationObject) || isValidValue(validationObject);
     }
 
-    private Boolean isNullButOptional(String validationObject)
+    private boolean isNullButOptional(String validationObject)
     {
         return validationObject == null && !mandatory;
     }
 
-    private Boolean isValidValue(String validationObject)
+    private boolean isValidValue(String validationObject)
     {
         return !validationObject.isEmpty() && COUNTRY_CODES.contains(validationObject);
     }
