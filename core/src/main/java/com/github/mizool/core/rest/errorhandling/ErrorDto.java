@@ -1,6 +1,6 @@
 /**
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+ *  Copyright 2017-2018 incub8 Software Labs GmbH
+ *  Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,11 +26,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class ErrorDto
 {
-    public static final String GENERIC_FIELD_KEY = "generic";
+    private static final String GENERIC_ERROR_ID = "generic";
 
     static ErrorDto createGenericError()
     {
-        return new ErrorDto(GENERIC_FIELD_KEY, null);
+        return createGenericError(null);
+    }
+
+    static ErrorDto createGenericError(Map<String, String> parameters)
+    {
+        return new ErrorDto(GENERIC_ERROR_ID, parameters);
     }
 
     private final String errorId;

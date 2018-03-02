@@ -1,6 +1,6 @@
 /**
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+ *  Copyright 2017-2018 incub8 Software Labs GmbH
+ *  Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -185,7 +185,7 @@ public class ErrorHandler
     private ErrorResponse createUndefinedErrorResponse(Throwable throwable)
     {
         Map<String, String> parameters = createExceptionParameters(throwable);
-        ErrorDto error = new ErrorDto(ErrorDto.GENERIC_FIELD_KEY, parameters);
+        ErrorDto error = ErrorDto.createGenericError(parameters);
 
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
         return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
