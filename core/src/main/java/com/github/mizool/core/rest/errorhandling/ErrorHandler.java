@@ -1,6 +1,6 @@
 /**
- * Copyright 2017 incub8 Software Labs GmbH
- * Copyright 2017 protel Hotelsoftware GmbH
+ * Copyright 2017-2018 incub8 Software Labs GmbH
+ * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Path;
 import javax.ws.rs.ClientErrorException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ import com.github.mizool.core.exception.RuleViolation;
 import com.github.mizool.core.exception.RuleViolationException;
 import com.google.common.base.Optional;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.SetMultimap;
 
 @Slf4j
@@ -38,22 +41,18 @@ public class ErrorHandler
     private static final int SC_UNPROCESSABLE_ENTITY = 422;
 
     private final ExceptionCatalog exceptionCatalog;
-    private final ConstraintViolationMapper constraintViolationMapper;
     private final ErrorMapper errorMapper;
 
     public ErrorHandler()
     {
         this.exceptionCatalog = new ExceptionCatalog();
-        constraintViolationMapper = new ConstraintViolationMapper();
         errorMapper = new ErrorMapper();
     }
 
     @Inject
-    protected ErrorHandler(
-        ExceptionCatalog exceptionCatalog, ConstraintViolationMapper constraintViolationMapper)
+    protected ErrorHandler(ExceptionCatalog exceptionCatalog)
     {
         this.exceptionCatalog = exceptionCatalog;
-        this.constraintViolationMapper = constraintViolationMapper;
         errorMapper = new ErrorMapper();
     }
 
@@ -119,8 +118,24 @@ public class ErrorHandler
     private ErrorResponse handleConstraintViolationError(ConstraintViolationException e)
     {
         log.debug("Validation error", e);
-        ErrorMessageDto errorMessage = constraintViolationMapper.fromPojo(e.getConstraintViolations());
+        SetMultimap<String, ErrorDto> errors = HashMultimap.create();
+        for (ConstraintViolation<?> violation : e.getConstraintViolations())
+        {
+            recordConstraintViolation(violation, errors);
+        }
+        ErrorMessageDto errorMessage = ErrorMessageDto.builder().errors(errors.asMap()).build();
         return new ErrorResponse(SC_UNPROCESSABLE_ENTITY, errorMessage);
+    }
+
+    private void recordConstraintViolation(ConstraintViolation<?> violation, SetMultimap<String, ErrorDto> target)
+    {
+        String errorId = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
+
+        Path.Node lastProperty = Iterators.getLast(violation.getPropertyPath().iterator());
+        String propertyName = lastProperty.getName();
+
+        ErrorDto errorDto = new ErrorDto(errorId, null);
+        target.put(propertyName, errorDto);
     }
 
     private ErrorResponse handleRuleViolationError(RuleViolationException e)
