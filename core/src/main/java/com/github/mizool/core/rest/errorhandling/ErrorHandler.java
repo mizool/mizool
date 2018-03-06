@@ -189,15 +189,11 @@ public class ErrorHandler
 
     private ErrorResponse createUndefinedErrorResponse(Throwable throwable)
     {
-        ErrorMessageDto errorMessage = createUndefinedErrorMessageDto(throwable);
-        return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
-    }
-
-    private ErrorMessageDto createUndefinedErrorMessageDto(Throwable throwable)
-    {
         Map<String, String> parameters = errorMapper.createExceptionParameters(throwable);
         ErrorDto error = new ErrorDto(ErrorDto.GENERIC_FIELD_KEY, parameters);
 
-        return errorMapper.createErrorMessageDto(error);
+        ErrorMessageDto errorMessage = errorMapper.createErrorMessageDto(error);
+        return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
     }
+
 }
