@@ -40,7 +40,7 @@ import com.google.common.collect.Maps;
 @Slf4j
 public class ErrorHandler
 {
-    private static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
+    public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
     private static final int SC_UNPROCESSABLE_ENTITY = 422;
 
     private final ExceptionCatalog exceptionCatalog;

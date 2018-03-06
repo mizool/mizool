@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class ErrorDto
 {
-    private static final String GENERIC_ERROR_ID = "generic";
+    public static final String GENERIC_ERROR_ID = "generic";
 
     static ErrorDto createGenericError()
     {
