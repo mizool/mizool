@@ -190,7 +190,7 @@ public class ErrorHandler
     private ErrorResponse createUndefinedErrorResponse(Throwable throwable)
     {
         Map<String, String> parameters = errorMapper.createExceptionParameters(throwable);
-        ErrorDto error = new ErrorDto(ErrorDto.GENERIC_FIELD_KEY, parameters);
+        ErrorDto error = ErrorDto.createGenericError(parameters);
 
         ErrorMessageDto errorMessage = errorMapper.createErrorMessageDto(error);
         return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
