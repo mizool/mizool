@@ -28,8 +28,16 @@ import com.google.common.util.concurrent.MoreExecutors;
  * Runs asynchronous tasks that supply {@link com.google.common.util.concurrent.ListenableFuture}s. The task execution
  * of a new task is delayed if the {@code taskLimit}, specified during construction, is reached. Delayed tasks are
  * resumed when running tasks complete by invoking the callback on the {@link com.google.common.util.concurrent.ListenableFuture}.
+ *
+ * @deprecated Use {@link com.github.mizool.core.function.BlockingAsynchronousFunctionDecorator} instead. The use of the
+ * {@link BlockingAsynchronousTaskController} encourages splitting of {@link java.util.stream.Stream}s by accumulating
+ * an {@link Iterable} of {@link com.google.common.util.concurrent.ListenableFuture}s inside the {@code task}
+ * {@link Supplier}. Not only is that cumbersome to read but it is also not idiomatic for {@link java.util.stream.Stream}s and
+ * bears the risk of accumulating a large number of {@link java.util.concurrent.Future}s before finally waiting for
+ * them.
  */
 // we decided not to test this class as writing a correct multi threaded test seems to be quite hard
+@Deprecated
 @RequiredArgsConstructor
 public class BlockingAsynchronousTaskController
 {
