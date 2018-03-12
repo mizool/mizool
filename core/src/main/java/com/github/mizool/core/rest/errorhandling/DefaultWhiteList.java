@@ -37,23 +37,20 @@ import com.google.common.collect.ImmutableSet;
 @MetaInfServices
 public class DefaultWhiteList implements WhiteList
 {
-    private static final int SC_UNPROCESSABLE_ENTITY = 422;
-    private static final int LOCKED = 423;
-
     @Override
     public Set<WhiteListEntry> getEntries()
     {
         return ImmutableSet.<WhiteListEntry>builder().add(new WhiteListEntry(BadRequestException.class,
             HttpServletResponse.SC_BAD_REQUEST,
             true))
-            .add(new WhiteListEntry(UnprocessableEntityException.class, SC_UNPROCESSABLE_ENTITY, true))
+            .add(new WhiteListEntry(UnprocessableEntityException.class, HttpStatus.UNPROCESSABLE_ENTITY, true))
             .add(new WhiteListEntry(ConflictingEntityException.class, HttpServletResponse.SC_CONFLICT))
             .add(new WhiteListEntry(ObjectNotFoundException.class, HttpServletResponse.SC_NOT_FOUND))
             .add(new WhiteListEntry(AuthenticationMissingException.class, HttpServletResponse.SC_UNAUTHORIZED))
             .add(new WhiteListEntry(AuthenticationRejectedException.class, HttpServletResponse.SC_UNAUTHORIZED))
             .add(new WhiteListEntry(PermissionDeniedException.class, HttpServletResponse.SC_FORBIDDEN))
             .add(new WhiteListEntry(UnsupportedHttpFeatureException.class, HttpServletResponse.SC_NOT_IMPLEMENTED))
-            .add(new WhiteListEntry(LockedEntityException.class, LOCKED))
+            .add(new WhiteListEntry(LockedEntityException.class, HttpStatus.LOCKED))
             .add(new WhiteListEntry(ServiceUnavailableException.class, HttpServletResponse.SC_SERVICE_UNAVAILABLE))
             .build();
     }
