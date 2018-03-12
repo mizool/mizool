@@ -44,6 +44,18 @@
             <organization>incub8 Software Labs</organization>
             <organizationUrl>http://www.incub8.de</organizationUrl>
         </developer>
+        <developer>
+            <name>Sven Haberer</name>
+            <email>svenhaberer@incub8.de</email>
+            <organization>incub8 Software Labs</organization>
+            <organizationUrl>http://www.incub8.de</organizationUrl>
+        </developer>
+        <developer>
+            <name>Sven Müller</name>
+            <email>svenmueller@incub8.de</email>
+            <organization>incub8 Software Labs</organization>
+            <organizationUrl>http://www.incub8.de</organizationUrl>
+        </developer>
     </developers>
 
     <prerequisites>
