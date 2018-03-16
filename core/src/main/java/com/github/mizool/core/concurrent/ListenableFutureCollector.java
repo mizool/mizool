@@ -18,6 +18,7 @@ package com.github.mizool.core.concurrent;
 
 import java.util.EnumSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -59,7 +60,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
 {
     public static ListenableFutureCollector concurrent(int maximumConcurrentFutures)
     {
-        if (maximumConcurrentFutures < 1)
+        if (maximumConcurrentFutures <= 0)
         {
             throw new IllegalArgumentException("Maximum concurrent futures must be greater than 0");
         }
@@ -74,7 +75,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
         {
             synchronized (semaphore)
             {
-                runningFutures--;
+                runningFutures.decrementAndGet();
                 if (collectionWasFinished())
                 {
                     setResultValueIfAllFuturesFinished();
@@ -88,7 +89,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
         {
             synchronized (semaphore)
             {
-                runningFutures--;
+                runningFutures.decrementAndGet();
                 if (collectionWasFinished())
                 {
                     result.setException(t);
@@ -105,7 +106,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     private final int maximumConcurrentFutures;
     private final Object semaphore = new Object();
 
-    private int runningFutures;
+    private AtomicInteger runningFutures = new AtomicInteger();
     private Throwable throwable;
     private SettableFuture<Void> result;
 
@@ -138,13 +139,13 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
 
     private void consumeFuture(ListenableFuture<Void> future)
     {
-        runningFutures++;
+        runningFutures.incrementAndGet();
         Futures.addCallback(future, new Callback());
     }
 
     private void waitWhileCapacityReached()
     {
-        while (runningFutures >= maximumConcurrentFutures)
+        while (runningFutures.get() >= maximumConcurrentFutures)
         {
             try
             {
@@ -190,7 +191,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
 
     private void setResultValueIfAllFuturesFinished()
     {
-        if (runningFutures == 0)
+        if (runningFutures.get() == 0)
         {
             result.set(null);
         }
