@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.concurrent.ListenableFutureCollector;
 import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -30,7 +31,7 @@ import com.google.common.util.concurrent.MoreExecutors;
  * of a new task is delayed if the {@code taskLimit}, specified during construction, is reached. Delayed tasks are
  * resumed when running tasks complete by invoking the callback on the {@link com.google.common.util.concurrent.ListenableFuture}.
  *
- * @deprecated Use {@link com.github.mizool.core.function.BlockingAsynchronousFunctionDecorator} instead. The use of the
+ * @deprecated Use {@link ListenableFutureCollector} instead. The use of the
  * {@link BlockingAsynchronousTaskController} encourages splitting of {@link java.util.stream.Stream}s by accumulating
  * an {@link Iterable} of {@link com.google.common.util.concurrent.ListenableFuture}s inside the {@code task}
  * {@link Supplier}. Not only is that cumbersome to read but it is also not idiomatic for {@link java.util.stream.Stream}s and
