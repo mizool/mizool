@@ -78,7 +78,7 @@ public class TestListenableFutureCollector
     @Test(timeOut = 5000)
     public void testMultipleFutures() throws ExecutionException, InterruptedException
     {
-        IntStream.of(0, 0, 0, 0, 0).mapToObj(scheduledFuture()).collect(concurrent(7)).get();
+        IntStream.of(500, 500, 500, 500, 500).mapToObj(scheduledFuture()).collect(concurrent(7)).get();
         assertFinishedFutures(5);
         assertMaximumConcurrentFutures(5);
     }
