@@ -43,6 +43,9 @@ import com.google.common.util.concurrent.SettableFuture;
  * Any {@link java.util.concurrent.ExecutionException} thrown by one of the incoming futures is either thrown during
  * collection or forwarded to the result future if the consumer was already finished.<br>
  * <br>
+ * This collector cannot be used for parallel streams as it would not be able to enforce the limit of
+ * {@code maximumConcurrentFutures}.<br>
+ * <br>
  * This collector is intended to be used like so:<br>
  * <pre>{@code
  * Stream<ListenableFuture<Void>> stream;
@@ -181,7 +184,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     @Override
     public Set<Characteristics> characteristics()
     {
-        return EnumSet.of(Characteristics.CONCURRENT, Characteristics.UNORDERED);
+        return EnumSet.of(Characteristics.UNORDERED);
     }
 
     private boolean collectionWasFinished()
