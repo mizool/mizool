@@ -28,6 +28,8 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.exception.UncheckedInterruptedException;
+
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 public class TimeoutingExecutor
 {
@@ -49,7 +51,12 @@ public class TimeoutingExecutor
         {
             throw new CacheTimeoutException(e);
         }
-        catch (InterruptedException | ExecutionException e)
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            throw new UncheckedInterruptedException(e);
+        }
+        catch (ExecutionException e)
         {
             throw new RuntimeException(e);
         }
@@ -65,7 +72,12 @@ public class TimeoutingExecutor
         {
             throw new CacheTimeoutException(e);
         }
-        catch (InterruptedException | ExecutionException e)
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            throw new UncheckedInterruptedException(e);
+        }
+        catch (ExecutionException e)
         {
             throw new RuntimeException(e);
         }

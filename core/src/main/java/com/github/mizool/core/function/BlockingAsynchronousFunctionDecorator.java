@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -79,7 +80,8 @@ public class BlockingAsynchronousFunctionDecorator<T, R> implements Function<T, 
                 }
                 catch (InterruptedException e)
                 {
-                    throw new RuntimeException(e);
+                    Thread.currentThread().interrupt();
+                    throw new UncheckedInterruptedException(e);
                 }
             }
             runningTasks.incrementAndGet();
