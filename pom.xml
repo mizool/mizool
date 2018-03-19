@@ -307,22 +307,6 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>external.atlassian.jgitflow</groupId>
-                    <artifactId>jgitflow-maven-plugin</artifactId>
-                    <version>1.0-m4.3</version>
-                    <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <defaultOriginUrl>${origin}</defaultOriginUrl>
-                        <pushReleases>true</pushReleases>
-                        <pushHotfixes>true</pushHotfixes>
-                        <!-- Note that the comment prefix below ends in a non-breaking space because jgitflow trims the value -->
-                        <scmCommentPrefix>[jgitflow] </scmCommentPrefix>
-                        <noReleaseBuild>true</noReleaseBuild>
-                        <noHotfixBuild>true</noHotfixBuild>
-                        <noDeploy>true</noDeploy>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>2.5</version>
