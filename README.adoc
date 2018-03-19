@@ -8,6 +8,8 @@ Mizool uses the http://nvie.com/posts/a-successful-git-branching-model/[Gitflow 
 http://nvie.com/about/[Vincent Driessen]. For now the commits and merges have to be performed manually, the builds are
 performed by https://travis-ci.org/[Travis].
 
+__Note: the commands below are intended for use on the Windows command line.__
+
 === Starting the release process
 
 . Set the versions in environment variables.
