@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.17</version>
+    <version>0.18</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -29,6 +29,18 @@
         <developer>
             <name>Jens Bannmann</name>
             <email>jensbannmann@incub8.de</email>
+            <organization>incub8 Software Labs</organization>
+            <organizationUrl>http://www.incub8.de</organizationUrl>
+        </developer>
+        <developer>
+            <name>Sven Haberer</name>
+            <email>svenhaberer@incub8.de</email>
+            <organization>incub8 Software Labs</organization>
+            <organizationUrl>http://www.incub8.de</organizationUrl>
+        </developer>
+        <developer>
+            <name>Sven Müller</name>
+            <email>svenmueller@incub8.de</email>
             <organization>incub8 Software Labs</organization>
             <organizationUrl>http://www.incub8.de</organizationUrl>
         </developer>
@@ -293,22 +305,6 @@
                             <phase>verify</phase>
                         </execution>
                     </executions>
-                </plugin>
-                <plugin>
-                    <groupId>external.atlassian.jgitflow</groupId>
-                    <artifactId>jgitflow-maven-plugin</artifactId>
-                    <version>1.0-m4.3</version>
-                    <configuration>
-                        <autoVersionSubmodules>true</autoVersionSubmodules>
-                        <defaultOriginUrl>${origin}</defaultOriginUrl>
-                        <pushReleases>true</pushReleases>
-                        <pushHotfixes>true</pushHotfixes>
-                        <!-- Note that the comment prefix below ends in a non-breaking space because jgitflow trims the value -->
-                        <scmCommentPrefix>[jgitflow] </scmCommentPrefix>
-                        <noReleaseBuild>true</noReleaseBuild>
-                        <noHotfixBuild>true</noHotfixBuild>
-                        <noDeploy>true</noDeploy>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
