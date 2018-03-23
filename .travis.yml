@@ -1,7 +1,7 @@
 language: java
 
 install: true
-script: "https://raw.githubusercontent.com/mizool/travis-ci-maven-gitflow/master/build.sh | bash"
+script: "wget -q -O - https://raw.githubusercontent.com/mizool/travis-ci-maven-gitflow/master/build.sh | bash"
 
 cache:
   directories:
