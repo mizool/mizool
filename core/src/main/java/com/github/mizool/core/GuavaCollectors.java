@@ -30,7 +30,6 @@ import lombok.NoArgsConstructor;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
@@ -122,16 +121,6 @@ public final class GuavaCollectors
             (builder, element) -> builder.put(keyMapper.apply(element), valueMapper.apply(element)),
             (thisBuilder, otherBuilder) -> thisBuilder.putAll(otherBuilder.build()),
             ImmutableMap.Builder::build);
-    }
-
-    public static <T, K, U> Collector<T, ImmutableMultimap.Builder<K, U>, ImmutableMultimap<K, U>> toImmutableMultimap(
-        Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends Iterable<U>> valueMapper)
-    {
-        return new CollectorImpl<>(
-            ImmutableMultimap::builder,
-            (builder, element) -> builder.putAll(keyMapper.apply(element), valueMapper.apply(element)),
-            (thisBuilder, otherBuilder) -> thisBuilder.putAll(otherBuilder.build()),
-            ImmutableMultimap.Builder::build);
     }
 
     public static <T, K, U> Collector<T, ImmutableListMultimap.Builder<K, U>, ImmutableListMultimap<K, U>> toImmutableListMultimap(
