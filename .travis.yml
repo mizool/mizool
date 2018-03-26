@@ -1,25 +1,10 @@
 language: java
 
+# As we don't need to install anything but the install phase is mandatory, we simply call the 'true' command.
 install: true
-before_script: "./ci-resources/before-build.sh"
-script: "./ci-resources/build.sh"
+
+script: "wget -q -O - https://raw.githubusercontent.com/mizool/travis-ci-maven-gitflow/master/build.sh | bash"
 
 cache:
   directories:
   - "$HOME/.m2/repository"
-
-env:
-  global:
-    - secure: "RUurU00PiSkv+wMGAkLK9LBvUAtN2teYjh3Gfw4Oe1N0tUiNpn44/hxZf2ZS0lC8hSyonG+pjhINdXAINtfrczBrBO3Q3B1tyx3QFdnZGenKrP0qSCPBQctwhZotVKgbQoKA7+L2qHs6rc/7LzMfXMS7wcdEMgTHwRn4YGMde9XbnFxa/qlk4wsW8q6wV4+a5NiKOq1RyXR3no6tB8wr96YO0E29C/8LrUYOAJoDyWo2SVNiky8YhJdSrTm4naKREez1aI3sQ5fOoVgr2NKvA9w81tB0r7oeeuBXFWyt1J2yyeFOYX19uK1Z+fDmRnc9kMZr1801nGXNFWmEjt6Y0G2JlKFytN9ClRsdr0Ry1Qa2hUmLhYT329sEIPHTT8M/BDPOpI33urF5FsX9sJKhS1UA2RWqh9trpyfWZZWWjMZSKXerRU9k2IzsVYgJpDbMAT/fKKwr+Q7oo0lwJqK8nvB4JjObZfv0dvOmfG+FE7QmSOOYCjor/rw3/sIkutwJS1NxrdwBXSy3DUYyI1rooQKThiDYy6HryJ3zIJL5TJGqoqD4UfS3WZHMtT35L54D4uPkMG3G0WARrHvBObqPrWdh7S7eEWj0Lpb5W8UlBTN2DFPB3bRn84T+E1vt/ACyCQEZvDU6MKKZVm9RVydaFmoOSqy/xmVQw3J5xsjapyI="
-    - # ^^ OSSRH_JIRA_USERNAME
-    - secure: "kr2vFg5suu4w5/5FGAVlC409i4mJ2lIIhbGd+FCAh7bng7+qKvcKqKHSGj+knQF3AlTQWt0KswdGpLxVcKKorvynZai2In8q/sseBZIf8coG42tmjsKSmlBirIma3VDfKeEXzxwwvzL/H0L7gBAy4ofcsWetSzYZmdRWnzqNxM6q3fgf3uMGAolmAdLEuYawu0qi2tA/qikVUHepk4qHORg7JAIOokZ97qG+iemNxHEnVCJCAQIp6ZGS+VRg43XUcZ96MOa3g9fZTkE1bHOYvQEA1JiNNASOWX/0p4BxLhHQUMDI8zG4/Y2XpZAUny3d19Az3FjFO6zA97R85vvQGan0cv+xJ0XCug8n4f9SUd6PHoPLVfFb4TLfrMpkU3v8p0S5MUDiwEQ8LP8DlDA/adBDQaITq3dL+QSwUNOeHePFUZYLh8vp67T3OA1vTJWgFoHhXPYXtoKTx8KlEDsaa8sliklC16LZKrfAwqE/Z6G+ct95mwS7kJwEk1b4crfxDZ5vuMwLGWzKfeHkP98aG0Z7LGlwDaxtoBgYT4qTuE3/4mLqMiz3aq8cCTVWzGAEqCFJgccaHV5RnKrW51UtpaDJDPVHhxDNglVK31LbYcemrVpci63j3sim330tNgHToXpnQvsxrDNY9UN2pAq/lg+kJVF1EfFHS3Zvmgs9u4Q="
-    - # ^^ OSSRH_JIRA_PASSWORD
-    - secure: "I5xBRz3M1wl6dKj+nXr8PVH2jM3zSJGpjKZWfD+lPux3/JpQH8BZwgGNbtrjTwdGoWi8XLeysUew5/GdGqnxjCXzbdVJjuKR/5uBLKqtO+XiFh79C14Gp6BSI/W1EfmlfYE2kDtr3u0vGrCcFyaSYKgdqJHzm1Htl/VEI72VNyjs8PiriXEo7j86nHKCbENeWzlLwrE11t/5Q2BSf+dPvL3Aib2WkFPuS21XSNymdi1KIWsBW0ZLP8Aq5AkG1BlEr49g6s16UMpbGo8jY1sFzaI4U/gtpt1U9RpzFZ3zg31weyEF0YtcSLi3jJ+WYVDSnrZz2jyWiMUTXKBzT9URehwY25JQB3IrYs3NuzyKvpB9kuc2oEOGnfqNvRtSRQbMqR/MPQOPnly4j9AzXQq/N3Grs6AWkv4/pO6RQfCMB1S4erwVlVfOGGWLEARpBnBzL2WtchNAQEEdLSS+0cWvFTwQ3yWu+tqyLEXPnykLQSCac7H+RWl3mqkpVxKOzMXT0yJZ6+FC9dEfESMWh1vjKXE+K62xAnpm5RPvQGhNFtb2T6HVHpBpZKAdNZ7+DjAwWac9WWwK1H3dLF1hSp5nuJl/UKj5oAfs3cxaLiTYd2KX2jh9lmTPjb2if9yt3sCdrpUx41tkc9vjay6G2DHPouEQ2NEISrdvGS9FxhXJSPA="
-    - # ^^ GPG_KEY_NAME
-    - secure: "u2hl0ZLglR6Ao1KyXStIm5ZKjiJT2GCBXiawqB8XKKDUWqNjKmf2CkblXN23AkLDThTIMkoXom83y3WPbIsaL24KSHeivfa2x5bU6stTksbAusJ+3WCXO7ceDZqiqqnBWRUBYDGQQpuAd2vx3F8VgCpUnCWZP9acqRnPBhSn/+P4GTLLFY6LaFL32vv4Nh5vC+s3tTv6tMg89UTH9I5GVeLuGwGe3B4Jg6CRcqzIwo6GTmPrQ3un8lEFCkO5eAYceUcM0UePfBTHvVcpAuCPIbduWJWEEjSy577EN6DDVb8brPTEojQBUVhKjjz2YLkTX7f3oyqfTsdRGghxWjehlvj/M4/BXxabeFM/4R2vanaxEjQiLkLfqbu9oYNEWPG5qG39hvaw2Ay9BLGOkHqkasl3nhywJw4TWiqemd3jKhjEIQuL5Hpmls4Db5KMNmQ8/io3xAJcCt3vOjoNrkpeeplk/EMlT8Ha0puxrOKH/jZsrXyQ9Ox8tFjUs2ZWI4+H7Hj8DxFkG+YwHKtGDtj/bpJyYrJnZbmH3I9x2dUL/2VcmuqjajWG/JoQdPOiParAPJj0KbKv1jNfBbF8pNu0uqBs2pgiM4BTplDe27/i9iimbI0fixo5kx/eQNKeX4EvpefX7NmP/L+06SvSza4k3vvArvaE8px8NgatFfllozU="
-    - # ^^ GPG_PASSPHRASE
-
-branches:
-  except:
-    - /^release-.*$/
-    - /^hotfix-.*$/
