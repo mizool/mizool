@@ -16,6 +16,7 @@
  */
 package com.github.mizool.technology.jackson;
 
+import java.time.format.DateTimeParseException;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -38,6 +39,7 @@ public class JacksonWhiteList implements WhiteList
             HttpServletResponse.SC_BAD_REQUEST,
             true))
             .add(new WhiteListEntry(UnrecognizedPropertyException.class, HttpServletResponse.SC_BAD_REQUEST, true))
+            .add(new WhiteListEntry(DateTimeParseException.class, HttpServletResponse.SC_BAD_REQUEST, true))
             .build();
     }
 }
