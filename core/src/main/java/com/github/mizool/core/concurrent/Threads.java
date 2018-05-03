@@ -31,8 +31,7 @@ public class Threads
         }
         catch (InterruptedException e)
         {
-            Thread.currentThread().interrupt();
-            throw new UncheckedInterruptedException(e);
+            rethrowInterrupt(e);
         }
     }
 
@@ -44,8 +43,13 @@ public class Threads
         }
         catch (InterruptedException e)
         {
-            Thread.currentThread().interrupt();
-            throw new UncheckedInterruptedException(e);
+            rethrowInterrupt(e);
         }
+    }
+
+    private void rethrowInterrupt(InterruptedException e)
+    {
+        Thread.currentThread().interrupt();
+        throw new UncheckedInterruptedException(e);
     }
 }
