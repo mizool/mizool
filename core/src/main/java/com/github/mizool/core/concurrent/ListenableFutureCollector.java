@@ -150,15 +150,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     {
         while (runningFutures.get() >= maximumConcurrentFutures)
         {
-            try
-            {
-                semaphore.wait();
-            }
-            catch (InterruptedException e)
-            {
-                Thread.currentThread().interrupt();
-                throw new UncheckedInterruptedException(e);
-            }
+            Threads.wait(semaphore);
         }
     }
 
