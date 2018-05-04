@@ -22,6 +22,7 @@ import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.concurrent.ListenableFutureCollector;
+import com.github.mizool.core.concurrent.Threads;
 import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -74,15 +75,7 @@ public class BlockingAsynchronousTaskController
         {
             while (runningTasks.intValue() >= taskLimit)
             {
-                try
-                {
-                    semaphore.wait();
-                }
-                catch (InterruptedException e)
-                {
-                    Thread.currentThread().interrupt();
-                    throw new UncheckedInterruptedException(e);
-                }
+                Threads.wait(semaphore);
             }
             runningTasks.incrementAndGet();
 
