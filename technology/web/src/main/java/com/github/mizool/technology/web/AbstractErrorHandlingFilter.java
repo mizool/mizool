@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.core.rest.errorhandling;
+package com.github.mizool.technology.web;
 
 import java.io.IOException;
 
@@ -27,7 +27,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.mizool.core.rest.TransactionalResponseWrapper;
+import com.github.mizool.core.rest.errorhandling.ErrorHandler;
+import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
+import com.github.mizool.core.rest.errorhandling.ErrorResponse;
 
 public abstract class AbstractErrorHandlingFilter implements Filter
 {

@@ -21,8 +21,8 @@ import javax.inject.Singleton;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.mizool.core.rest.errorhandling.AbstractErrorHandlingFilter;
 import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
+import com.github.mizool.technology.web.AbstractErrorHandlingFilter;
 import com.google.common.base.Charsets;
 
 @Singleton
