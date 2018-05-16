@@ -24,6 +24,10 @@
             <artifactId>mizool-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.github.mizool.technology</groupId>
+            <artifactId>technology-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
         </dependency>

@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.core.rest;
+package com.github.mizool.technology.web;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import javax.servlet.WriteListener;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-public class TransactionalResponseWrapper extends HttpServletResponseWrapper
+class TransactionalResponseWrapper extends HttpServletResponseWrapper
 {
     private final ByteArrayOutputStream outputStream;
     private final HttpServletResponse response;
