@@ -208,7 +208,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>20.0</version>
+                <version>25.0-jre</version>
             </dependency>
             <dependency>
                 <!-- force dependency convergence. 1.1.3 is intended for aws-java-sdk-dynamodb 1.11.75 -->
