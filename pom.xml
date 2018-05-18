@@ -165,6 +165,22 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.github.mizool.jcache</groupId>
+                <artifactId>cache-annotations-ri-cdi</artifactId>
+                <version>${jcache.ri.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.enterprise</groupId>
+                        <artifactId>cdi-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.jcache</groupId>
+                <artifactId>cache-annotations-ri-common</artifactId>
+                <version>${jcache.ri.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-aws</artifactId>
                 <version>${project.version}</version>
@@ -188,22 +204,6 @@
                 <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-web</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.jcache</groupId>
-                <artifactId>cache-annotations-ri-cdi</artifactId>
-                <version>${jcache.ri.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.enterprise</groupId>
-                        <artifactId>cdi-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.jcache</groupId>
-                <artifactId>cache-annotations-ri-common</artifactId>
-                <version>${jcache.ri.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
