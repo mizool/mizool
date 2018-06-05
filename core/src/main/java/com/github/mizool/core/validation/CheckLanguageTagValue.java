@@ -39,12 +39,7 @@ public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagVal
     @Override
     public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return isNullButOptional(validationObject) || isValidValue(validationObject);
-    }
-
-    private boolean isNullButOptional(String validationObject)
-    {
-        return validationObject == null && !mandatory;
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
     private boolean isValidValue(String validationObject)
