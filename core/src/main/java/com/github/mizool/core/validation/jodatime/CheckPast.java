@@ -21,6 +21,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.joda.time.DateTime;
 
+import com.github.mizool.core.validation.ConstraintValidators;
 import com.google.common.annotations.VisibleForTesting;
 
 public class CheckPast implements ConstraintValidator<Past, DateTime>
@@ -36,12 +37,7 @@ public class CheckPast implements ConstraintValidator<Past, DateTime>
     @Override
     public boolean isValid(DateTime validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return isNullButOptional(validationObject) || (validationObject != null && isValidValue(validationObject));
-    }
-
-    private boolean isNullButOptional(DateTime validationObject)
-    {
-        return validationObject == null && !mandatory;
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
     private boolean isValidValue(DateTime validationObject)

@@ -16,20 +16,10 @@
  */
 package com.github.mizool.core.validation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-
 import lombok.AllArgsConstructor;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-
-import com.google.common.collect.Iterables;
 
 public class TestLanguageTagValueAnnotation
 {
@@ -40,11 +30,12 @@ public class TestLanguageTagValueAnnotation
         private String languageTag;
     }
 
-    private Set<ConstraintViolation<TestLanguageTagValueAnnotation.TestData>> runValidator(
-        TestLanguageTagValueAnnotation.TestData testData)
+    @DataProvider(name = "acceptableValues")
+    public Object[][] createAcceptableValues()
     {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        return validator.validate(testData);
+        return new Object[][]{
+            { null }, { "DE-de" }, { "EN-gb" }, { "DE-gb" }, { "FR-fr" }
+        };
     }
 
     @DataProvider(name = "unacceptableValues")
@@ -55,30 +46,15 @@ public class TestLanguageTagValueAnnotation
         };
     }
 
-    @DataProvider(name = "acceptableValues")
-    public Object[][] createAcceptableValues()
+    @Test(dataProvider = "acceptableValues")
+    public void testValidationOfAcceptableValue(String value)
     {
-        return new Object[][]{
-            { null }, { "DE-de" }, { "EN-gb" }, { "DE-gb" }, { "FR-fr" }
-        };
+        ValidatorAnnotationTests.assertAcceptableValue(new TestData(value));
     }
 
     @Test(dataProvider = "unacceptableValues")
     public void testValidationOfUnacceptableValue(String value)
     {
-        TestLanguageTagValueAnnotation.TestData testData = new TestLanguageTagValueAnnotation.TestData(value);
-        Set<ConstraintViolation<TestLanguageTagValueAnnotation.TestData>> violations = runValidator(testData);
-        assertThat(violations).hasSize(1);
-        ConstraintViolation<TestLanguageTagValueAnnotation.TestData> violation = Iterables.getFirst(violations, null);
-        String violatedAnnotation = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
-        assertThat(violatedAnnotation).isEqualTo(LanguageTagValue.class.getName());
-    }
-
-    @Test(dataProvider = "acceptableValues")
-    public void testValidationOfAcceptableValue(String value)
-    {
-        TestLanguageTagValueAnnotation.TestData testData = new TestLanguageTagValueAnnotation.TestData(value);
-        Set<ConstraintViolation<TestLanguageTagValueAnnotation.TestData>> violations = runValidator(testData);
-        assertThat(violations).isEmpty();
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestData(value), LanguageTagValue.class);
     }
 }

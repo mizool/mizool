@@ -34,12 +34,7 @@ public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, St
     @Override
     public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return isNullButOptional(validationObject) || (validationObject != null && isValidValue(validationObject));
-    }
-
-    private boolean isNullButOptional(String validationObject)
-    {
-        return validationObject == null && !mandatory;
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
     private boolean isValidValue(String validationObject)

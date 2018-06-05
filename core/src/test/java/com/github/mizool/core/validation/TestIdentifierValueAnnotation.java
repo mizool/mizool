@@ -16,20 +16,12 @@
  */
 package com.github.mizool.core.validation;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.List;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 
 import lombok.AllArgsConstructor;
 
 import org.testng.annotations.Test;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class TestIdentifierValueAnnotation
@@ -51,57 +43,30 @@ public class TestIdentifierValueAnnotation
         private List<String> identifiers;
     }
 
-    private Set<ConstraintViolation<TestIdentifierValueAnnotation.TestData>> runValidator(TestIdentifierValueAnnotation.TestData testData)
-    {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        return validator.validate(testData);
-    }
-
-    private Set<ConstraintViolation<TestIdentifierValueAnnotation.TestListData>> runValidator(
-        TestIdentifierValueAnnotation.TestListData testData)
-    {
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        return validator.validate(testData);
-    }
-
     @Test
     public void testValidationOfUnacceptableValue()
     {
-        TestIdentifierValueAnnotation.TestData testData = new TestIdentifierValueAnnotation.TestData(EMPTY);
-        Set<ConstraintViolation<TestIdentifierValueAnnotation.TestData>> violations = runValidator(testData);
-        assertThat(violations).hasSize(1);
-        ConstraintViolation<TestIdentifierValueAnnotation.TestData> violation = Iterables.getFirst(violations, null);
-        String violatedAnnotation = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
-        assertThat(violatedAnnotation).isEqualTo(IdentifierValue.class.getName());
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestIdentifierValueAnnotation.TestData(EMPTY),
+            IdentifierValue.class);
     }
 
     @Test
     public void testValidationOfUnacceptableListValue()
     {
-        TestIdentifierValueAnnotation.TestListData
-            testData
-            = new TestIdentifierValueAnnotation.TestListData(Lists.newArrayList(IDENTIFIER, EMPTY));
-        Set<ConstraintViolation<TestIdentifierValueAnnotation.TestListData>> violations = runValidator(testData);
-        assertThat(violations).hasSize(1);
-        ConstraintViolation<TestIdentifierValueAnnotation.TestListData> violation = Iterables.getFirst(violations,
-            null);
-        String violatedAnnotation = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
-        assertThat(violatedAnnotation).isEqualTo(IdentifierValue.class.getName());
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestIdentifierValueAnnotation.TestListData(Lists.newArrayList(
+            IDENTIFIER,
+            EMPTY)), IdentifierValue.class);
     }
 
     @Test
     public void testValidationOfAcceptableValue()
     {
-        TestIdentifierValueAnnotation.TestData testData = new TestIdentifierValueAnnotation.TestData(IDENTIFIER);
-        Set<ConstraintViolation<TestIdentifierValueAnnotation.TestData>> violations = runValidator(testData);
-        assertThat(violations).isEmpty();
+        ValidatorAnnotationTests.assertAcceptableValue(new TestIdentifierValueAnnotation.TestData(IDENTIFIER));
     }
 
     @Test
     public void testNonMandatory()
     {
-        TestIdentifierValueAnnotation.TestData testData = new TestIdentifierValueAnnotation.TestData(null);
-        Set<ConstraintViolation<TestIdentifierValueAnnotation.TestData>> violations = runValidator(testData);
-        assertThat(violations).isEmpty();
+        ValidatorAnnotationTests.assertAcceptableValue(new TestIdentifierValueAnnotation.TestData(null));
     }
 }
