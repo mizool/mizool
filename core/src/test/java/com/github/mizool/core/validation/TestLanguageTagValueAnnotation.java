@@ -31,17 +31,17 @@ import org.testng.annotations.Test;
 
 import com.google.common.collect.Iterables;
 
-public class TestEmailAnnotation
+public class TestLanguageTagValueAnnotation
 {
-
     @AllArgsConstructor
     private final class TestData
     {
-        @Email(mandatory = false)
-        private String email;
+        @LanguageTagValue(mandatory = false)
+        private String languageTag;
     }
 
-    private Set<ConstraintViolation<TestData>> runValidator(TestData testData)
+    private Set<ConstraintViolation<TestLanguageTagValueAnnotation.TestData>> runValidator(
+        TestLanguageTagValueAnnotation.TestData testData)
     {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         return validator.validate(testData);
@@ -51,7 +51,7 @@ public class TestEmailAnnotation
     public Object[][] createUnacceptableValues()
     {
         return new Object[][]{
-            { "b" }, { "b@" }, { "b@b" }, { "b@b." }, { ".b@b." }
+            { "foo" }, { "german" }, { "DE" }, { "de" }, { "DE-german" }
         };
     }
 
@@ -59,26 +59,26 @@ public class TestEmailAnnotation
     public Object[][] createAcceptableValues()
     {
         return new Object[][]{
-            { "b@b.de" }, { "bob@example.com" }, { null }
+            { null }, { "DE-de" }, { "EN-gb" }, { "DE-gb" }, { "FR-fr" }
         };
     }
 
     @Test(dataProvider = "unacceptableValues")
     public void testValidationOfUnacceptableValue(String value)
     {
-        TestData testData = new TestData(value);
-        Set<ConstraintViolation<TestData>> violations = runValidator(testData);
+        TestLanguageTagValueAnnotation.TestData testData = new TestLanguageTagValueAnnotation.TestData(value);
+        Set<ConstraintViolation<TestLanguageTagValueAnnotation.TestData>> violations = runValidator(testData);
         assertThat(violations).hasSize(1);
-        ConstraintViolation<TestData> violation = Iterables.getFirst(violations, null);
+        ConstraintViolation<TestLanguageTagValueAnnotation.TestData> violation = Iterables.getFirst(violations, null);
         String violatedAnnotation = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
-        assertThat(violatedAnnotation).isEqualTo(Email.class.getName());
+        assertThat(violatedAnnotation).isEqualTo(LanguageTagValue.class.getName());
     }
 
     @Test(dataProvider = "acceptableValues")
     public void testValidationOfAcceptableValue(String value)
     {
-        TestData testData = new TestData(value);
-        Set<ConstraintViolation<TestData>> violations = runValidator(testData);
+        TestLanguageTagValueAnnotation.TestData testData = new TestLanguageTagValueAnnotation.TestData(value);
+        Set<ConstraintViolation<TestLanguageTagValueAnnotation.TestData>> violations = runValidator(testData);
         assertThat(violations).isEmpty();
     }
 }
