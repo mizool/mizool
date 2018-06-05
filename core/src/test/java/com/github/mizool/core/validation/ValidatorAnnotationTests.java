@@ -9,8 +9,11 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 
+import lombok.experimental.UtilityClass;
+
 import com.google.common.collect.Iterables;
 
+@UtilityClass
 class ValidatorAnnotationTests
 {
     public static <T> void assertAcceptableValue(T value)

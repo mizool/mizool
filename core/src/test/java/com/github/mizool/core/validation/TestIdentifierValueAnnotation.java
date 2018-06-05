@@ -46,27 +46,25 @@ public class TestIdentifierValueAnnotation
     @Test
     public void testValidationOfUnacceptableValue()
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new TestIdentifierValueAnnotation.TestData(EMPTY),
-            IdentifierValue.class);
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestData(EMPTY), IdentifierValue.class);
     }
 
     @Test
     public void testValidationOfUnacceptableListValue()
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new TestIdentifierValueAnnotation.TestListData(Lists.newArrayList(
-            IDENTIFIER,
-            EMPTY)), IdentifierValue.class);
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestListData(Lists.newArrayList(IDENTIFIER, EMPTY)),
+            IdentifierValue.class);
     }
 
     @Test
     public void testValidationOfAcceptableValue()
     {
-        ValidatorAnnotationTests.assertAcceptableValue(new TestIdentifierValueAnnotation.TestData(IDENTIFIER));
+        ValidatorAnnotationTests.assertAcceptableValue(new TestData(IDENTIFIER));
     }
 
     @Test
     public void testNonMandatory()
     {
-        ValidatorAnnotationTests.assertAcceptableValue(new TestIdentifierValueAnnotation.TestData(null));
+        ValidatorAnnotationTests.assertAcceptableValue(new TestData(null));
     }
 }

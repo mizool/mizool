@@ -2,6 +2,9 @@ package com.github.mizool.core.validation;
 
 import java.util.function.Predicate;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class ConstraintValidators
 {
     public static <T> boolean isValid(T validationObject, boolean mandatory, Predicate<T> isValidValue)
