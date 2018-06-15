@@ -1,6 +1,6 @@
 /**
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+ *  Copyright 2017-2018 incub8 Software Labs GmbH
+ *  Copyright 2017-2018 protel Hotelsoftware GmbH
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package com.github.mizool.core;
 
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -43,5 +46,10 @@ public final class MockitoExtensions
     public static <T> Optional<T> anyOptionalOf(Class<T> tClass)
     {
         return nullable(Optional.class);
+    }
+
+    public static <T> void mockIterable(Iterable<T> mockedIterable, List<T> values)
+    {
+        when(mockedIterable.iterator()).then(invocation -> values.iterator());
     }
 }
