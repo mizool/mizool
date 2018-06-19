@@ -1,44 +1,36 @@
 package com.github.mizool.core.concurrent;
 
 import static com.github.mizool.core.concurrent.ListenableFutureCollector.concurrent;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.IntFunction;
-import java.util.stream.IntStream;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.SettableFuture;
 
 public class TestListenableFutureCollector
 {
-    private AtomicInteger maximumConcurrent;
-    private AtomicInteger running;
-    private AtomicInteger totalFinished;
-    private ScheduledExecutorService executorService;
+    private static final int IMMEDIATE = 0;
+    private static final int FAST = 100;
+    private static final int SLOW = 1000;
+
+    private ConcurrentTests.Suite suite;
 
     @BeforeMethod
     public void setUp()
     {
-        maximumConcurrent = new AtomicInteger();
-        running = new AtomicInteger();
-        totalFinished = new AtomicInteger();
-        executorService = Executors.newSingleThreadScheduledExecutor();
+        suite = ConcurrentTests.suite(100);
     }
 
     @AfterMethod
     public void tearDown()
     {
-        executorService.shutdown();
+        suite.tearDown();
     }
 
     @Test(expectedExceptions = IllegalArgumentException.class)
@@ -47,89 +39,63 @@ public class TestListenableFutureCollector
         concurrent(0);
     }
 
-    @Test(timeOut = 5000)
-    public void testEmptyStream() throws ExecutionException, InterruptedException
+    @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
+    public void testParallelization(String name, int maximumConcurrentFutures, long[] durations)
+        throws InterruptedException, ExecutionException
     {
-        IntStream.empty().mapToObj(scheduledFuture()).collect(concurrent(1)).get();
+        suite.addItems(durations);
+
+        suite.stream().map(ResultVoidingFuture::new).collect(concurrent(maximumConcurrentFutures)).get();
+
+        suite.assertStartedFutures(durations.length);
+        suite.assertFinishedFutures(durations.length);
+        suite.assertMaximumConcurrentFutures(Math.min(maximumConcurrentFutures, durations.length));
     }
 
-    @Test(timeOut = 5000)
-    public void testSingleFuture() throws ExecutionException, InterruptedException
+    @DataProvider
+    private Object[][] parallelizationVariants()
     {
-        IntStream.of(0).mapToObj(scheduledFuture()).collect(concurrent(1)).get();
-
-        assertFinishedFutures(1);
-        assertMaximumConcurrentFutures(1);
+        return new Object[][]{
+            { "empty stream", 1, new long[]{} },
+            { "single immediate future", 1, new long[]{ IMMEDIATE } },
+            { "single delayed future", 1, new long[]{ FAST } },
+            { "multiple futures", 5, new long[]{ FAST, FAST, FAST, FAST, FAST } },
+            { "multiple throttling", 2, new long[]{ FAST, FAST, FAST, FAST, FAST } }
+        };
     }
 
-    @Test(timeOut = 5000)
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
     public void testResultIsReadyImmediately() throws ExecutionException, InterruptedException, TimeoutException
     {
-        ListenableFuture<Void> result = IntStream.of(0).mapToObj(scheduledFuture()).collect(concurrent(1));
+        suite.addItems(IMMEDIATE);
+
+        ListenableFuture<Void> result = suite.stream().map(ResultVoidingFuture::new).collect(concurrent(1));
 
         Thread.sleep(1);
 
         result.get(0, TimeUnit.MILLISECONDS);
 
-        assertFinishedFutures(1);
-        assertMaximumConcurrentFutures(1);
+        suite.assertFinishedFutures(1);
+        suite.assertMaximumConcurrentFutures(1);
     }
 
-    @Test(timeOut = 5000)
-    public void testMultipleFutures() throws ExecutionException, InterruptedException
-    {
-        IntStream.of(500, 500, 500, 500, 500).mapToObj(scheduledFuture()).collect(concurrent(7)).get();
-        assertFinishedFutures(5);
-        assertMaximumConcurrentFutures(5);
-    }
-
-    @Test(timeOut = 5000)
-    public void testThrottling() throws ExecutionException, InterruptedException
-    {
-        IntStream.of(500, 500, 500, 500, 500).mapToObj(scheduledFuture()).collect(concurrent(2)).get();
-        assertFinishedFutures(5);
-        assertMaximumConcurrentFutures(2);
-    }
-
-    @Test(timeOut = 5000)
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
     public void testFastFuturesCompleteEarly() throws ExecutionException, InterruptedException
     {
-        ListenableFuture<Void> result = IntStream.of(500, 50, 500, 50, 500)
-            .mapToObj(scheduledFuture())
-            .collect(concurrent(5));
+        suite.addItems(SLOW, FAST, SLOW, FAST, SLOW);
 
-        Thread.sleep(100);
+        int sufficientWaitTime = FAST * 2;
 
-        assertFinishedFutures(2);
+        ListenableFuture<Void> result = suite.stream().map(ResultVoidingFuture::new).collect(concurrent(5));
+
+        Thread.sleep(sufficientWaitTime);
+
+        suite.assertStartedFutures(5);
+        suite.assertFinishedFutures(2);
 
         result.get();
 
-        assertFinishedFutures(5);
-        assertMaximumConcurrentFutures(5);
-    }
-
-    private IntFunction<ListenableFuture<Void>> scheduledFuture()
-    {
-        return delay -> {
-            int nowRunning = running.incrementAndGet();
-            maximumConcurrent.accumulateAndGet(nowRunning, Math::max);
-            SettableFuture<Void> future = SettableFuture.create();
-            executorService.schedule(() -> {
-                running.decrementAndGet();
-                totalFinished.incrementAndGet();
-                future.set(null);
-            }, delay, TimeUnit.MILLISECONDS);
-            return future;
-        };
-    }
-
-    private void assertFinishedFutures(int expected)
-    {
-        assertThat(totalFinished.get()).isEqualTo(expected);
-    }
-
-    private void assertMaximumConcurrentFutures(int expected)
-    {
-        assertThat(maximumConcurrent.get()).isEqualTo(expected);
+        suite.assertFinishedFutures(5);
+        suite.assertMaximumConcurrentFutures(5);
     }
 }
