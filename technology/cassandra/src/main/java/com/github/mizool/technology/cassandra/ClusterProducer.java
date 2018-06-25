@@ -43,7 +43,7 @@ class ClusterProducer
     private static final String
         CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME
         = "cassandra.maxRequestsPerConnection.remote";
-    private static final String CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT = "cassandra.readTimeoutMillis";
+    private static final String CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT_PROPERTY_NAME = "cassandra.readTimeoutMillis";
 
     @Produces
     @Singleton
@@ -81,27 +81,6 @@ class ClusterProducer
         return queryOptions;
     }
 
-    private void registerJdk8TimeCodecs(Cluster cluster)
-    {
-        cluster.getConfiguration()
-            .getCodecRegistry()
-            .register(InstantCodec.instance)
-            .register(LocalDateCodec.instance)
-            .register(LocalTimeCodec.instance);
-    }
-
-    private SocketOptions getSocketOptions()
-    {
-        SocketOptions socketOptions = new SocketOptions();
-        String readTimeoutInMillis = System.getProperty(CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT);
-        if (!Strings.isNullOrEmpty(readTimeoutInMillis))
-        {
-            socketOptions.setReadTimeoutMillis(Integer.parseInt(readTimeoutInMillis));
-        }
-
-        return socketOptions;
-    }
-
     private PoolingOptions getPoolingOptions()
     {
         PoolingOptions poolingOptions = new PoolingOptions();
@@ -123,6 +102,27 @@ class ClusterProducer
         }
 
         return poolingOptions;
+    }
+
+    private SocketOptions getSocketOptions()
+    {
+        SocketOptions socketOptions = new SocketOptions();
+        String readTimeoutInMillis = System.getProperty(CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT_PROPERTY_NAME);
+        if (!Strings.isNullOrEmpty(readTimeoutInMillis))
+        {
+            socketOptions.setReadTimeoutMillis(Integer.parseInt(readTimeoutInMillis));
+        }
+
+        return socketOptions;
+    }
+
+    private void registerJdk8TimeCodecs(Cluster cluster)
+    {
+        cluster.getConfiguration()
+            .getCodecRegistry()
+            .register(InstantCodec.instance)
+            .register(LocalDateCodec.instance)
+            .register(LocalTimeCodec.instance);
     }
 
     public void dispose(@Disposes Cluster cluster)
