@@ -25,11 +25,13 @@ import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
 import com.datastax.driver.core.QueryOptions;
+import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.extras.codecs.jdk8.InstantCodec;
 import com.datastax.driver.extras.codecs.jdk8.LocalDateCodec;
 import com.datastax.driver.extras.codecs.jdk8.LocalTimeCodec;
 import com.github.mizool.core.exception.ConfigurationException;
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 
 class ClusterProducer
@@ -41,6 +43,7 @@ class ClusterProducer
     private static final String
         CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME
         = "cassandra.maxRequestsPerConnection.remote";
+    private static final String CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT_PROPERTY_NAME = "cassandra.readTimeoutMillis";
 
     @Produces
     @Singleton
@@ -56,6 +59,7 @@ class ClusterProducer
             .withQueryOptions(getQueryOptions())
             .withMaxSchemaAgreementWaitSeconds(300)
             .withPoolingOptions(getPoolingOptions())
+            .withSocketOptions(getSocketOptions())
             .build()
             .init();
         registerJdk8TimeCodecs(cluster);
@@ -75,15 +79,6 @@ class ClusterProducer
         queryOptions.setConsistencyLevel(ConsistencyLevel.ALL);
 
         return queryOptions;
-    }
-
-    private void registerJdk8TimeCodecs(Cluster cluster)
-    {
-        cluster.getConfiguration()
-            .getCodecRegistry()
-            .register(InstantCodec.instance)
-            .register(LocalDateCodec.instance)
-            .register(LocalTimeCodec.instance);
     }
 
     private PoolingOptions getPoolingOptions()
@@ -107,6 +102,27 @@ class ClusterProducer
         }
 
         return poolingOptions;
+    }
+
+    private SocketOptions getSocketOptions()
+    {
+        SocketOptions socketOptions = new SocketOptions();
+        String readTimeoutInMillis = System.getProperty(CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT_PROPERTY_NAME);
+        if (!Strings.isNullOrEmpty(readTimeoutInMillis))
+        {
+            socketOptions.setReadTimeoutMillis(Integer.parseInt(readTimeoutInMillis));
+        }
+
+        return socketOptions;
+    }
+
+    private void registerJdk8TimeCodecs(Cluster cluster)
+    {
+        cluster.getConfiguration()
+            .getCodecRegistry()
+            .register(InstantCodec.instance)
+            .register(LocalDateCodec.instance)
+            .register(LocalTimeCodec.instance);
     }
 
     public void dispose(@Disposes Cluster cluster)
