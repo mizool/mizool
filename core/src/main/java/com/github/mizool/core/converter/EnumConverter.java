@@ -20,11 +20,22 @@ public class EnumConverter
 {
     public String fromPojo(Enum<?> enumValue)
     {
-        return enumValue.name();
+        String result = null;
+
+        if (enumValue != null)
+        {
+            result = enumValue.name();
+        }
+        return result;
     }
 
     public <T extends Enum<T>> T toPojo(Class<T> enumClass, String value)
     {
-        return T.valueOf(enumClass, value);
+        T result = null;
+        if (enumClass != null && value != null)
+        {
+            result = Enum.valueOf(enumClass, value);
+        }
+        return result;
     }
 }
