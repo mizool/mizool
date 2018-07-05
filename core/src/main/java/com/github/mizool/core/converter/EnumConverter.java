@@ -16,6 +16,8 @@
  */
 package com.github.mizool.core.converter;
 
+import lombok.NonNull;
+
 public class EnumConverter
 {
     public String fromPojo(Enum<?> enumValue)
@@ -29,12 +31,12 @@ public class EnumConverter
         return result;
     }
 
-    public <T extends Enum<T>> T toPojo(Class<T> enumClass, String value)
+    public <T extends Enum<T>> T toPojo(@NonNull Class<T> enumClass, String enumValue)
     {
         T result = null;
-        if (enumClass != null && value != null)
+        if (enumValue != null)
         {
-            result = Enum.valueOf(enumClass, value);
+            result = Enum.valueOf(enumClass, enumValue);
         }
         return result;
     }
