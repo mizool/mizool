@@ -16,6 +16,8 @@
  */
 package com.github.mizool.core.concurrent;
 
+import java.util.function.BooleanSupplier;
+
 import lombok.experimental.UtilityClass;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
@@ -39,13 +41,18 @@ public class Threads
     }
 
     /**
-     * @throws UncheckedInterruptedException When the thread was interrupted.
+     * @throws UncheckedInterruptedException If the thread was interrupted.
+     * @throws IllegalMonitorStateException If the current thread is not the owner of the object's monitor
      */
-    public void wait(Object semaphore)
+    @SuppressWarnings({ "squid:S2273" })
+    public void waitUntil(BooleanSupplier state, Object semaphore)
     {
         try
         {
-            semaphore.wait();
+            while (!state.getAsBoolean())
+            {
+                semaphore.wait();
+            }
         }
         catch (@SuppressWarnings("squid:S2142") InterruptedException e)
         {
