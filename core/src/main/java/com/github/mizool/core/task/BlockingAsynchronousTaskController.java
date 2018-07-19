@@ -17,13 +17,13 @@
 package com.github.mizool.core.task;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.concurrent.ListenableFutureCollector;
 import com.github.mizool.core.concurrent.Threads;
-import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
 
@@ -73,15 +73,17 @@ public class BlockingAsynchronousTaskController
     {
         synchronized (semaphore)
         {
-            while (runningTasks.intValue() >= taskLimit)
-            {
-                Threads.wait(semaphore);
-            }
+            Threads.waitUntil(capacityAvailable(), semaphore);
             runningTasks.incrementAndGet();
 
             ListenableFuture<?> future = task.get();
 
             future.addListener(completionListener, MoreExecutors.directExecutor());
         }
+    }
+
+    private BooleanSupplier capacityAvailable()
+    {
+        return () -> runningTasks.intValue() < taskLimit;
     }
 }

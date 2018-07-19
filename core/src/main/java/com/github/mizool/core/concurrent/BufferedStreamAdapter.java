@@ -22,6 +22,7 @@ import java.util.Spliterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -124,16 +125,13 @@ public class BufferedStreamAdapter<V>
             {
                 runningFutures.incrementAndGet();
                 Futures.addCallback(future, new Callback());
-                waitWhileBufferSizeReached();
+                Threads.waitUntil(capacityAvailable(), semaphore);
             }
         }
 
-        private void waitWhileBufferSizeReached()
+        private BooleanSupplier capacityAvailable()
         {
-            while (runningFutures.get() + results.size() >= bufferSize)
-            {
-                Threads.wait(semaphore);
-            }
+            return () -> runningFutures.get() + results.size() < bufferSize;
         }
     }
 
@@ -145,9 +143,9 @@ public class BufferedStreamAdapter<V>
             ValueHolder<V> valueHolder = null;
             synchronized (semaphore)
             {
-                waitForResultOrCompletion();
+                Threads.waitUntil(resultOrCompletion(), semaphore);
 
-                if (!results.isEmpty())
+                if (resultsAvailable())
                 {
                     valueHolder = results.remove();
                     semaphore.notifyAll();
@@ -164,17 +162,19 @@ public class BufferedStreamAdapter<V>
             return valueEmitted;
         }
 
-        private void waitForResultOrCompletion()
+        private BooleanSupplier resultOrCompletion()
         {
-            while (results.isEmpty() && hasUpcomingFutures())
-            {
-                Threads.wait(semaphore);
-            }
+            return () -> resultsAvailable() || completed();
         }
 
-        private boolean hasUpcomingFutures()
+        private boolean resultsAvailable()
         {
-            return !streamDepleted.get() || runningFutures.get() > 0;
+            return !results.isEmpty();
+        }
+
+        private boolean completed()
+        {
+            return streamDepleted.get() && runningFutures.get() == 0;
         }
 
         @Override
