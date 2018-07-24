@@ -18,6 +18,7 @@ package com.github.mizool.core.converter;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 import lombok.experimental.UtilityClass;
@@ -25,14 +26,18 @@ import lombok.experimental.UtilityClass;
 import com.github.mizool.core.GuavaCollectors;
 
 @UtilityClass
-public class DtoConverters
+public class Converters
 {
     public <D, P> List<D> fromPojos(List<P> pojos, Function<P, D> converter)
     {
-        List<D> dtos = null;
+        List<D> dtos;
         if (pojos != null)
         {
             dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableList());
+        }
+        else
+        {
+            dtos = Collections.emptyList();
         }
         return dtos;
     }
@@ -47,6 +52,34 @@ public class DtoConverters
         else
         {
             pojos = Collections.emptyList();
+        }
+        return pojos;
+    }
+
+    public <D, P> Set<D> fromPojos(Set<P> pojos, Function<P, D> converter)
+    {
+        Set<D> dtos;
+        if (pojos != null)
+        {
+            dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
+        }
+        else
+        {
+            dtos = Collections.emptySet();
+        }
+        return dtos;
+    }
+
+    public <D, P> Set<P> toPojos(Set<D> dtos, Function<D, P> converter)
+    {
+        Set<P> pojos;
+        if (dtos != null)
+        {
+            pojos = dtos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
+        }
+        else
+        {
+            pojos = Collections.emptySet();
         }
         return pojos;
     }
