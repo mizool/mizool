@@ -70,6 +70,7 @@
 
     <modules>
         <module>core</module>
+        <module>bom</module>
         <module>technology</module>
     </modules>
 
