@@ -30,14 +30,10 @@ public class Converters
 {
     public <D, P> List<D> fromPojos(List<P> pojos, Function<P, D> converter)
     {
-        List<D> dtos;
-        if (pojos != null)
+        List<D> dtos = null;
+        if (pojos != null && !pojos.isEmpty())
         {
             dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableList());
-        }
-        else
-        {
-            dtos = Collections.emptyList();
         }
         return dtos;
     }
@@ -58,15 +54,12 @@ public class Converters
 
     public <D, P> Set<D> fromPojos(Set<P> pojos, Function<P, D> converter)
     {
-        Set<D> dtos;
-        if (pojos != null)
+        Set<D> dtos = null;
+        if (pojos != null && !pojos.isEmpty())
         {
             dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
         }
-        else
-        {
-            dtos = Collections.emptySet();
-        }
+
         return dtos;
     }
 
