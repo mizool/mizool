@@ -13,10 +13,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>jackson</module>
         <module>aws</module>
         <module>cache</module>
         <module>cassandra</module>
+        <module>jackson</module>
         <module>web</module>
     </modules>
 </project>
