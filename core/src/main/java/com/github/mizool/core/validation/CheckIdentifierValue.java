@@ -34,12 +34,7 @@ public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return isNullButOptional(validationObject) || isValidValue(validationObject);
-    }
-
-    private boolean isNullButOptional(Object validationObject)
-    {
-        return validationObject == null && !mandatory;
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
     private boolean isValidValue(Object validationObject)

@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018 incub8 Software Labs GmbH
+ * Copyright 2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,19 @@
  */
 package com.github.mizool.core.validation;
 
+import java.util.TimeZone;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckNotEmpty implements ConstraintValidator<NotEmpty, String>
+public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, String>
 {
     private boolean mandatory;
 
     @Override
-    public void initialize(NotEmpty notEmpty)
+    public void initialize(TimeZoneValue timeZoneValue)
     {
-        mandatory = notEmpty.mandatory();
+        mandatory = timeZoneValue.mandatory();
     }
 
     @Override
@@ -37,6 +39,12 @@ public class CheckNotEmpty implements ConstraintValidator<NotEmpty, String>
 
     private boolean isValidValue(String validationObject)
     {
-        return !validationObject.isEmpty();
+        boolean valid = false;
+        if (!validationObject.isEmpty())
+        {
+            TimeZone timeZone = TimeZone.getTimeZone(validationObject);
+            valid = timeZone.getID().equals(validationObject);
+        }
+        return valid;
     }
 }

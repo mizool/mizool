@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018 incub8 Software Labs GmbH
+ * Copyright 2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,29 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.core.validation;
+package com.github.mizool.core.validation.jodatime;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckNotEmpty implements ConstraintValidator<NotEmpty, String>
+import org.joda.time.DateTime;
+
+import com.github.mizool.core.validation.ConstraintValidators;
+import com.google.common.annotations.VisibleForTesting;
+
+public class CheckPast implements ConstraintValidator<Past, DateTime>
 {
     private boolean mandatory;
 
     @Override
-    public void initialize(NotEmpty notEmpty)
+    public void initialize(Past past)
     {
-        mandatory = notEmpty.mandatory();
+        mandatory = past.mandatory();
     }
 
     @Override
-    public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(DateTime validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(DateTime validationObject)
     {
-        return !validationObject.isEmpty();
+        return validationObject.isBefore(now());
+    }
+
+    @VisibleForTesting
+    protected DateTime now()
+    {
+        return DateTime.now();
     }
 }

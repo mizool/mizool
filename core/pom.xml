@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>0.23</version>
+        <version>0.24</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,8 +38,17 @@
             <artifactId>javax.ws.rs-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>org.antlr</groupId>
             <artifactId>ST4</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.bval</groupId>
+            <artifactId>bval-jsr303</artifactId>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
@@ -60,6 +69,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>

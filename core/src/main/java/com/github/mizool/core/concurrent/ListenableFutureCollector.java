@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -29,7 +30,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
-import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -127,7 +127,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
             {
                 verifyNoPreviousException();
                 consumeFuture(future);
-                waitWhileCapacityReached();
+                Threads.waitUntil(capacityAvailable(), semaphore);
             }
         };
     }
@@ -146,12 +146,9 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
         Futures.addCallback(future, new Callback());
     }
 
-    private void waitWhileCapacityReached()
+    private BooleanSupplier capacityAvailable()
     {
-        while (runningFutures.get() >= maximumConcurrentFutures)
-        {
-            Threads.wait(semaphore);
-        }
+        return () -> runningFutures.get() < maximumConcurrentFutures;
     }
 
     @Override

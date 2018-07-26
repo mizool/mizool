@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018 incub8 Software Labs GmbH
+ * Copyright 2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@ package com.github.mizool.core.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckNotEmpty implements ConstraintValidator<NotEmpty, String>
+public class CheckEmail implements ConstraintValidator<Email, String>
 {
     private boolean mandatory;
 
     @Override
-    public void initialize(NotEmpty notEmpty)
+    public void initialize(Email email)
     {
-        mandatory = notEmpty.mandatory();
+        mandatory = email.mandatory();
     }
 
     @Override
@@ -37,6 +37,6 @@ public class CheckNotEmpty implements ConstraintValidator<NotEmpty, String>
 
     private boolean isValidValue(String validationObject)
     {
-        return !validationObject.isEmpty();
+        return validationObject.matches(".+[@].+\\..+");
     }
 }
