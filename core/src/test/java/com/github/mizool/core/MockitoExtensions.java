@@ -20,7 +20,9 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.Arrays;
+
+import javax.enterprise.inject.Instance;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -48,8 +50,15 @@ public final class MockitoExtensions
         return nullable(Optional.class);
     }
 
-    public static <T> void mockIterable(Iterable<T> mockedIterable, List<T> values)
+    public static <T> Instance<T> mockInstance(Iterable<T> values)
     {
-        when(mockedIterable.iterator()).then(invocation -> values.iterator());
+        Instance<T> mockedInstance = mock(Instance.class);
+        when(mockedInstance.iterator()).then(invocation -> values.iterator());
+        return mockedInstance;
+    }
+
+    public static <T> Instance<T> mockInstance(T... values)
+    {
+        return mockInstance(Arrays.asList(values));
     }
 }
