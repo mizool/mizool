@@ -31,7 +31,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 @Slf4j
-class ErrorMapper
+@VisibleForTesting
+public class ErrorMapper
 {
     @VisibleForTesting
     public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
