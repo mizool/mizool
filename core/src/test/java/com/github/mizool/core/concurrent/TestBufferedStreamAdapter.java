@@ -29,7 +29,9 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.github.mizool.core.exception.StoreLayerException;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class TestBufferedStreamAdapter
 {
@@ -159,5 +161,15 @@ public class TestBufferedStreamAdapter
             { "dual buffer slow futures delay subsequent", 2, new long[]{ FAST, SLOW, SLOW, FAST }, 900, 1, 3 },
             { "big buffer slow futures are bypassed", 8, new long[]{ FAST, SLOW, SLOW, FAST }, 900, 2, 2 }
         };
+    }
+
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, expectedExceptions = UncheckedExecutionException.class)
+    public void testTransportsExceptionInStream()
+    {
+        Stream<ListenableFuture<Void>> stream = Stream.generate(() -> {
+            throw new StoreLayerException("some test exception");
+        });
+        BufferedStreamAdapter.adapt(stream, 2, executorService).forEach(ignored -> {
+        });
     }
 }
