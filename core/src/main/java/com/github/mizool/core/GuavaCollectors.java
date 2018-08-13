@@ -95,49 +95,57 @@ public final class GuavaCollectors
         }
     }
 
-    public static <T> Collector<T, ImmutableList.Builder<T>, ImmutableList<T>> toImmutableList()
+    /**
+     * @deprecated Use {@link ImmutableList#toImmutableList()} instead.
+     */
+    @Deprecated
+    public static <T> Collector<T, ?, ImmutableList<T>> toImmutableList()
     {
-        return new CollectorImpl<>(
-            ImmutableList::builder,
-            ImmutableList.Builder::add,
-            (thisBuilder, otherBuilder) -> thisBuilder.addAll(otherBuilder.build()),
-            ImmutableList.Builder::build);
+        return ImmutableList.toImmutableList();
     }
 
-    public static <T> Collector<T, ImmutableSet.Builder<T>, ImmutableSet<T>> toImmutableSet()
+    /**
+     * @deprecated Use {@link ImmutableSet#toImmutableSet()} instead.
+     */
+    @Deprecated
+    public static <T> Collector<T, ?, ImmutableSet<T>> toImmutableSet()
     {
-        return new CollectorImpl<>(
-            ImmutableSet::builder,
-            ImmutableSet.Builder::add,
-            (thisBuilder, otherBuilder) -> thisBuilder.addAll(otherBuilder.build()),
-            ImmutableSet.Builder::build);
+        return ImmutableSet.toImmutableSet();
     }
 
-    public static <T, K, U> Collector<T, ImmutableMap.Builder<K, U>, ImmutableMap<K, U>> toImmutableMap(
+    /**
+     * @deprecated Use {@link ImmutableMap#toImmutableMap(Function, Function)} instead.
+     */
+    @Deprecated
+    public static <T, K, U> Collector<T, ?, ImmutableMap<K, U>> toImmutableMap(
         Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends U> valueMapper)
     {
-        return new CollectorImpl<>(
-            ImmutableMap::builder,
-            (builder, element) -> builder.put(keyMapper.apply(element), valueMapper.apply(element)),
-            (thisBuilder, otherBuilder) -> thisBuilder.putAll(otherBuilder.build()),
-            ImmutableMap.Builder::build);
+        return ImmutableMap.toImmutableMap(keyMapper, valueMapper);
     }
 
+    /**
+     * @deprecated Use {@link ImmutableListMultimap#toImmutableListMultimap(Function, Function)} instead. This will
+     * require some refactoring as it expects the value mapper to map one value instead of a list.
+     */
+    @Deprecated
     public static <T, K, U> Collector<T, ImmutableListMultimap.Builder<K, U>, ImmutableListMultimap<K, U>> toImmutableListMultimap(
         Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends List<U>> valueMapper)
     {
-        return new CollectorImpl<>(
-            ImmutableListMultimap::builder,
+        return new CollectorImpl<>(ImmutableListMultimap::builder,
             (builder, element) -> builder.putAll(keyMapper.apply(element), valueMapper.apply(element)),
             (thisBuilder, otherBuilder) -> thisBuilder.putAll(otherBuilder.build()),
             ImmutableListMultimap.Builder::build);
     }
 
+    /**
+     * @deprecated Use {@link ImmutableSetMultimap#toImmutableSetMultimap(Function, Function)} instead. This will
+     * require some refactoring as it expects the value mapper to map one value instead of a list.
+     */
+    @Deprecated
     public static <T, K, U> Collector<T, ImmutableSetMultimap.Builder<K, U>, ImmutableSetMultimap<K, U>> toImmutableSetMultimap(
         Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends Set<U>> valueMapper)
     {
-        return new CollectorImpl<>(
-            ImmutableSetMultimap::builder,
+        return new CollectorImpl<>(ImmutableSetMultimap::builder,
             (builder, element) -> builder.putAll(keyMapper.apply(element), valueMapper.apply(element)),
             (thisBuilder, otherBuilder) -> thisBuilder.putAll(otherBuilder.build()),
             ImmutableSetMultimap.Builder::build);

@@ -33,7 +33,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.UtilityClass;
 
-import com.github.mizool.core.GuavaCollectors;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -108,7 +108,7 @@ class ConcurrentTests
 
         public void assertContainsExpectedResults(Stream<Object> actual)
         {
-            List<Object> results = actual.collect(GuavaCollectors.toImmutableList());
+            List<Object> results = actual.collect(ImmutableList.toImmutableList());
             assertThat(results).containsOnlyElementsOf(getExpectedResults());
         }
 
