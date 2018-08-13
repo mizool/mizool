@@ -23,7 +23,8 @@ import java.util.function.Function;
 
 import lombok.experimental.UtilityClass;
 
-import com.github.mizool.core.GuavaCollectors;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 @UtilityClass
 public class Converters
@@ -33,7 +34,7 @@ public class Converters
         List<D> dtos = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableList());
+            dtos = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
         }
         return dtos;
     }
@@ -43,7 +44,7 @@ public class Converters
         List<P> pojos;
         if (dtos != null)
         {
-            pojos = dtos.stream().map(converter).collect(GuavaCollectors.toImmutableList());
+            pojos = dtos.stream().map(converter).collect(ImmutableList.toImmutableList());
         }
         else
         {
@@ -57,7 +58,7 @@ public class Converters
         Set<D> dtos = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
+            dtos = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
         }
 
         return dtos;
@@ -68,7 +69,7 @@ public class Converters
         Set<P> pojos;
         if (dtos != null)
         {
-            pojos = dtos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
+            pojos = dtos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
         }
         else
         {
