@@ -22,6 +22,8 @@ import lombok.experimental.Delegate;
 
 import com.github.mizool.technology.jcache.common.CacheMethodsUsedByReferenceImplementation;
 
+@SuppressWarnings("overrides")
+    //needed because of lombok @Delegate with varargs methods
 class NoOpCache<K, V> implements Cache<K, V>
 {
     @Delegate(excludes = { CacheMethodsUsedByReferenceImplementation.class })
@@ -36,6 +38,7 @@ class NoOpCache<K, V> implements Cache<K, V>
     @Override
     public void put(K key, V value)
     {
+        // No-op
     }
 
     @Override
@@ -47,5 +50,6 @@ class NoOpCache<K, V> implements Cache<K, V>
     @Override
     public void removeAll()
     {
+        // No-op
     }
 }
