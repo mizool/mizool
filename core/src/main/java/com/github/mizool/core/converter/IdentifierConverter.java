@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018 incub8 Software Labs GmbH
+ * Copyright 2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,23 @@ public class IdentifierConverter
 {
     public String fromPojo(Identifier<?> pojo)
     {
-        String record = null;
+        String result = null;
 
         if (pojo != null)
         {
-            record = pojo.getValue();
+            result = pojo.getValue();
         }
 
-        return record;
+        return result;
     }
 
-    public <T extends Identifiable<T>> Identifier<T> toPojo(String record, Class<T> pojoClass)
+    public <T extends Identifiable<T>> Identifier<T> toPojo(String value, Class<T> pojoClass)
     {
         Identifier<T> pojo = null;
 
-        if (record != null)
+        if (value != null)
         {
-            pojo = Identifier.forPojo(pojoClass).of(record);
+            pojo = Identifier.forPojo(pojoClass).of(value);
         }
 
         return pojo;
