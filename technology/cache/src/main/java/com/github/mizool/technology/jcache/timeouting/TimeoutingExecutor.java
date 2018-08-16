@@ -34,7 +34,7 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
 public class TimeoutingExecutor
 {
     private static final String TIMEOUT_PROPERTY_NAME = "cache.timeout";
-    private static final String DEFAULT_CACHE_TIMEOUT = "250";
+    private static final String DEFAULT_CACHE_TIMEOUT = "10000";
     private static final long CACHE_TIMEOUT = Long.parseLong(System.getProperty(TIMEOUT_PROPERTY_NAME,
         DEFAULT_CACHE_TIMEOUT));
 

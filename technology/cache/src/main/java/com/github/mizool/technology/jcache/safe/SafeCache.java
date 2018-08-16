@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.technology.jcache.common.CacheMethodsUsedByReferenceImplementation;
 
+@SuppressWarnings("overrides") //needed because of lombok @Delegate with varargs methods
 @Slf4j
 @RequiredArgsConstructor
 class SafeCache<K, V> implements Cache<K, V>
