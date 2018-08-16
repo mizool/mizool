@@ -16,28 +16,32 @@
  */
 package com.github.mizool.core.converter;
 
-import lombok.NonNull;
+import com.github.mizool.core.Identifiable;
+import com.github.mizool.core.Identifier;
 
-public class EnumConverter
+public class IdentifierConverter
 {
-    public String fromPojo(Enum<?> enumValue)
+    public String fromPojo(Identifier<?> pojo)
     {
         String result = null;
 
-        if (enumValue != null)
+        if (pojo != null)
         {
-            result = enumValue.name();
+            result = pojo.getValue();
         }
+
         return result;
     }
 
-    public <T extends Enum<T>> T toPojo(@NonNull Class<T> enumClass, String value)
+    public <T extends Identifiable<T>> Identifier<T> toPojo(String value, Class<T> pojoClass)
     {
-        T result = null;
+        Identifier<T> pojo = null;
+
         if (value != null)
         {
-            result = Enum.valueOf(enumClass, value);
+            pojo = Identifier.forPojo(pojoClass).of(value);
         }
-        return result;
+
+        return pojo;
     }
 }
