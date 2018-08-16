@@ -24,15 +24,18 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.MethodNotAllowedException;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 @Slf4j
-class ErrorMapper
+@VisibleForTesting
+public class ErrorMapper
 {
-    private static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
+    @VisibleForTesting
+    public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
 
     public ErrorResponse handleWhitelistedException(Throwable t, WhiteListEntry whiteListEntry)
     {

@@ -216,7 +216,18 @@ public class BufferedStreamAdapter<V>
     private Stream<V> adapt()
     {
         executorService.submit(() -> {
-            futures.forEach(new BlockingConsumer());
+            try
+            {
+                futures.forEach(new BlockingConsumer());
+            }
+            catch (RuntimeException e)
+            {
+                synchronized (semaphore)
+                {
+                    results.add(new ValueHolder<>(e));
+                    semaphore.notifyAll();
+                }
+            }
             synchronized (semaphore)
             {
                 streamDepleted.set(true);
