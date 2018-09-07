@@ -5,6 +5,7 @@ import java.util.concurrent.Future;
 
 import lombok.experimental.UtilityClass;
 
+import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 @UtilityClass
@@ -18,8 +19,8 @@ public class Futures
         }
         catch (@SuppressWarnings("squid:S2142") InterruptedException e)
         {
-            Threads.rethrowInterrupt(e);
-            return null; //this will never happen as rethrowInterrupt always throws an unchecked exception
+            Thread.currentThread().interrupt();
+            throw new UncheckedInterruptedException(e);
         }
         catch (ExecutionException e)
         {
