@@ -23,6 +23,7 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.RuleViolationException;
+import com.github.mizool.core.exception.ServiceUnavailableException;
 import com.google.common.base.Optional;
 
 @Slf4j
@@ -75,6 +76,10 @@ public class ErrorHandler
             else if (isAssignable(RuleViolationException.class, cursor))
             {
                 result = ruleViolationMapper.handleRuleViolationError((RuleViolationException) cursor);
+            }
+            else if (isAssignable(ServiceUnavailableException.class, cursor))
+            {
+                result = errorMapper.handleServiceUnavailableError((ServiceUnavailableException) cursor);
             }
             else if (isAssignable(ClientErrorException.class, cursor))
             {
