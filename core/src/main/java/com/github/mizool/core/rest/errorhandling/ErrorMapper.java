@@ -24,6 +24,7 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.MethodNotAllowedException;
+import com.github.mizool.core.exception.ServiceUnavailableException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.HashMultimap;
@@ -74,6 +75,16 @@ public class ErrorMapper
                 errorClass = defaultErrorClass;
         }
         return errorClass;
+    }
+
+    public ErrorResponse handleServiceUnavailableError(ServiceUnavailableException serviceUnavailableException)
+    {
+        log.error("Service unavailable error", serviceUnavailableException);
+        Map<String, String> parameters = createExceptionParameters(serviceUnavailableException);
+
+        ErrorDto error = ErrorDto.createGenericError(parameters);
+        ErrorMessageDto errorMessage = createErrorMessageDto(error);
+        return new ErrorResponse(HttpServletResponse.SC_SERVICE_UNAVAILABLE, errorMessage);
     }
 
     public ErrorResponse handleUndefinedError(Throwable throwable)
