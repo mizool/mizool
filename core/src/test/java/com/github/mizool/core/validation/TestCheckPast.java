@@ -14,18 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.core.validation.jodatime;
+package com.github.mizool.core.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.joda.time.DateTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class TestCheckPast
 {
-    private static final DateTime NOW = new DateTime(2016, 1, 1, 0, 0);
+    private static final ZonedDateTime NOW = ZonedDateTime.parse("2016-01-01T00:00:00Z[UTC]");
 
     private CheckPast checkPast;
 
@@ -35,7 +37,7 @@ public class TestCheckPast
         checkPast = new CheckPast()
         {
             @Override
-            protected DateTime now()
+            protected ZonedDateTime now()
             {
                 return NOW;
             }
@@ -43,9 +45,9 @@ public class TestCheckPast
     }
 
     @Test(dataProvider = "dateTimeVariants")
-    public void testsPast(String name, DateTime dateTime, boolean expected)
+    public void testsPast(String name, ZonedDateTime zonedDateTime, boolean expected)
     {
-        boolean actual = checkPast.isValid(dateTime, null);
+        boolean actual = checkPast.isValid(zonedDateTime, null);
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -54,7 +56,9 @@ public class TestCheckPast
     public Object[][] dateTimeVariants()
     {
         return new Object[][]{
-            { "now", NOW, false }, { "future", NOW.plus(1), false }, { "past", NOW.minus(1), true }
+            { "now", NOW, false },
+            { "future", NOW.plus(1, ChronoUnit.MILLIS), false },
+            { "past", NOW.minus(1, ChronoUnit.MILLIS), true }
         };
     }
 }
