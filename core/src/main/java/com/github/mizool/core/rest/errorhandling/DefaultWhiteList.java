@@ -30,7 +30,6 @@ import com.github.mizool.core.exception.LockedEntityException;
 import com.github.mizool.core.exception.MethodNotAllowedException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.PermissionDeniedException;
-import com.github.mizool.core.exception.ServiceUnavailableException;
 import com.github.mizool.core.exception.UnprocessableEntityException;
 import com.github.mizool.core.exception.UnsupportedHttpFeatureException;
 import com.google.common.collect.ImmutableSet;

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeoutException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
@@ -39,7 +40,7 @@ public class ResultVoidingFuture implements ListenableFuture<Void>
 
     public <T> ResultVoidingFuture(ListenableFuture<T> target)
     {
-        Futures.addCallback(target, new Callback<>());
+        Futures.addCallback(target, new Callback<>(), MoreExecutors.directExecutor());
     }
 
     /*

@@ -29,6 +29,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 public class TimeoutingExecutor
@@ -58,7 +59,7 @@ public class TimeoutingExecutor
         }
         catch (ExecutionException e)
         {
-            throw new RuntimeException(e);
+            throw new UncheckedExecutionException(e);
         }
     }
 
@@ -79,7 +80,7 @@ public class TimeoutingExecutor
         }
         catch (ExecutionException e)
         {
-            throw new RuntimeException(e);
+            throw new UncheckedExecutionException(e);
         }
     }
 }
