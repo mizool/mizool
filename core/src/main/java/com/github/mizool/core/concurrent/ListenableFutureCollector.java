@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
@@ -143,7 +144,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     private void consumeFuture(ListenableFuture<Void> future)
     {
         runningFutures.incrementAndGet();
-        Futures.addCallback(future, new Callback());
+        Futures.addCallback(future, new Callback(), MoreExecutors.directExecutor());
     }
 
     private BooleanSupplier capacityAvailable()

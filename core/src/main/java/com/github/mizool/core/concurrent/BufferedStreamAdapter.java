@@ -33,6 +33,7 @@ import lombok.NoArgsConstructor;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
@@ -51,7 +52,7 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * Stream<ListenableFuture<V>> futureStream;
  * Stream<V> resultStream = BufferedStreamAdapter.adapt(futureStream, bufferSize, executorService);}</pre>
  */
-public class BufferedStreamAdapter<V>
+public final class BufferedStreamAdapter<V>
 {
     public static <V> Stream<V> adapt(
         Stream<ListenableFuture<V>> futures, int bufferSize, ExecutorService executorService)
@@ -124,7 +125,7 @@ public class BufferedStreamAdapter<V>
             synchronized (semaphore)
             {
                 runningFutures.incrementAndGet();
-                Futures.addCallback(future, new Callback());
+                Futures.addCallback(future, new Callback(), MoreExecutors.directExecutor());
                 Threads.waitUntil(capacityAvailable(), semaphore);
             }
         }
