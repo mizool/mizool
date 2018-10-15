@@ -16,16 +16,29 @@
  */
 package com.github.mizool.core.validation;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
 import com.google.common.annotations.VisibleForTesting;
 
+@VisibleForTesting
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class CheckPast implements ConstraintValidator<Past, ZonedDateTime>
 {
+    private final Clock clock;
+
     private boolean mandatory;
+
+    public CheckPast()
+    {
+        clock = Clock.systemDefaultZone();
+    }
 
     @Override
     public void initialize(Past past)
@@ -41,12 +54,6 @@ public class CheckPast implements ConstraintValidator<Past, ZonedDateTime>
 
     private boolean isValidValue(ZonedDateTime validationObject)
     {
-        return validationObject.isBefore(now());
-    }
-
-    @VisibleForTesting
-    protected ZonedDateTime now()
-    {
-        return ZonedDateTime.now();
+        return validationObject.isBefore(ZonedDateTime.now(clock));
     }
 }
