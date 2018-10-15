@@ -18,6 +18,7 @@ package com.github.mizool.core.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -34,14 +35,7 @@ public class TestCheckPast
     @BeforeMethod
     public void setUp()
     {
-        checkPast = new CheckPast()
-        {
-            @Override
-            protected ZonedDateTime now()
-            {
-                return NOW;
-            }
-        };
+        checkPast = new CheckPast(Clock.fixed(NOW.toInstant(), NOW.getZone()));
     }
 
     @Test(dataProvider = "dateTimeVariants")
