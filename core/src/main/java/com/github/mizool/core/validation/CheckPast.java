@@ -14,19 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.core.validation.jodatime;
+package com.github.mizool.core.validation;
+
+import java.time.Clock;
+import java.time.ZonedDateTime;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-import org.joda.time.DateTime;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 
-import com.github.mizool.core.validation.ConstraintValidators;
 import com.google.common.annotations.VisibleForTesting;
 
-public class CheckPast implements ConstraintValidator<Past, DateTime>
+@VisibleForTesting
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public class CheckPast implements ConstraintValidator<Past, ZonedDateTime>
 {
+    private final Clock clock;
+
     private boolean mandatory;
+
+    public CheckPast()
+    {
+        clock = Clock.systemDefaultZone();
+    }
 
     @Override
     public void initialize(Past past)
@@ -35,19 +47,13 @@ public class CheckPast implements ConstraintValidator<Past, DateTime>
     }
 
     @Override
-    public boolean isValid(DateTime validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(ZonedDateTime validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(DateTime validationObject)
+    private boolean isValidValue(ZonedDateTime validationObject)
     {
-        return validationObject.isBefore(now());
-    }
-
-    @VisibleForTesting
-    protected DateTime now()
-    {
-        return DateTime.now();
+        return validationObject.isBefore(ZonedDateTime.now(clock));
     }
 }

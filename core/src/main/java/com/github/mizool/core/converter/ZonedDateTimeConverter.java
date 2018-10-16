@@ -18,6 +18,7 @@ package com.github.mizool.core.converter;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -32,7 +33,7 @@ public class ZonedDateTimeConverter
         ZonedDateTime result = null;
         if (!Strings.isNullOrEmpty(value))
         {
-            result = ZonedDateTime.from(FORMATTER.parse(value));
+            result = ZonedDateTime.parse(value, FORMATTER);
         }
         return result;
     }
@@ -49,11 +50,16 @@ public class ZonedDateTimeConverter
 
     public ZonedDateTime fromInstant(Instant value)
     {
+        return fromInstant(value, ZoneOffset.UTC);
+    }
+
+    public ZonedDateTime fromInstant(Instant value, ZoneId zoneId)
+    {
         ZonedDateTime result = null;
 
         if (value != null)
         {
-            result = ZonedDateTime.ofInstant(value, ZoneId.of("UTC"));
+            result = value.atZone(zoneId);
         }
         return result;
     }
@@ -64,7 +70,7 @@ public class ZonedDateTimeConverter
 
         if (value != null)
         {
-            result = Instant.from(value);
+            result = value.toInstant();
         }
         return result;
     }
