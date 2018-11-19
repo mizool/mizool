@@ -23,27 +23,28 @@ import java.util.function.Function;
 
 import lombok.experimental.UtilityClass;
 
-import com.github.mizool.core.GuavaCollectors;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 @UtilityClass
 public class Converters
 {
     public <D, P> List<D> fromPojos(List<P> pojos, Function<P, D> converter)
     {
-        List<D> dtos = null;
+        List<D> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableList());
+            results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
         }
-        return dtos;
+        return results;
     }
 
-    public <D, P> List<P> toPojos(List<D> dtos, Function<D, P> converter)
+    public <D, P> List<P> toPojos(List<D> values, Function<D, P> converter)
     {
         List<P> pojos;
-        if (dtos != null)
+        if (values != null)
         {
-            pojos = dtos.stream().map(converter).collect(GuavaCollectors.toImmutableList());
+            pojos = values.stream().map(converter).collect(ImmutableList.toImmutableList());
         }
         else
         {
@@ -54,21 +55,21 @@ public class Converters
 
     public <D, P> Set<D> fromPojos(Set<P> pojos, Function<P, D> converter)
     {
-        Set<D> dtos = null;
+        Set<D> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            dtos = pojos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
+            results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
         }
 
-        return dtos;
+        return results;
     }
 
-    public <D, P> Set<P> toPojos(Set<D> dtos, Function<D, P> converter)
+    public <D, P> Set<P> toPojos(Set<D> values, Function<D, P> converter)
     {
         Set<P> pojos;
-        if (dtos != null)
+        if (values != null)
         {
-            pojos = dtos.stream().map(converter).collect(GuavaCollectors.toImmutableSet());
+            pojos = values.stream().map(converter).collect(ImmutableSet.toImmutableSet());
         }
         else
         {

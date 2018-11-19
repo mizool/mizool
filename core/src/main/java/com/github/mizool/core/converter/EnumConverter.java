@@ -31,12 +31,12 @@ public class EnumConverter
         return result;
     }
 
-    public <T extends Enum<T>> T toPojo(@NonNull Class<T> enumClass, String enumValue)
+    public <T extends Enum<T>> T toPojo(@NonNull Class<T> enumClass, String value)
     {
         T result = null;
-        if (enumValue != null)
+        if (value != null)
         {
-            result = Enum.valueOf(enumClass, enumValue);
+            result = Enum.valueOf(enumClass, value);
         }
         return result;
     }

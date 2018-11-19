@@ -16,8 +16,11 @@
  */
 package com.github.mizool.core.rest.errorhandling;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class HttpStatus
 {
-    public static final int UNPROCESSABLE_ENTITY = 422;
-    public static final int LOCKED = 423;
+    public final int UNPROCESSABLE_ENTITY = 422;
+    public final int LOCKED = 423;
 }

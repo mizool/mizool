@@ -29,12 +29,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 public class TimeoutingExecutor
 {
     private static final String TIMEOUT_PROPERTY_NAME = "cache.timeout";
-    private static final String DEFAULT_CACHE_TIMEOUT = "250";
+    private static final String DEFAULT_CACHE_TIMEOUT = "10000";
     private static final long CACHE_TIMEOUT = Long.parseLong(System.getProperty(TIMEOUT_PROPERTY_NAME,
         DEFAULT_CACHE_TIMEOUT));
 
@@ -58,7 +59,7 @@ public class TimeoutingExecutor
         }
         catch (ExecutionException e)
         {
-            throw new RuntimeException(e);
+            throw new UncheckedExecutionException(e);
         }
     }
 
@@ -79,7 +80,7 @@ public class TimeoutingExecutor
         }
         catch (ExecutionException e)
         {
-            throw new RuntimeException(e);
+            throw new UncheckedExecutionException(e);
         }
     }
 }

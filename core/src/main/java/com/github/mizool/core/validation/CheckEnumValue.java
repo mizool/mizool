@@ -39,14 +39,15 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
 
     private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
+        boolean valid;
         try
         {
             Enum.valueOf(enumeration, validationObject);
             valid = true;
         }
-        catch (Exception ignored)
+        catch (@SuppressWarnings("squid:S1166") IllegalArgumentException | NullPointerException ignored)
         {
+            valid = false;
         }
         return valid;
     }

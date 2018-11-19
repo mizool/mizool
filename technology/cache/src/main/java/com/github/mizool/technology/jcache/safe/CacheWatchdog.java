@@ -18,7 +18,6 @@ package com.github.mizool.technology.jcache.safe;
 
 import javax.cache.CacheManager;
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +29,7 @@ class CacheWatchdog
 {
     private static final String CACHE_RETRY_PERIOD_PROPERTY_NAME = "cache.retryPeriod";
     private static final long CACHE_RETRY_PERIOD = Long.parseLong(System.getProperty(CACHE_RETRY_PERIOD_PROPERTY_NAME,
-        Long.toString(300000)));
+        Long.toString(30000)));
 
     private final CacheWatchdogState cacheWatchdogState;
 

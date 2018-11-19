@@ -44,6 +44,13 @@ class ClusterProducer
         CASSANDRA_MAX_REQUESTS_PER_CONNECTION_REMOTE_PROPERTY_NAME
         = "cassandra.maxRequestsPerConnection.remote";
     private static final String CASSANDRA_SOCKET_OPTIONS_READ_TIMEOUT_PROPERTY_NAME = "cassandra.readTimeoutMillis";
+    private static final String
+        CASSANDRA_MAX_CONNECTIONS_PER_HOST_LOCAL_PROPERTY_NAME
+        = "cassandra.maxConnectionsPerHost.local";
+    private static final String
+        CASSANDRA_MAX_CONNECTIONS_PER_HOST_REMOTE_PROPERTY_NAME
+        = "cassandra.maxConnectionsPerHost.remote";
+    private static final String CASSANDRA_QUEUE_SIZE_PROPERTY_NAME = "cassandra.queueSize";
 
     @Produces
     @Singleton
@@ -99,6 +106,26 @@ class ClusterProducer
         {
             poolingOptions.setMaxRequestsPerConnection(HostDistance.REMOTE,
                 Integer.parseInt(maxRequestsPerConnectionRemote));
+        }
+
+        String maxConnectionsPerHostLocal = System.getProperty(CASSANDRA_MAX_CONNECTIONS_PER_HOST_LOCAL_PROPERTY_NAME);
+        if (maxConnectionsPerHostLocal != null)
+        {
+            poolingOptions.setMaxConnectionsPerHost(HostDistance.LOCAL, Integer.parseInt(maxConnectionsPerHostLocal));
+        }
+
+        String
+            maxConnectionsPerHostRemote
+            = System.getProperty(CASSANDRA_MAX_CONNECTIONS_PER_HOST_REMOTE_PROPERTY_NAME);
+        if (maxConnectionsPerHostRemote != null)
+        {
+            poolingOptions.setMaxConnectionsPerHost(HostDistance.REMOTE, Integer.parseInt(maxConnectionsPerHostRemote));
+        }
+
+        String queueSize = System.getProperty(CASSANDRA_QUEUE_SIZE_PROPERTY_NAME);
+        if (queueSize != null)
+        {
+            poolingOptions.setMaxQueueSize(Integer.parseInt(queueSize));
         }
 
         return poolingOptions;

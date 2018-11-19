@@ -27,35 +27,35 @@ public class JavaUtilDateConverter
 {
     public Date fromZonedDateTime(ZonedDateTime pojo)
     {
-        Date record = null;
+        Date result = null;
 
         if (pojo != null)
         {
-            record = Date.from(Instant.from(pojo));
+            result = Date.from(Instant.from(pojo));
         }
-        return record;
+        return result;
     }
 
-    public ZonedDateTime toZonedDateTime(Date record)
+    public ZonedDateTime toZonedDateTime(Date value)
     {
         ZonedDateTime pojo = null;
 
-        if (record != null)
+        if (value != null)
         {
-            pojo = ZonedDateTime.ofInstant(record.toInstant(), ZoneOffset.UTC);
+            pojo = ZonedDateTime.ofInstant(value.toInstant(), ZoneOffset.UTC);
         }
         return pojo;
     }
 
     public Date fromLocalDate(LocalDate pojo)
     {
-        Date record = null;
+        Date result = null;
 
         if (pojo != null)
         {
-            record = Date.from(Instant.from(pojo.atStartOfDay(ZoneOffset.UTC)));
+            result = Date.from(Instant.from(pojo.atStartOfDay(ZoneOffset.UTC)));
         }
-        return record;
+        return result;
     }
 
     public LocalDate toLocalDate(Date record)

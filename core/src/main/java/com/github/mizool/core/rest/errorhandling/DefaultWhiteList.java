@@ -30,7 +30,6 @@ import com.github.mizool.core.exception.LockedEntityException;
 import com.github.mizool.core.exception.MethodNotAllowedException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.PermissionDeniedException;
-import com.github.mizool.core.exception.ServiceUnavailableException;
 import com.github.mizool.core.exception.UnprocessableEntityException;
 import com.github.mizool.core.exception.UnsupportedHttpFeatureException;
 import com.google.common.collect.ImmutableSet;
@@ -52,7 +51,6 @@ public class DefaultWhiteList implements WhiteList
             .add(new WhiteListEntry(PermissionDeniedException.class, HttpServletResponse.SC_FORBIDDEN))
             .add(new WhiteListEntry(UnsupportedHttpFeatureException.class, HttpServletResponse.SC_NOT_IMPLEMENTED))
             .add(new WhiteListEntry(LockedEntityException.class, HttpStatus.LOCKED))
-            .add(new WhiteListEntry(ServiceUnavailableException.class, HttpServletResponse.SC_SERVICE_UNAVAILABLE))
             .add(new WhiteListEntry(MethodNotAllowedException.class, HttpServletResponse.SC_METHOD_NOT_ALLOWED))
             .build();
     }
