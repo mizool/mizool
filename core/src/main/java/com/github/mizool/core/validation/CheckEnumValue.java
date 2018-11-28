@@ -16,10 +16,12 @@
  */
 package com.github.mizool.core.validation;
 
+import java.util.List;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
+public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
 {
     private Class enumeration;
     private boolean mandatory;
@@ -32,9 +34,22 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
     }
 
     @Override
-    public final boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public final boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+    }
+
+    private boolean isValidValue(Object validationObject)
+    {
+        if (validationObject instanceof String)
+        {
+            return isValidValue((String) validationObject);
+        }
+        else if (validationObject instanceof List)
+        {
+            return isValidValue((List) validationObject);
+        }
+        return false;
     }
 
     private boolean isValidValue(String validationObject)
@@ -48,6 +63,25 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
         catch (@SuppressWarnings("squid:S1166") IllegalArgumentException | NullPointerException ignored)
         {
             valid = false;
+        }
+        return valid;
+    }
+
+    private boolean isValidValue(List validationObject)
+    {
+        boolean valid = true;
+        for (Object value : validationObject)
+        {
+            try
+            {
+                Enum.valueOf(enumeration, (String) value);
+                valid = true;
+            }
+            catch (@SuppressWarnings("squid:S1166") IllegalArgumentException | NullPointerException ignored)
+            {
+                valid = false;
+                break;
+            }
         }
         return valid;
     }

@@ -16,7 +16,12 @@
  */
 package com.github.mizool.core.converter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import lombok.NonNull;
+
+import com.google.common.collect.ImmutableList;
 
 public class EnumConverter
 {
@@ -37,6 +42,28 @@ public class EnumConverter
         if (value != null)
         {
             result = Enum.valueOf(enumClass, value);
+        }
+        return result;
+    }
+
+    public List<String> fromPojos(List<Enum<?>> enumValues)
+    {
+        List<String> result = null;
+        if (enumValues != null && !enumValues.isEmpty())
+        {
+            result = enumValues.stream().map(this::fromPojo).collect(ImmutableList.toImmutableList());
+        }
+        return result;
+    }
+
+    public <T extends Enum<T>> List<T> toPojos(@NonNull Class<T> enumClass, List<String> values)
+    {
+        List<T> result = null;
+        if (values != null && !values.isEmpty())
+        {
+            result = values.stream()
+                .map(value -> this.toPojo(enumClass, value))
+                .collect(ImmutableList.toImmutableList());
         }
         return result;
     }

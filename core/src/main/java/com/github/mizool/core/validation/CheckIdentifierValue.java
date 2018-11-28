@@ -62,7 +62,7 @@ public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue
         {
             if (value instanceof String)
             {
-                valid = valid && !((String) value).isEmpty();
+                valid = !((String) value).isEmpty();
             }
             else
             {
