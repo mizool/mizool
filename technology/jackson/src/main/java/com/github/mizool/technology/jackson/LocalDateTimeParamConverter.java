@@ -16,33 +16,34 @@
  */
 package com.github.mizool.technology.jackson;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.ws.rs.ext.ParamConverter;
-import javax.ws.rs.ext.ParamConverterProvider;
-import javax.ws.rs.ext.Provider;
 
-@Provider
-public class LocalDateTimeParamConverterProvider implements ParamConverterProvider
+import com.google.common.base.Strings;
+
+class LocalDateTimeParamConverter implements ParamConverter<LocalDateTime>
 {
     @Override
-    public <T> ParamConverter<T> getConverter(Class<T> rawType, Type genericType, Annotation[] annotations)
+    public LocalDateTime fromString(String value)
     {
-        ParamConverter<T> result = null;
-
-        if (rawType.equals(LocalDateTime.class))
+        LocalDateTime result = null;
+        if (!Strings.isNullOrEmpty(value))
         {
-            result = getParamConverter();
+            result = LocalDateTime.from(DateTimeFormatter.ISO_LOCAL_DATE_TIME.parse(value));
         }
-
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> ParamConverter<T> getParamConverter()
+    @Override
+    public String toString(LocalDateTime value)
     {
-        return (ParamConverter<T>) new LocalDateTimeParamConverter();
+        String result = null;
+        if (value != null)
+        {
+            result = DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(value);
+        }
+        return result;
     }
 }

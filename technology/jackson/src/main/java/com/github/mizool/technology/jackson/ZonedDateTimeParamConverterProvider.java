@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2018 incub8 Software Labs GmbH
  * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
@@ -43,21 +43,15 @@ public class ZonedDateTimeParamConverterProvider implements ParamConverterProvid
 
         if (rawType.equals(ZonedDateTime.class))
         {
-            result = new ParamConverter<T>()
-            {
-                @Override
-                public T fromString(String value)
-                {
-                    return rawType.cast(zonedDateTimeConverter.fromString(value));
-                }
-
-                @Override
-                public String toString(T value)
-                {
-                    return zonedDateTimeConverter.toString((ZonedDateTime) value);
-                }
-            };
+            result = getParamConverter();
         }
+
         return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> ParamConverter<T> getParamConverter()
+    {
+        return (ParamConverter<T>) new ZonedDateTimeParamConverter(zonedDateTimeConverter);
     }
 }
