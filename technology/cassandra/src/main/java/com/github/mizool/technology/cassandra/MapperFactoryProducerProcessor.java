@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018 incub8 Software Labs GmbH
+ * Copyright 2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import javax.annotation.processing.Processor;
 import org.kohsuke.MetaInfServices;
 
 @MetaInfServices(value = Processor.class)
-public class MapperProducerProcessor extends AbstractTemplateBasedProcessor
+public class MapperFactoryProducerProcessor extends AbstractTemplateBasedProcessor
 {
-    public MapperProducerProcessor()
+    public MapperFactoryProducerProcessor()
     {
-        super(MapperProducer.class, "mapperProducerGenerator.stg");
+        super(MapperFactoryProducer.class, "mapperFactoryProducerGenerator.stg");
     }
 }
