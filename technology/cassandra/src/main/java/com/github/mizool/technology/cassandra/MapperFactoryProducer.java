@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018 incub8 Software Labs GmbH
+ * Copyright 2018 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
  */
 package com.github.mizool.technology.cassandra;
 
-import javax.annotation.processing.Processor;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.kohsuke.MetaInfServices;
-
-@MetaInfServices(value = Processor.class)
-public class MapperProducerProcessor extends AbstractTemplateBasedProcessor
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.CLASS)
+public @interface MapperFactoryProducer
 {
-    public MapperProducerProcessor()
-    {
-        super(MapperProducer.class, "mapperProducerGenerator.stg");
-    }
 }
