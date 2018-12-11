@@ -21,6 +21,7 @@ import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 
 import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.CodecRegistry;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.HostDistance;
 import com.datastax.driver.core.PoolingOptions;
@@ -56,25 +57,27 @@ class ClusterProducer
     @Singleton
     public Cluster produce()
     {
+        return Cluster.buildFrom(createInitializer()).init();
+    }
+
+    private Cluster.Initializer createInitializer()
+    {
+        return Cluster.builder()
+            .addContactPoints(getContactPoints())
+            .withQueryOptions(getQueryOptions())
+            .withMaxSchemaAgreementWaitSeconds(300)
+            .withPoolingOptions(getPoolingOptions())
+            .withSocketOptions(getSocketOptions())
+            .withCodecRegistry(getCodecRegistry());
+    }
+
+    private String[] getContactPoints()
+    {
         String addresses = System.getProperty(CASSANDRA_CONTACT_POINTS_PROPERTY_NAME);
         if (addresses == null)
         {
             throw new ConfigurationException("No contact points for cassandra set");
         }
-        Cluster cluster = Cluster.builder()
-            .addContactPoints(parseAddressString(addresses))
-            .withQueryOptions(getQueryOptions())
-            .withMaxSchemaAgreementWaitSeconds(300)
-            .withPoolingOptions(getPoolingOptions())
-            .withSocketOptions(getSocketOptions())
-            .build()
-            .init();
-        registerJdk8TimeCodecs(cluster);
-        return cluster;
-    }
-
-    private String[] parseAddressString(String addresses)
-    {
         return Iterables.toArray(Splitter.on(",").trimResults().split(addresses), String.class);
     }
 
@@ -143,11 +146,9 @@ class ClusterProducer
         return socketOptions;
     }
 
-    private void registerJdk8TimeCodecs(Cluster cluster)
+    private CodecRegistry getCodecRegistry()
     {
-        cluster.getConfiguration()
-            .getCodecRegistry()
-            .register(InstantCodec.instance)
+        return CodecRegistry.DEFAULT_INSTANCE.register(InstantCodec.instance)
             .register(LocalDateCodec.instance)
             .register(LocalTimeCodec.instance);
     }
