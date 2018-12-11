@@ -14,17 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.technology.cassandra;
+package com.github.mizool.technology.jackson;
 
-import javax.annotation.processing.Processor;
+import java.time.ZonedDateTime;
 
-import org.kohsuke.MetaInfServices;
+import javax.ws.rs.ext.ParamConverter;
 
-@MetaInfServices(value = Processor.class)
-public class MapperProducerProcessor extends AbstractTemplateBasedProcessor
+import lombok.RequiredArgsConstructor;
+
+import com.github.mizool.core.converter.ZonedDateTimeConverter;
+
+@RequiredArgsConstructor
+class ZonedDateTimeParamConverter implements ParamConverter<ZonedDateTime>
 {
-    public MapperProducerProcessor()
+    private final ZonedDateTimeConverter zonedDateTimeConverter;
+
+    @Override
+    public ZonedDateTime fromString(String value)
     {
-        super(MapperProducer.class, "mapperProducerGenerator.stg");
+        return zonedDateTimeConverter.fromString(value);
+    }
+
+    @Override
+    public String toString(ZonedDateTime value)
+    {
+        return zonedDateTimeConverter.toString(value);
     }
 }

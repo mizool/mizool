@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2018 incub8 Software Labs GmbH
  * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
@@ -40,14 +40,15 @@ public class CheckUuidValue implements ConstraintValidator<UuidValue, String>
 
     private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
+        boolean valid;
         try
         {
             UUID.fromString(validationObject);
             valid = true;
         }
-        catch (IllegalArgumentException ignored)
+        catch (@SuppressWarnings("squid:S1166") IllegalArgumentException ignored)
         {
+            valid = false;
         }
         return valid;
     }

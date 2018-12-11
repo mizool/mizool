@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2018 incub8 Software Labs GmbH
  * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
@@ -54,6 +54,7 @@ class CacheWatchdog
             catch (RuntimeException e)
             {
                 log.warn("Error during cache reset: {}", e.getMessage());
+                log.debug("Stack trace for warning", e);
             }
         }
     }
