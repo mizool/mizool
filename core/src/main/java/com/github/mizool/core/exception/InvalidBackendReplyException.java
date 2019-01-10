@@ -17,7 +17,7 @@
 package com.github.mizool.core.exception;
 
 /**
- * Thrown when the Backend communicated with a third party system and got an invalid reply
+ * Thrown when an invalid reply was received from a backend system.
  */
 public class InvalidBackendReplyException extends RuntimeException
 {
