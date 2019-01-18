@@ -122,12 +122,11 @@ public final class BufferedStreamAdapter<V>
         @Override
         public void accept(ListenableFuture<V> future)
         {
-            synchronized (semaphore)
-            {
+            Runnable accept = () -> {
                 runningFutures.incrementAndGet();
                 Futures.addCallback(future, new Callback(), MoreExecutors.directExecutor());
-                Threads.waitUntil(capacityAvailable(), semaphore);
-            }
+            };
+            Threads.doAndWaitUntil(accept, capacityAvailable(), semaphore);
         }
 
         private BooleanSupplier capacityAvailable()
@@ -141,17 +140,15 @@ public final class BufferedStreamAdapter<V>
         @Override
         public boolean tryAdvance(Consumer<? super V> action)
         {
-            ValueHolder<V> valueHolder = null;
-            synchronized (semaphore)
-            {
-                Threads.waitUntil(resultOrCompletion(), semaphore);
-
+            ValueHolder<V> valueHolder = Threads.waitUntilAndDo(resultOrCompletion(), () -> {
+                ValueHolder<V> removedValue = null;
                 if (resultsAvailable())
                 {
-                    valueHolder = results.remove();
+                    removedValue = results.remove();
                     semaphore.notifyAll();
                 }
-            }
+                return removedValue;
+            }, semaphore);
 
             boolean valueEmitted = false;
             if (valueHolder != null)

@@ -17,6 +17,7 @@
 package com.github.mizool.core.concurrent;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 import lombok.experimental.UtilityClass;
 
@@ -34,38 +35,97 @@ public class Threads
         {
             Thread.sleep(milliSeconds);
         }
-        catch (@SuppressWarnings("squid:S2142") InterruptedException e)
+        catch (InterruptedException e)
         {
             rethrowInterrupt(e);
         }
     }
 
-    /**
-     * @throws UncheckedInterruptedException If the thread was interrupted.
-     * @throws IllegalMonitorStateException If the current thread is not the owner of the object's monitor
-     */
-    @SuppressWarnings({ "squid:S2273" })
-    public void waitUntil(BooleanSupplier state, Object semaphore)
+    public void doAndWaitUntil(Runnable runnable, BooleanSupplier state, Object semaphore)
     {
-        try
+        synchronized (semaphore)
         {
-            while (!state.getAsBoolean())
+            runnable.run();
+
+            try
             {
-                semaphore.wait();
+                while (!state.getAsBoolean())
+                {
+                    semaphore.wait();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                rethrowInterrupt(e);
             }
         }
-        catch (@SuppressWarnings("squid:S2142") InterruptedException e)
+    }
+
+    public <T> T doAndWaitUntil(Supplier<T> supplier, BooleanSupplier state, Object semaphore)
+    {
+        T result;
+        synchronized (semaphore)
         {
-            rethrowInterrupt(e);
+            result = supplier.get();
+
+            try
+            {
+                while (!state.getAsBoolean())
+                {
+                    semaphore.wait();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                rethrowInterrupt(e);
+            }
+        }
+        return result;
+    }
+
+    public void waitUntilAndDo(BooleanSupplier state, Runnable runnable, Object semaphore)
+    {
+        synchronized (semaphore)
+        {
+            try
+            {
+                while (!state.getAsBoolean())
+                {
+                    semaphore.wait();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                rethrowInterrupt(e);
+            }
+
+            runnable.run();
+        }
+    }
+
+    public <T> T waitUntilAndDo(BooleanSupplier state, Supplier<T> supplier, Object semaphore)
+    {
+        synchronized (semaphore)
+        {
+            try
+            {
+                while (!state.getAsBoolean())
+                {
+                    semaphore.wait();
+                }
+            }
+            catch (InterruptedException e)
+            {
+                rethrowInterrupt(e);
+            }
+
+            return supplier.get();
         }
     }
 
     /**
      * Wraps the given {@link InterruptedException} in an {@link UncheckedInterruptedException} and re-interrupts the
-     * thread.<br>
-     * <br>
-     * Remember to add {@code @SuppressWarnings("squid:S2142") } to the catch clause. Otherwise, Sonar will complain
-     * about not interrupting the thread.
+     * thread.
      *
      * @throws UncheckedInterruptedException Wrapping the given {@link InterruptedException}.
      */

@@ -123,14 +123,16 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     @Override
     public BiConsumer<Void, ListenableFuture<Void>> accumulator()
     {
-        return (a, future) -> {
-            synchronized (semaphore)
-            {
-                verifyNoPreviousException();
-                consumeFuture(future);
-                Threads.waitUntil(capacityAvailable(), semaphore);
-            }
+        return this::accumulateAndWait;
+    }
+
+    private void accumulateAndWait(Void a, ListenableFuture<Void> future)
+    {
+        Runnable accumulate = () -> {
+            verifyNoPreviousException();
+            consumeFuture(future);
         };
+        Threads.doAndWaitUntil(accumulate, capacityAvailable(), semaphore);
     }
 
     private void verifyNoPreviousException()
