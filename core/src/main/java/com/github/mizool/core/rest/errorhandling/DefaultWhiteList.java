@@ -1,6 +1,6 @@
 /**
- * Copyright 2017 incub8 Software Labs GmbH
- * Copyright 2017 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import com.github.mizool.core.exception.AuthenticationMissingException;
 import com.github.mizool.core.exception.AuthenticationRejectedException;
 import com.github.mizool.core.exception.BadRequestException;
 import com.github.mizool.core.exception.ConflictingEntityException;
+import com.github.mizool.core.exception.InvalidBackendReplyException;
 import com.github.mizool.core.exception.LockedEntityException;
 import com.github.mizool.core.exception.MethodNotAllowedException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
@@ -52,6 +53,7 @@ public class DefaultWhiteList implements WhiteList
             .add(new WhiteListEntry(UnsupportedHttpFeatureException.class, HttpServletResponse.SC_NOT_IMPLEMENTED))
             .add(new WhiteListEntry(LockedEntityException.class, HttpStatus.LOCKED))
             .add(new WhiteListEntry(MethodNotAllowedException.class, HttpServletResponse.SC_METHOD_NOT_ALLOWED))
+            .add(new WhiteListEntry(InvalidBackendReplyException.class, HttpServletResponse.SC_BAD_GATEWAY))
             .build();
     }
 }
