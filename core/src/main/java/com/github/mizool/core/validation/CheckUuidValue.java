@@ -46,7 +46,7 @@ public class CheckUuidValue implements ConstraintValidator<UuidValue, String>
             UUID.fromString(validationObject);
             valid = true;
         }
-        catch (@SuppressWarnings("squid:S1166") IllegalArgumentException ignored)
+        catch (IllegalArgumentException ignored)
         {
             valid = false;
         }

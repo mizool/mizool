@@ -19,6 +19,8 @@ package com.github.mizool.core.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import com.google.common.base.Enums;
+
 public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
 {
     private Class enumeration;
@@ -39,16 +41,6 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
 
     private boolean isValidValue(String validationObject)
     {
-        boolean valid;
-        try
-        {
-            Enum.valueOf(enumeration, validationObject);
-            valid = true;
-        }
-        catch (@SuppressWarnings("squid:S1166") IllegalArgumentException | NullPointerException ignored)
-        {
-            valid = false;
-        }
-        return valid;
+        return Enums.getIfPresent(enumeration, validationObject).isPresent();
     }
 }
