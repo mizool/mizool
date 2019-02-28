@@ -2,24 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.github.mizool</groupId>
-        <artifactId>mizool</artifactId>
+        <groupId>com.github.mizool.technology.typemapping</groupId>
+        <artifactId>typemapping</artifactId>
         <version>0.28-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.mizool.technology</groupId>
-    <artifactId>technology</artifactId>
+    <groupId>com.github.mizool.technology.typemapping.core</groupId>
+    <artifactId>core</artifactId>
     <packaging>pom</packaging>
-
     <modules>
-        <module>aws</module>
-        <module>cache</module>
-        <module>cassandra</module>
-        <module>jackson</module>
         <module>jdbc</module>
-        <module>typemapping</module>
-        <module>web</module>
-
     </modules>
+
 </project>

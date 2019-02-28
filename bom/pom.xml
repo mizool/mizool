@@ -57,6 +57,27 @@
                 <type>test-jar</type>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.jdbc</groupId>
+                <artifactId>jdbc-business</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.mizool.technology.jdbc</groupId>
+                <artifactId>jdbc-store</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping</groupId>
+                <artifactId>typemapping-business</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping.core</groupId>
+                <artifactId>core-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

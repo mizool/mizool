@@ -219,6 +219,26 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.github.mizool.technology.jdbc</groupId>
+                <artifactId>jdbc-business</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.jdbc</groupId>
+                <artifactId>jdbc-store</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping</groupId>
+                <artifactId>typemapping-business</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping.core</groupId>
+                <artifactId>core-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>25.1-jre</version>
@@ -244,6 +264,11 @@
                 <artifactId>cdi-api</artifactId>
                 <version>1.2</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>
