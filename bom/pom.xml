@@ -62,7 +62,6 @@
                 <artifactId>jdbc-business</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.github.mizool.technology.jdbc</groupId>
                 <artifactId>jdbc-store</artifactId>
