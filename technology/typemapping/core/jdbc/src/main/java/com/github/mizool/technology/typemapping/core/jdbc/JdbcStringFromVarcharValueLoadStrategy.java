@@ -7,11 +7,11 @@ import java.time.ZoneId;
 
 import com.github.mizool.technology.typemapping.business.DataType;
 
-class JdbcStringValueLoadStrategy extends AbstractJdbcValueLoadStrategy
+class JdbcStringFromVarcharValueLoadStrategy extends AbstractJdbcValueLoadStrategy
 {
-    public JdbcStringValueLoadStrategy()
+    public JdbcStringFromVarcharValueLoadStrategy()
     {
-        super(Types.LONGNVARCHAR, DataType.STRING);
+        super(Types.VARCHAR, DataType.STRING);
     }
 
     @Override
