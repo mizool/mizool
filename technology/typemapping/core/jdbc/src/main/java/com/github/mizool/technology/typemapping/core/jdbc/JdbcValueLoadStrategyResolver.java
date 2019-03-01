@@ -7,8 +7,8 @@ import java.util.stream.StreamSupport;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import com.github.mizool.core.GuavaCollectors;
 import com.github.mizool.core.exception.UnprocessableEntityException;
+import com.google.common.collect.ImmutableMap;
 
 public class JdbcValueLoadStrategyResolver
 {
@@ -18,7 +18,7 @@ public class JdbcValueLoadStrategyResolver
     protected JdbcValueLoadStrategyResolver(Instance<JdbcValueLoadStrategy> strategies)
     {
         this.strategies = StreamSupport.stream(strategies.spliterator(), false)
-            .collect(GuavaCollectors.toImmutableMap(JdbcValueLoadStrategy::getSourceColumnType,
+            .collect(ImmutableMap.toImmutableMap(JdbcValueLoadStrategy::getSourceColumnType,
                 prestoValueLoadStrategy -> prestoValueLoadStrategy));
     }
 
