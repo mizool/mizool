@@ -15,23 +15,21 @@ import com.github.mizool.technology.foo.business.TableData;
 public class JdbcQueryExecuteStore
 {
     private final JdbcTableDataConverter converter;
-    private final DataSource dataSource;
 
     @Inject
-    protected JdbcQueryExecuteStore(JdbcTableDataConverter converter, DataSource dataSource)
+    protected JdbcQueryExecuteStore(JdbcTableDataConverter converter)
     {
         this.converter = converter;
-        this.dataSource = dataSource;
     }
 
-    public TableData execute(ZoneId zoneId, String query)
+    public TableData execute(ZoneId zoneId, String query, DataSource dataSource)
     {
         /*
          * Statement and connection are created here but passed on to the converter to be closed there later.
          * This is necessary since the resultSet, that is being worked on in the converter,
          * is closed as soon as statement or connection are closed here
          */
-        Connection connection = obtainConnection();
+        Connection connection = obtainConnection(dataSource);
         Statement statement = obtainStatement(connection);
 
         try
@@ -57,7 +55,7 @@ public class JdbcQueryExecuteStore
         }
     }
 
-    private Connection obtainConnection()
+    private Connection obtainConnection(DataSource dataSource)
     {
         Connection connection;
         try

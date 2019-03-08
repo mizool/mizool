@@ -18,9 +18,8 @@ import com.github.mizool.technology.foo.business.TableData;
 public class CassandraQueryExecuteStore
 {
     private final CassandraTableDataConverter converter;
-    private final Session cassandraSession;
 
-    public TableData execute(ZoneId zoneId, Stream<Statement> statements)
+    public TableData execute(ZoneId zoneId, Stream<Statement> statements, Session cassandraSession)
     {
         Iterable<ResultSetFuture> resultSetFutures = statements.map(cassandraSession::executeAsync)
             .collect(GuavaCollectors.toImmutableList());
