@@ -17,7 +17,7 @@
         <module>cache</module>
         <module>cassandra</module>
         <module>jackson</module>
-        <module>jdbc</module>
+        <module>foo</module>
         <module>typemapping</module>
         <module>web</module>
 

@@ -219,13 +219,18 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.jdbc</groupId>
-                <artifactId>jdbc-business</artifactId>
+                <groupId>com.github.mizool.technology.foo</groupId>
+                <artifactId>foo-business</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.jdbc</groupId>
-                <artifactId>jdbc-store</artifactId>
+                <groupId>com.github.mizool.technology.foo.store</groupId>
+                <artifactId>store-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.foo.store</groupId>
+                <artifactId>store-cassandra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -234,8 +239,13 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.typemapping.core</groupId>
-                <artifactId>core-jdbc</artifactId>
+                <groupId>com.github.mizool.technology.typemapping.store</groupId>
+                <artifactId>store-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping.store</groupId>
+                <artifactId>store-cassandra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

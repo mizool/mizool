@@ -8,9 +8,10 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.mizool.technology.typemapping</groupId>
-    <artifactId>typemapping</artifactId>
+    <groupId>com.github.mizool.technology.foo</groupId>
+    <artifactId>foo</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>business</module>
         <module>store</module>
