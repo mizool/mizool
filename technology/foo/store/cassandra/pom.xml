@@ -1,15 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>store</artifactId>
         <groupId>com.github.mizool.technology.foo.store</groupId>
+        <artifactId>store</artifactId>
         <version>0.28-SNAPSHOT</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>store-cassandra</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.mizool.technology.foo</groupId>
+            <artifactId>foo-business</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.mizool.technology.typemapping.store</groupId>
+            <artifactId>store-cassandra</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>javax.inject</groupId>
@@ -18,18 +30,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.datastax.cassandra</groupId>
-            <artifactId>cassandra-driver-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.mizool.technology.typemapping.store</groupId>
-            <artifactId>store-cassandra</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.mizool.technology.foo</groupId>
-            <artifactId>foo-business</artifactId>
         </dependency>
         <dependency>
             <groupId>org.testng</groupId>

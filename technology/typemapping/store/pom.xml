@@ -12,8 +12,8 @@
     <artifactId>store</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>jdbc</module>
         <module>cassandra</module>
+        <module>jdbc</module>
     </modules>
 
 </project>

@@ -16,8 +16,8 @@
         <module>aws</module>
         <module>cache</module>
         <module>cassandra</module>
-        <module>jackson</module>
         <module>foo</module>
+        <module>jackson</module>
         <module>typemapping</module>
         <module>web</module>
 

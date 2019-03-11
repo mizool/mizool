@@ -225,12 +225,12 @@
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology.foo.store</groupId>
-                <artifactId>store-jdbc</artifactId>
+                <artifactId>store-cassandra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology.foo.store</groupId>
-                <artifactId>store-cassandra</artifactId>
+                <artifactId>store-jdbc</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -240,12 +240,12 @@
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology.typemapping.store</groupId>
-                <artifactId>store-jdbc</artifactId>
+                <artifactId>store-cassandra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology.typemapping.store</groupId>
-                <artifactId>store-cassandra</artifactId>
+                <artifactId>store-jdbc</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
