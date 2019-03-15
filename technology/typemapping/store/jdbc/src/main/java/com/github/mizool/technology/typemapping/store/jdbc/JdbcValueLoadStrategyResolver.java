@@ -2,6 +2,7 @@ package com.github.mizool.technology.typemapping.store.jdbc;
 
 import java.sql.Types;
 import java.util.Map;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import javax.enterprise.inject.Instance;
@@ -17,9 +18,15 @@ public class JdbcValueLoadStrategyResolver
     @Inject
     protected JdbcValueLoadStrategyResolver(Instance<JdbcValueLoadStrategy> strategies)
     {
-        this.strategies = StreamSupport.stream(strategies.spliterator(), false)
-            .collect(ImmutableMap.toImmutableMap(JdbcValueLoadStrategy::getSourceColumnType,
-                prestoValueLoadStrategy -> prestoValueLoadStrategy));
+        ImmutableMap.Builder<Integer, JdbcValueLoadStrategy> builder  = ImmutableMap.builder();
+
+        Stream<JdbcValueLoadStrategy> jdbcValueLoadStrategyStream
+            = StreamSupport.stream(strategies.spliterator(), false);
+
+        jdbcValueLoadStrategyStream.forEach(jdbcValueLoadStrategy -> jdbcValueLoadStrategy.getSourceColumnType()
+            .forEach(integer -> builder.put(integer, jdbcValueLoadStrategy)));
+
+        this.strategies = builder.build();
     }
 
     public JdbcValueLoadStrategy resolve(int columnType)

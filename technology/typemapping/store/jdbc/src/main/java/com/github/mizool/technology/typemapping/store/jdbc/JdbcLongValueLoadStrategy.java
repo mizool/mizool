@@ -5,12 +5,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.github.mizool.technology.typemapping.business.DataType;
+import com.google.common.collect.ImmutableList;
 
 class JdbcLongValueLoadStrategy extends AbstractJdbcValueLoadStrategy
 {
     public JdbcLongValueLoadStrategy()
     {
-        super(Types.BIGINT, DataType.LONG);
+        super(ImmutableList.of(Types.BIGINT), DataType.LONG);
     }
 
     @Override

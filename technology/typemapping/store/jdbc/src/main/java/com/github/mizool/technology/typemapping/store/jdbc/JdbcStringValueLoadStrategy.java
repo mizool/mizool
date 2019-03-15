@@ -5,12 +5,13 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.github.mizool.technology.typemapping.business.DataType;
+import com.google.common.collect.ImmutableList;
 
-class JdbcStringFromNVCharValueLoadStrategy extends AbstractJdbcValueLoadStrategy
+class JdbcStringValueLoadStrategy extends AbstractJdbcValueLoadStrategy
 {
-    public JdbcStringFromNVCharValueLoadStrategy()
+    public JdbcStringValueLoadStrategy()
     {
-        super(Types.NVARCHAR, DataType.STRING);
+        super(ImmutableList.of(Types.VARCHAR, Types.CHAR, Types.LONGVARCHAR, Types.NVARCHAR), DataType.STRING);
     }
 
     @Override

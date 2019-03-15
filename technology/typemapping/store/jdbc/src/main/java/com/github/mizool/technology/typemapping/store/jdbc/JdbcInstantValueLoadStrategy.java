@@ -7,6 +7,7 @@ import java.sql.Types;
 import javax.inject.Inject;
 
 import com.github.mizool.technology.typemapping.business.DataType;
+import com.google.common.collect.ImmutableList;
 
 class JdbcInstantValueLoadStrategy extends AbstractJdbcValueLoadStrategy
 {
@@ -15,7 +16,7 @@ class JdbcInstantValueLoadStrategy extends AbstractJdbcValueLoadStrategy
     @Inject
     public JdbcInstantValueLoadStrategy(JavaSqlTimestampConverter javaSqlTimestampConverter)
     {
-        super(Types.TIMESTAMP, DataType.INSTANT);
+        super(ImmutableList.of(Types.TIMESTAMP), DataType.INSTANT);
         this.javaSqlTimestampConverter = javaSqlTimestampConverter;
     }
 
