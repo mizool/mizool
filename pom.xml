@@ -219,17 +219,17 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.foo</groupId>
-                <artifactId>foo-business</artifactId>
+                <groupId>com.github.mizool.technology.table-access</groupId>
+                <artifactId>table-access-business</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.foo.store</groupId>
+                <groupId>com.github.mizool.technology.table-access.store</groupId>
                 <artifactId>store-cassandra</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.foo.store</groupId>
+                <groupId>com.github.mizool.technology.table-access.store</groupId>
                 <artifactId>store-jdbc</artifactId>
                 <version>${project.version}</version>
             </dependency>

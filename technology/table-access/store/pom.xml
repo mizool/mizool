@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.github.mizool.technology.foo</groupId>
-        <artifactId>foo</artifactId>
+        <groupId>com.github.mizool.technology.table-access</groupId>
+        <artifactId>table-access</artifactId>
         <version>0.28-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.mizool.technology.foo.store</groupId>
+    <groupId>com.github.mizool.technology.table-access.store</groupId>
     <artifactId>store</artifactId>
     <packaging>pom</packaging>
 

@@ -8,8 +8,8 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.mizool.technology.foo</groupId>
-    <artifactId>foo</artifactId>
+    <groupId>com.github.mizool.technology.table-access</groupId>
+    <artifactId>table-access</artifactId>
     <packaging>pom</packaging>
 
     <modules>
