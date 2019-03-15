@@ -26,7 +26,7 @@ import com.google.common.collect.ImmutableList;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
-public class JdbcTableDataConverter
+class JdbcTableDataConverter
 {
     private final JdbcColumnConverter jdbcColumnConverter;
     private final JdbcCellConverter jdbcCellConverter;
