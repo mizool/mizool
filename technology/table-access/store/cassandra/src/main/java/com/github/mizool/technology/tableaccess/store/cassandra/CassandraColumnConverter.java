@@ -1,4 +1,4 @@
-package com.github.mizool.technology.foo.store.cassandra;
+package com.github.mizool.technology.tableaccess.store.cassandra;
 
 import javax.inject.Inject;
 
@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.datastax.driver.core.ColumnDefinitions;
-import com.github.mizool.technology.foo.business.Column;
+import com.github.mizool.technology.tableaccess.business.Column;
 import com.github.mizool.technology.typemapping.store.cassandra.CassandraValueLoadStrategyResolver;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)

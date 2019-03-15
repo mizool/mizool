@@ -1,10 +1,9 @@
-package com.github.mizool.technology.foo.store.jdbc;
+package com.github.mizool.technology.tableaccess.store.jdbc;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.ZoneId;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
@@ -20,9 +19,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.StoreLayerException;
-import com.github.mizool.technology.foo.business.Cell;
-import com.github.mizool.technology.foo.business.Column;
-import com.github.mizool.technology.foo.business.TableData;
+import com.github.mizool.technology.tableaccess.business.Cell;
+import com.github.mizool.technology.tableaccess.business.Column;
+import com.github.mizool.technology.tableaccess.business.TableData;
 import com.google.common.collect.ImmutableList;
 
 @Slf4j
@@ -32,7 +31,7 @@ public class JdbcTableDataConverter
     private final JdbcColumnConverter jdbcColumnConverter;
     private final JdbcCellConverter jdbcCellConverter;
 
-    public TableData toPojo(ZoneId zoneId, ResultSet resultSet, Statement statement, Connection connection)
+    public TableData toPojo(ResultSet resultSet, Statement statement, Connection connection)
     {
         TableData pojo = null;
 
@@ -40,7 +39,7 @@ public class JdbcTableDataConverter
         {
             TableData.TableDataBuilder builder = TableData.builder();
             builder.columns(getColumns(resultSet));
-            builder.rows(createStream(zoneId, resultSet, statement, connection));
+            builder.rows(createStream(resultSet, statement, connection));
             pojo = builder.build();
         }
 
@@ -57,8 +56,7 @@ public class JdbcTableDataConverter
         return columnNumber -> jdbcColumnConverter.toPojo(columnNumber, resultSet);
     }
 
-    private Stream<Iterable<Cell>> createStream(
-        ZoneId zoneId, ResultSet resultSet, Statement statement, Connection connection)
+    private Stream<Iterable<Cell>> createStream(ResultSet resultSet, Statement statement, Connection connection)
     {
         Spliterator<Iterable<Cell>> spliterator = new Spliterators.AbstractSpliterator<Iterable<Cell>>(Long.MAX_VALUE,
             Spliterator.ORDERED)
@@ -70,7 +68,7 @@ public class JdbcTableDataConverter
                 {
                     if (resultSet.next())
                     {
-                        action.accept(readRow(zoneId, resultSet));
+                        action.accept(readRow(resultSet));
                         return true;
                     }
                     else
@@ -99,14 +97,14 @@ public class JdbcTableDataConverter
         });
     }
 
-    private Iterable<Cell> readRow(ZoneId zoneId, ResultSet resultSet)
+    private Iterable<Cell> readRow(ResultSet resultSet)
     {
-        return getColumnIndexes(resultSet).mapToObj(toCell(zoneId, resultSet)).collect(ImmutableList.toImmutableList());
+        return getColumnIndexes(resultSet).mapToObj(toCell(resultSet)).collect(ImmutableList.toImmutableList());
     }
 
-    private IntFunction<Cell> toCell(ZoneId zoneId, ResultSet resultSet)
+    private IntFunction<Cell> toCell(ResultSet resultSet)
     {
-        return columnNumber -> jdbcCellConverter.toPojo(zoneId, columnNumber, resultSet);
+        return columnNumber -> jdbcCellConverter.toPojo(columnNumber, resultSet);
     }
 
     private IntStream getColumnIndexes(ResultSet resultSet)

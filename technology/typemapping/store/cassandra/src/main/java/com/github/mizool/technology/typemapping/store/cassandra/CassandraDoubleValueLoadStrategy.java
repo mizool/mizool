@@ -1,7 +1,5 @@
 package com.github.mizool.technology.typemapping.store.cassandra;
 
-import java.time.ZoneId;
-
 import com.datastax.driver.core.Row;
 import com.github.mizool.technology.typemapping.business.DataType;
 
@@ -13,7 +11,7 @@ class CassandraDoubleValueLoadStrategy extends AbstractCassandraValueLoadStrateg
     }
 
     @Override
-    public Object loadValue(ZoneId zoneId, String columnName, Row row)
+    public Object loadValue(String columnName, Row row)
     {
         return row.getDouble(columnName);
     }

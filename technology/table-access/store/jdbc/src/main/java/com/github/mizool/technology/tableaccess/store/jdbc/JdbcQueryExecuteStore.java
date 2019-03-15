@@ -1,16 +1,15 @@
-package com.github.mizool.technology.foo.store.jdbc;
+package com.github.mizool.technology.tableaccess.store.jdbc;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.time.ZoneId;
 
 import javax.inject.Inject;
 import javax.sql.DataSource;
 
 import com.github.mizool.core.exception.StoreLayerException;
-import com.github.mizool.technology.foo.business.TableData;
+import com.github.mizool.technology.tableaccess.business.TableData;
 
 public class JdbcQueryExecuteStore
 {
@@ -22,7 +21,7 @@ public class JdbcQueryExecuteStore
         this.converter = converter;
     }
 
-    public TableData execute(ZoneId zoneId, String query, DataSource dataSource)
+    public TableData execute(String query, DataSource dataSource)
     {
         /*
          * Statement and connection are created here but passed on to the converter to be closed there later.
@@ -35,7 +34,7 @@ public class JdbcQueryExecuteStore
         try
         {
             ResultSet resultSet = statement.executeQuery(query);
-            return converter.toPojo(zoneId, resultSet, statement, connection);
+            return converter.toPojo(resultSet, statement, connection);
         }
         catch (SQLException | StoreLayerException e)
         {

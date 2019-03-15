@@ -1,4 +1,4 @@
-package com.github.mizool.technology.foo.business;
+package com.github.mizool.technology.tableaccess.business;
 
 import java.io.Serializable;
 

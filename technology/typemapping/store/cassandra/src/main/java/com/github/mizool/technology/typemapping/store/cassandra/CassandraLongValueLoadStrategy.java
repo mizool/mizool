@@ -13,7 +13,7 @@ class CassandraLongValueLoadStrategy extends AbstractCassandraValueLoadStrategy
     }
 
     @Override
-    public Object loadValue(ZoneId zoneId, String columnName, Row row)
+    public Object loadValue(String columnName, Row row)
     {
         return row.getLong(columnName);
     }

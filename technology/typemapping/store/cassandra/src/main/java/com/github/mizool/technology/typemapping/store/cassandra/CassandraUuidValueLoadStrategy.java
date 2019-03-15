@@ -18,7 +18,7 @@ class CassandraUuidValueLoadStrategy extends AbstractCassandraValueLoadStrategy
     }
 
     @Override
-    public Object loadValue(ZoneId zoneId, String columnName, Row row)
+    public Object loadValue(String columnName, Row row)
     {
 
         return row.getUUID(columnName).toString();

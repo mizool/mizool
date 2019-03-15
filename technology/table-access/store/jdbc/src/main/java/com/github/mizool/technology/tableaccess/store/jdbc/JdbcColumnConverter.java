@@ -1,4 +1,4 @@
-package com.github.mizool.technology.foo.store.jdbc;
+package com.github.mizool.technology.tableaccess.store.jdbc;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.exception.StoreLayerException;
 
-import com.github.mizool.technology.foo.business.Column;
+import com.github.mizool.technology.tableaccess.business.Column;
 import com.github.mizool.technology.typemapping.business.DataType;
 import com.github.mizool.technology.typemapping.store.jdbc.JdbcValueLoadStrategyResolver;
 

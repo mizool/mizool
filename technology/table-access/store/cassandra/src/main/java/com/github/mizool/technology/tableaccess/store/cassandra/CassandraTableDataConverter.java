@@ -1,6 +1,5 @@
-package com.github.mizool.technology.foo.store.cassandra;
+package com.github.mizool.technology.tableaccess.store.cassandra;
 
-import java.time.ZoneId;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -12,10 +11,9 @@ import lombok.RequiredArgsConstructor;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.ResultSetFuture;
 import com.datastax.driver.core.Row;
-
-import com.github.mizool.technology.foo.business.Cell;
-import com.github.mizool.technology.foo.business.Column;
-import com.github.mizool.technology.foo.business.TableData;
+import com.github.mizool.technology.tableaccess.business.Cell;
+import com.github.mizool.technology.tableaccess.business.Column;
+import com.github.mizool.technology.tableaccess.business.TableData;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -25,7 +23,7 @@ class CassandraTableDataConverter
     private final CassandraColumnConverter cassandraColumnConverter;
     private final CassandraCellConverter cassandraCellConverter;
 
-    public TableData toPojo(ZoneId zoneId, Iterable<ResultSetFuture> resultSetFutures)
+    public TableData toPojo(Iterable<ResultSetFuture> resultSetFutures)
     {
         TableData pojo = null;
 
@@ -34,7 +32,7 @@ class CassandraTableDataConverter
             TableData.TableDataBuilder builder = TableData.builder();
             Iterable<Column> columns = getColumns(resultSetFutures);
             builder.columns(columns);
-            builder.rows(createStreamFromFutures(zoneId, resultSetFutures, columns));
+            builder.rows(createStreamFromFutures(resultSetFutures, columns));
             pojo = builder.build();
         }
 
@@ -50,23 +48,22 @@ class CassandraTableDataConverter
     }
 
     private Stream<Iterable<Cell>> createStreamFromFutures(
-        ZoneId zoneId, Iterable<ResultSetFuture> resultSetFutures, Iterable<Column> columns)
+        Iterable<ResultSetFuture> resultSetFutures, Iterable<Column> columns)
     {
         return StreamSupport.stream(resultSetFutures.spliterator(), false)
             .map(ResultSetFuture::getUninterruptibly)
-            .flatMap(rows -> createStreamFromRows(zoneId, rows, columns));
+            .flatMap(rows -> createStreamFromRows(rows, columns));
     }
 
-    private Stream<Iterable<Cell>> createStreamFromRows(
-        ZoneId zoneId, Iterable<Row> rows, Iterable<Column> columns)
+    private Stream<Iterable<Cell>> createStreamFromRows(Iterable<Row> rows, Iterable<Column> columns)
     {
-        return StreamSupport.stream(rows.spliterator(), false).map(row -> mapRow(zoneId, row, columns));
+        return StreamSupport.stream(rows.spliterator(), false).map(row -> mapRow(row, columns));
     }
 
-    private Iterable<Cell> mapRow(ZoneId zoneId, Row row, Iterable<Column> columns)
+    private Iterable<Cell> mapRow(Row row, Iterable<Column> columns)
     {
         return StreamSupport.stream(columns.spliterator(), false)
-            .map(column -> cassandraCellConverter.toPojo(zoneId, column, row))
+            .map(column -> cassandraCellConverter.toPojo(column, row))
             .collect(ImmutableList.toImmutableList());
     }
 }
