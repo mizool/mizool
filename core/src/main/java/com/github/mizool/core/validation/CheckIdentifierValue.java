@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 package com.github.mizool.core.validation;
-
-import java.util.List;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -39,36 +37,11 @@ public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue
 
     private boolean isValidValue(Object validationObject)
     {
+        boolean valid = false;
         if (validationObject instanceof String)
         {
-            return isValidValue((String) validationObject);
-        }
-        else if (validationObject instanceof List)
-        {
-            return isValidValue((List) validationObject);
-        }
-        return false;
-    }
-
-    private boolean isValidValue(String validationObject)
-    {
-        return !validationObject.isEmpty();
-    }
-
-    private boolean isValidValue(List validationObject)
-    {
-        boolean valid = true;
-        for (Object value : validationObject)
-        {
-            if (value instanceof String)
-            {
-                valid = valid && !((String) value).isEmpty();
-            }
-            else
-            {
-                valid = false;
-                break;
-            }
+            String validationString = (String) validationObject;
+            valid = !validationString.isEmpty();
         }
         return valid;
     }

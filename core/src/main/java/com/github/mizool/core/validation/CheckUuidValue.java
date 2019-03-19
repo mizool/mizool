@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.UUID;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckUuidValue implements ConstraintValidator<UuidValue, String>
+public class CheckUuidValue implements ConstraintValidator<UuidValue, Object>
 {
     private boolean mandatory;
 
@@ -33,22 +33,25 @@ public class CheckUuidValue implements ConstraintValidator<UuidValue, String>
 
     @Override
     public final boolean isValid(
-        String validationObject, ConstraintValidatorContext constraintValidatorContext)
+        Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        boolean valid;
+        boolean valid = false;
         try
         {
-            UUID.fromString(validationObject);
-            valid = true;
+            if (validationObject instanceof String)
+            {
+                String validationString = (String) validationObject;
+                UUID.fromString(validationString);
+                valid = true;
+            }
         }
-        catch (@SuppressWarnings("squid:S1166") IllegalArgumentException ignored)
+        catch (IllegalArgumentException ignored)
         {
-            valid = false;
         }
         return valid;
     }

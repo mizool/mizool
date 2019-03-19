@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.TimeZone;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, String>
+public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, Object>
 {
     private boolean mandatory;
 
@@ -32,18 +32,22 @@ public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, St
     }
 
     @Override
-    public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
         boolean valid = false;
-        if (!validationObject.isEmpty())
+        if (validationObject instanceof String)
         {
-            TimeZone timeZone = TimeZone.getTimeZone(validationObject);
-            valid = timeZone.getID().equals(validationObject);
+            String validationString = (String) validationObject;
+            if (!validationString.isEmpty())
+            {
+                TimeZone timeZone = TimeZone.getTimeZone(validationString);
+                valid = timeZone.getID().equals(validationString);
+            }
         }
         return valid;
     }
