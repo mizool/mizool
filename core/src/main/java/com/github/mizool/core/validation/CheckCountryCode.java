@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import com.google.common.collect.ImmutableSet;
 
-public class CheckCountryCode implements ConstraintValidator<CountryCode, String>
+public class CheckCountryCode implements ConstraintValidator<CountryCode, Object>
 {
     private static final Set<String> COUNTRY_CODES = ImmutableSet.copyOf(Locale.getISOCountries());
 
@@ -37,13 +37,19 @@ public class CheckCountryCode implements ConstraintValidator<CountryCode, String
     }
 
     @Override
-    public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        return !validationObject.isEmpty() && COUNTRY_CODES.contains(validationObject);
+        boolean valid = false;
+        if (validationObject instanceof String)
+        {
+            String validationString = (String) validationObject;
+            return !validationString.isEmpty() && COUNTRY_CODES.contains(validationString);
+        }
+        return valid;
     }
 }

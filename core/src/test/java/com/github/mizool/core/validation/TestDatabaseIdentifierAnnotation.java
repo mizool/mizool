@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
  */
 package com.github.mizool.core.validation;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.ImmutableList;
 
 public class TestDatabaseIdentifierAnnotation
 {
@@ -28,6 +33,20 @@ public class TestDatabaseIdentifierAnnotation
     {
         @DatabaseIdentifier(mandatory = false)
         private String identifier;
+    }
+
+    @RequiredArgsConstructor
+    private static class TestListData
+    {
+        @DatabaseIdentifier(mandatory = false)
+        private final List<String> identifiers;
+    }
+
+    @RequiredArgsConstructor
+    private static class WrongDataTypeList
+    {
+        @DatabaseIdentifier(mandatory = false)
+        private final List<Integer> identifiers;
     }
 
     @DataProvider(name = "acceptableValues")
@@ -59,6 +78,24 @@ public class TestDatabaseIdentifierAnnotation
         };
     }
 
+    @DataProvider
+    private Object[][] acceptableListValues()
+    {
+        return new Object[][]{
+            { null }, { ImmutableList.of("login") }, {
+            ImmutableList.of("login_", "LogIN", "LoremIpsumDolorSitAmetConseteturSadipscingElitrS")
+        }
+        };
+    }
+
+    @DataProvider
+    private Object[][] unacceptableListValues()
+    {
+        return new Object[][]{
+            { ImmutableList.of("") }, { ImmutableList.of("_login") }, { ImmutableList.of("login", "log(in") }
+        };
+    }
+
     @Test(dataProvider = "acceptableValues")
     public void testValidationOfAcceptableValue(String value)
     {
@@ -69,5 +106,24 @@ public class TestDatabaseIdentifierAnnotation
     public void testValidationOfUnacceptableValue(String value)
     {
         ValidatorAnnotationTests.assertUnacceptableValue(new TestData(value), DatabaseIdentifier.class);
+    }
+
+    @Test(dataProvider = "acceptableListValues")
+    public void testValidationOfAcceptableValues(List<String> values)
+    {
+        ValidatorAnnotationTests.assertAcceptableValue(new TestListData(values));
+    }
+
+    @Test(dataProvider = "unacceptableListValues")
+    public void testValidationOfUnacceptableListValues(List<String> values)
+    {
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestListData(values), DatabaseIdentifier.class);
+    }
+
+    @Test
+    public void testHandlesWrongDataType()
+    {
+        ValidatorAnnotationTests.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+            DatabaseIdentifier.class);
     }
 }
