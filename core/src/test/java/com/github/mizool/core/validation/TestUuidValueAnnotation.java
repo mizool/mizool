@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,14 @@
  */
 package com.github.mizool.core.validation;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import com.google.common.collect.ImmutableList;
 
 public class TestUuidValueAnnotation
 {
@@ -27,7 +31,21 @@ public class TestUuidValueAnnotation
     private static class TestData
     {
         @UuidValue(mandatory = false)
-        private final String enumValue;
+        private final String uuid;
+    }
+
+    @RequiredArgsConstructor
+    private static class TestListData
+    {
+        @UuidValue(mandatory = false)
+        private final List<String> uuids;
+    }
+
+    @RequiredArgsConstructor
+    private static class WrongDataTypeList
+    {
+        @UuidValue(mandatory = false)
+        private final List<Integer> uuids;
     }
 
     @DataProvider
@@ -42,6 +60,24 @@ public class TestUuidValueAnnotation
         return new Object[][]{ { "" }, { "MOEP" } };
     }
 
+    @DataProvider
+    private Object[][] acceptableListValues()
+    {
+        return new Object[][]{
+            { null },
+            { ImmutableList.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a") },
+            { ImmutableList.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a", "abc12370-0000-aaaa-bbbb-2ba9ffd55e4a") }
+        };
+    }
+
+    @DataProvider
+    private Object[][] unacceptableListValues()
+    {
+        return new Object[][]{
+            { ImmutableList.of("") }, { ImmutableList.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a", "MOEP") }
+        };
+    }
+
     @Test(dataProvider = "acceptableValues")
     public void testValidationOfAcceptableValues(String value)
     {
@@ -52,5 +88,24 @@ public class TestUuidValueAnnotation
     public void testValidationOfUnacceptableValues(String value)
     {
         ValidatorAnnotationTests.assertUnacceptableValue(new TestData(value), UuidValue.class);
+    }
+
+    @Test(dataProvider = "acceptableListValues")
+    public void testValidationOfAcceptableValues(List<String> values)
+    {
+        ValidatorAnnotationTests.assertAcceptableValue(new TestListData(values));
+    }
+
+    @Test(dataProvider = "unacceptableListValues")
+    public void testValidationOfUnacceptableListValues(List<String> values)
+    {
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestListData(values), UuidValue.class);
+    }
+
+    @Test
+    public void testHandlesWrongDataType()
+    {
+        ValidatorAnnotationTests.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+            UuidValue.class);
     }
 }
