@@ -22,7 +22,6 @@
             <groupId>com.github.mizool.technology.typemapping.store</groupId>
             <artifactId>store-cassandra</artifactId>
         </dependency>
-
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
@@ -35,6 +34,5 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
         </dependency>
-
     </dependencies>
 </project>

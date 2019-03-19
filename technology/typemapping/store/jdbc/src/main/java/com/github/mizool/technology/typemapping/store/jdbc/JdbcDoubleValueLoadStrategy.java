@@ -5,13 +5,12 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.github.mizool.technology.typemapping.business.DataType;
-import com.google.common.collect.ImmutableList;
 
 class JdbcDoubleValueLoadStrategy extends AbstractJdbcValueLoadStrategy
 {
     public JdbcDoubleValueLoadStrategy()
     {
-        super(ImmutableList.of(Types.DOUBLE), DataType.DOUBLE);
+        super(Types.DOUBLE, DataType.DOUBLE);
     }
 
     @Override

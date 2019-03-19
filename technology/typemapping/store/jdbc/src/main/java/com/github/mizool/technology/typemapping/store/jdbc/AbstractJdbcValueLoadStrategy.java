@@ -1,22 +1,25 @@
 package com.github.mizool.technology.typemapping.store.jdbc;
 
-import java.util.List;
+import java.util.Set;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.technology.typemapping.business.DataType;
+import com.google.common.collect.ImmutableSet;
 
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractJdbcValueLoadStrategy implements JdbcValueLoadStrategy
 {
     @Getter
-    private final List<Integer> sourceColumnType;
+    private final Set<Integer> sourceColumnTypes;
 
     @Getter
     private final DataType targetDataType;
 
-    protected AbstractJdbcValueLoadStrategy(List<Integer> sourceColumnType, DataType targetDataType)
+    protected AbstractJdbcValueLoadStrategy(Integer sourceColumnType, DataType targetDataType)
     {
-        this.sourceColumnType = sourceColumnType;
-        this.targetDataType = targetDataType;
+        this(ImmutableSet.of(sourceColumnType), targetDataType);
     }
 }

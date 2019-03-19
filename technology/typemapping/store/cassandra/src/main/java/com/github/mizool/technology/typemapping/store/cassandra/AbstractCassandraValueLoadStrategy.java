@@ -1,9 +1,12 @@
 package com.github.mizool.technology.typemapping.store.cassandra;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.technology.typemapping.business.DataType;
 
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractCassandraValueLoadStrategy implements CassandraValueLoadStrategy
 {
     @Getter
@@ -11,11 +14,4 @@ abstract class AbstractCassandraValueLoadStrategy implements CassandraValueLoadS
 
     @Getter
     private final DataType targetDataType;
-
-    protected AbstractCassandraValueLoadStrategy(
-        com.datastax.driver.core.DataType sourceDataType, DataType targetDataType)
-    {
-        this.sourceDataType = sourceDataType;
-        this.targetDataType = targetDataType;
-    }
 }

@@ -52,12 +52,13 @@ class CassandraTableDataConverter
     {
         return StreamSupport.stream(resultSetFutures.spliterator(), false)
             .map(ResultSetFuture::getUninterruptibly)
-            .flatMap(rows -> createStreamFromRows(rows, columns));
+            .flatMap(this::toRowStream)
+            .map(row -> mapRow(row, columns));
     }
 
-    private Stream<Iterable<Cell>> createStreamFromRows(Iterable<Row> rows, Iterable<Column> columns)
+    private Stream<Row> toRowStream(ResultSet resultSet)
     {
-        return StreamSupport.stream(rows.spliterator(), false).map(row -> mapRow(row, columns));
+        return StreamSupport.stream(resultSet.spliterator(), false);
     }
 
     private Iterable<Cell> mapRow(Row row, Iterable<Column> columns)

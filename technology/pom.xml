@@ -20,6 +20,5 @@
         <module>table-access</module>
         <module>typemapping</module>
         <module>web</module>
-
     </modules>
 </project>

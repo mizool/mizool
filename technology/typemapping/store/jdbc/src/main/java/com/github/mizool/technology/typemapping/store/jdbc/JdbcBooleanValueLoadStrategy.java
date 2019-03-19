@@ -5,13 +5,12 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import com.github.mizool.technology.typemapping.business.DataType;
-import com.google.common.collect.ImmutableList;
 
 class JdbcBooleanValueLoadStrategy extends AbstractJdbcValueLoadStrategy
 {
     public JdbcBooleanValueLoadStrategy()
     {
-        super(ImmutableList.of(Types.BOOLEAN), DataType.BOOLEAN);
+        super(Types.BOOLEAN, DataType.BOOLEAN);
     }
 
     @Override

@@ -16,7 +16,7 @@ import com.github.mizool.technology.typemapping.store.jdbc.JdbcValueLoadStrategy
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class JdbcCellConverter
 {
-    private final JdbcColumnConverter prestoColumnConverter;
+    private final JdbcColumnConverter jdbcColumnConverter;
     private final JdbcValueLoadStrategyResolver jdbcValueLoadStrategyResolver;
 
     public Cell toPojo(int columnNumber, ResultSet resultSet)
@@ -25,7 +25,7 @@ class JdbcCellConverter
 
         if (resultSet != null)
         {
-            Column column = prestoColumnConverter.toPojo(columnNumber, resultSet);
+            Column column = jdbcColumnConverter.toPojo(columnNumber, resultSet);
             Cell.CellBuilder builder = Cell.builder();
             builder.column(column);
             try

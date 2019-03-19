@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.exception.StoreLayerException;
-
 import com.github.mizool.technology.tableaccess.business.Column;
 import com.github.mizool.technology.typemapping.business.DataType;
 import com.github.mizool.technology.typemapping.store.jdbc.JdbcValueLoadStrategyResolver;
@@ -17,7 +16,7 @@ import com.github.mizool.technology.typemapping.store.jdbc.JdbcValueLoadStrategy
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class JdbcColumnConverter
 {
-    private final JdbcValueLoadStrategyResolver prestoValueLoadStrategyResolver;
+    private final JdbcValueLoadStrategyResolver jdbcValueLoadStrategyResolver;
 
     public Column toPojo(int columnNumber, ResultSet resultSet)
     {
@@ -50,7 +49,7 @@ class JdbcColumnConverter
     {
         try
         {
-            return prestoValueLoadStrategyResolver.resolve(resultSet.getMetaData().getColumnType(columnNumber))
+            return jdbcValueLoadStrategyResolver.resolve(resultSet.getMetaData().getColumnType(columnNumber))
                 .getTargetDataType();
         }
         catch (SQLException e)

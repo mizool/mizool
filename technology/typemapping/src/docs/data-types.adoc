@@ -34,9 +34,9 @@ Version {project-version}
 |java.{zwsp}time.{zwsp}Instant
 |TIMESTAMP
 |java.{zwsp}sql.{zwsp}Timestamp
-|DATE_TIME
-|java.{zwsp}time.{zwsp}ZonedDateTime
-|must be converted with de.{zwsp}incub8.{zwsp}majestix.{zwsp}modules.{zwsp}store.{zwsp}JavaSqlTimestampConverter
+|INSTANT
+|java.{zwsp}time.{zwsp}Instant
+|must be converted with com.{zwsp}github.{zwsp}mizool.{zwsp}technology.{zwsp}typemapping.{zwsp}store.{zwsp}jdbc.{zwsp}JavaSqlTimestampConverter
 
 |double
 |double
