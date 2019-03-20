@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.github.mizool.core.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckEmail implements ConstraintValidator<Email, String>
+public class CheckEmail implements ConstraintValidator<Email, Object>
 {
     private boolean mandatory;
 
@@ -30,13 +30,19 @@ public class CheckEmail implements ConstraintValidator<Email, String>
     }
 
     @Override
-    public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        return validationObject.matches(".+[@].+\\..+");
+        boolean valid = false;
+        if (validationObject instanceof String)
+        {
+            String validationString = (String) validationObject;
+            valid = validationString.matches(".+[@].+\\..+");
+        }
+        return valid;
     }
 }

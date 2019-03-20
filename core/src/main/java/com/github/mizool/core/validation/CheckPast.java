@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 @VisibleForTesting
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class CheckPast implements ConstraintValidator<Past, ZonedDateTime>
+public class CheckPast implements ConstraintValidator<Past, Object>
 {
     private final Clock clock;
 
@@ -47,13 +47,19 @@ public class CheckPast implements ConstraintValidator<Past, ZonedDateTime>
     }
 
     @Override
-    public boolean isValid(ZonedDateTime validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(ZonedDateTime validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        return validationObject.isBefore(ZonedDateTime.now(clock));
+        boolean valid = false;
+        if (validationObject instanceof ZonedDateTime)
+        {
+            ZonedDateTime validationZonedDateTime = (ZonedDateTime) validationObject;
+            valid = validationZonedDateTime.isBefore(ZonedDateTime.now(clock));
+        }
+        return valid;
     }
 }

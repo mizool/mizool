@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package com.github.mizool.core.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
+public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
 {
     private Class enumeration;
     private boolean mandatory;
@@ -32,22 +32,24 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
     }
 
     @Override
-    public final boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public final boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        boolean valid;
+        boolean valid = false;
         try
         {
-            Enum.valueOf(enumeration, validationObject);
-            valid = true;
+            if (validationObject instanceof String)
+            {
+                Enum.valueOf(enumeration, (String) validationObject);
+                valid = true;
+            }
         }
-        catch (@SuppressWarnings("squid:S1166") IllegalArgumentException | NullPointerException ignored)
+        catch (IllegalArgumentException | NullPointerException ignored)
         {
-            valid = false;
         }
         return valid;
     }
