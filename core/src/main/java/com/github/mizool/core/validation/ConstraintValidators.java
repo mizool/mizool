@@ -25,6 +25,7 @@ import com.github.mizool.core.Streams;
 @UtilityClass
 public class ConstraintValidators
 {
+    // TODO There is no real type safety here, all callers use T=Object
     public static <T> boolean isValid(T validationObject, boolean mandatory, Predicate<T> isValidValue)
     {
         boolean result = isNullButOptional(validationObject, mandatory);
