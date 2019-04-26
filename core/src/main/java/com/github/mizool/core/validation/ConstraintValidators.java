@@ -25,6 +25,20 @@ import com.github.mizool.core.Streams;
 @UtilityClass
 public class ConstraintValidators
 {
+    /**
+     *
+     * @param field either an instance of Iterable<T> or an instance of T
+     * @param fieldMandatory
+     * @param isValidScalarValue
+     * @param scalarClass
+     * @param <T>
+     * @return
+     */
+    public static <T> boolean isValid(Object field, boolean fieldMandatory, Predicate<T> isValidScalarValue, Class<T> scalarClass)
+    {
+        // cont
+    }
+
     // TODO There is no real type safety here, all callers use T=Object
     public static <T> boolean isValid(T validationObject, boolean mandatory, Predicate<T> isValidValue)
     {

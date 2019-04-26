@@ -66,25 +66,54 @@ public class TestConstraintValidators
             // a null object is perfectly fine for optional fields
             { "null as value of an optional field", Type.OPTIONAL, null, PREDICATE_NOT_CALLED, true },
 
+            // we decided that mandatory = true" accepting an empty list would not be intuitive
+            { "empty list in mandatory field", Type.MANDATORY, Collections.emptyList(), PREDICATE_NOT_CALLED, false },
+
             // this is okay, if we want to have a non-empty list we would use a @Size constraint
-            { "empty list in mandatory field", Type.MANDATORY, Collections.emptyList(), PREDICATE_NOT_CALLED, true },
             { "empty list in optional field", Type.OPTIONAL, Collections.emptyList(), PREDICATE_NOT_CALLED, true },
 
-            // TODO I have a bad feeling about these two. Why is the predicate even called when we never do that for scalar fields where the value is null?
+
             {
                 "list with null element in optional field",
                 Type.OPTIONAL,
                 LIST_WITH_NULL_ELEMENT,
                 PREDICATE_NOT_CALLED,
-                true
+                false
             },
             {
                 "list with null element in mandatory field",
                 Type.MANDATORY,
                 LIST_WITH_NULL_ELEMENT,
                 PREDICATE_NOT_CALLED,
-                true
+                false
             },
             };
     }
+
+    /*
+
+    additional tests:
+
+     true predicate result is returned as true
+     false predicate result is returned as false
+     permutations to find loop errors: valid-invalid-valid results in false
+     happy cases: valid value in a list results in true, both for optional and mandatory fields
+     null values in a collection result in false withozt the predicate having been called with the null value
+        remark: for the non-null values (at least those before the null), the predicate can must have been called
+     when the predicate wants a string, it should not be called at all for a list of integers
+     reject field values that are neither T nor Iterable<T>, e.g. an Animal
+
+    other requirements:
+        - when a field List<Integer> is annotated with a beanval check that calls ConstraintValidators with
+          a predicate for T=String, this is a CodeInconsistencyException.
+
+
+
+    notes:
+     - to satisfy jens' curiosity, test this: when a DTO field wants a list of strings, but the client-supplied JSON
+       has a list of numbers, we should never even reach a bean validation check.
+     - encapsulate the expected true/false validation result in an enum to make the data provider more readable, e.g. "Validation.PASSED/FAILED"
+     - jens does not care whether the predicate throws exceptions or not. sven says it shouldn't.
+
+     */
 }
