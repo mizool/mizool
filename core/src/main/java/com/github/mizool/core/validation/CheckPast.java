@@ -49,17 +49,11 @@ public class CheckPast implements ConstraintValidator<Past, Object>
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, ZonedDateTime.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(ZonedDateTime validationObject)
     {
-        boolean valid = false;
-        if (validationObject instanceof ZonedDateTime)
-        {
-            ZonedDateTime validationZonedDateTime = (ZonedDateTime) validationObject;
-            valid = validationZonedDateTime.isBefore(ZonedDateTime.now(clock));
-        }
-        return valid;
+        return validationObject.isBefore(ZonedDateTime.now(clock));
     }
 }

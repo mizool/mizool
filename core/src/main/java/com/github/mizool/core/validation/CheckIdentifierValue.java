@@ -19,6 +19,8 @@ package com.github.mizool.core.validation;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import com.google.common.base.Strings;
+
 public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue, Object>
 {
     private boolean mandatory;
@@ -32,17 +34,11 @@ public class CheckIdentifierValue implements ConstraintValidator<IdentifierValue
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
-        if (validationObject instanceof String)
-        {
-            String validationString = (String) validationObject;
-            valid = !validationString.isEmpty();
-        }
-        return valid;
+        return !Strings.isNullOrEmpty(validationObject);
     }
 }

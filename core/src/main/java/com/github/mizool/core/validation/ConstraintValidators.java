@@ -21,38 +21,44 @@ import java.util.function.Predicate;
 import lombok.experimental.UtilityClass;
 
 import com.github.mizool.core.Streams;
+import com.github.mizool.core.exception.CodeInconsistencyException;
 
 @UtilityClass
 public class ConstraintValidators
 {
     /**
-     *
      * @param field either an instance of Iterable<T> or an instance of T
-     * @param fieldMandatory
-     * @param isValidScalarValue
-     * @param scalarClass
-     * @param <T>
-     * @return
      */
-    public static <T> boolean isValid(Object field, boolean fieldMandatory, Predicate<T> isValidScalarValue, Class<T> scalarClass)
+    public static <T> boolean isValid(
+        Object field, boolean fieldMandatory, Predicate<T> isValidScalarValue, Class<T> scalarClass)
     {
-        // cont
-    }
-
-    // TODO There is no real type safety here, all callers use T=Object
-    public static <T> boolean isValid(T validationObject, boolean mandatory, Predicate<T> isValidValue)
-    {
-        boolean result = isNullButOptional(validationObject, mandatory);
-        if (validationObject instanceof Iterable)
+        boolean result = isNullButOptional(field, fieldMandatory);
+        if (!result && field != null)
         {
-            Iterable<T> validationObjects = (Iterable<T>) validationObject;
-            result = result || isNotNullAndValid(validationObjects, isValidValue);
+            if (field instanceof Iterable)
+            {
+                Iterable<T> validationObjects = (Iterable<T>) field;
+                if (validationObjects.iterator().hasNext())
+                {
+                    result = isNotNullAndValid(validationObjects, isValidScalarValue);
+                }
+                else
+                {
+                    result = !fieldMandatory;
+                }
+            }
+            else if (field.getClass().isAssignableFrom(scalarClass))
+            {
+                result = isNotNullAndValid((T) field, isValidScalarValue);
+            }
+            else
+            {
+                throw new CodeInconsistencyException("Mismatching types, expected " +
+                    scalarClass +
+                    " but found " +
+                    field.getClass());
+            }
         }
-        else
-        {
-            result = result || isNotNullAndValid(validationObject, isValidValue);
-        }
-
         return result;
     }
 
@@ -68,6 +74,6 @@ public class ConstraintValidators
 
     private static <T> boolean isNotNullAndValid(Iterable<T> validationObjects, Predicate<T> isValidValue)
     {
-        return Streams.sequential(validationObjects).allMatch(isValidValue);
+        return Streams.sequential(validationObjects).allMatch(value -> isNotNullAndValid(value, isValidValue));
     }
 }

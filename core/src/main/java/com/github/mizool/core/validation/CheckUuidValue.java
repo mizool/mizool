@@ -35,24 +35,19 @@ public class CheckUuidValue implements ConstraintValidator<UuidValue, Object>
     public final boolean isValid(
         Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
         try
         {
-            if (validationObject instanceof String)
-            {
-                String validationString = (String) validationObject;
-                UUID.fromString(validationString);
-                valid = true;
-            }
+            UUID.fromString(validationObject);
+            return true;
         }
-        catch (IllegalArgumentException ignored)
+        catch (IllegalArgumentException exception)
         {
+            return false;
         }
-        return valid;
     }
 }

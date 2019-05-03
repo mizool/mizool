@@ -32,19 +32,13 @@ public class CheckDatabaseIdentifier implements ConstraintValidator<DatabaseIden
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
-        if (validationObject instanceof String)
-        {
-            String validationString = (String) validationObject;
-            return !validationString.isEmpty() &&
-                validationString.matches("[a-zA-Z][a-zA-Z0-9_]*") &&
-                validationString.length() <= 48;
-        }
-        return valid;
+        return !validationObject.isEmpty() &&
+            validationObject.matches("[a-zA-Z][a-zA-Z0-9_]*") &&
+            validationObject.length() <= 48;
     }
 }

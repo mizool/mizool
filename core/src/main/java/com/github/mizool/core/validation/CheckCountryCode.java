@@ -39,17 +39,11 @@ public class CheckCountryCode implements ConstraintValidator<CountryCode, Object
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
-        if (validationObject instanceof String)
-        {
-            String validationString = (String) validationObject;
-            return !validationString.isEmpty() && COUNTRY_CODES.contains(validationString);
-        }
-        return valid;
+        return !validationObject.isEmpty() && COUNTRY_CODES.contains(validationObject);
     }
 }

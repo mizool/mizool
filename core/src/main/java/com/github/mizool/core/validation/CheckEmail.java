@@ -32,18 +32,11 @@ public class CheckEmail implements ConstraintValidator<Email, Object>
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        // TODO This will wrongly return 'false' for 'null', but luckily, ConstraintValidators never calls it for 'null'.
-        boolean valid = false;
-        if (validationObject instanceof String)
-        {
-            String validationString = (String) validationObject;
-            valid = validationString.matches(".+[@].+\\..+");
-        }
-        return valid;
+        return validationObject.matches(".+[@].+\\..+");
     }
 }

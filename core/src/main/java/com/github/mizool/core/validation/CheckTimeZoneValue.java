@@ -34,21 +34,12 @@ public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, Ob
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
-        if (validationObject instanceof String)
-        {
-            String validationString = (String) validationObject;
-            if (!validationString.isEmpty())
-            {
-                TimeZone timeZone = TimeZone.getTimeZone(validationString);
-                valid = timeZone.getID().equals(validationString);
-            }
-        }
-        return valid;
+        TimeZone timeZone = TimeZone.getTimeZone(validationObject);
+        return timeZone.getID().equals(validationObject);
     }
 }

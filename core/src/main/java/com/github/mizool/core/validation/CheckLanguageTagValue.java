@@ -39,19 +39,13 @@ public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagVal
     @Override
     public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
-        if (validationObject instanceof String)
-        {
-            String validationString = (String) validationObject;
-            Locale locale = Locale.forLanguageTag(validationString);
-            valid = !validationString.isEmpty() && isValidLanguage(locale) && isValidCountry(locale);
-        }
-        return valid;
+        Locale locale = Locale.forLanguageTag(validationObject);
+        return !validationObject.isEmpty() && isValidLanguage(locale) && isValidCountry(locale);
     }
 
     private boolean isValidLanguage(Locale locale)

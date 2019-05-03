@@ -34,23 +34,19 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
     @Override
     public final boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
-        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
+        return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue, String.class);
     }
 
-    private boolean isValidValue(Object validationObject)
+    private boolean isValidValue(String validationObject)
     {
-        boolean valid = false;
         try
         {
-            if (validationObject instanceof String)
-            {
-                Enum.valueOf(enumeration, (String) validationObject);
-                valid = true;
-            }
+            Enum.valueOf(enumeration, validationObject);
+            return true;
         }
-        catch (IllegalArgumentException | NullPointerException ignored)
+        catch (IllegalArgumentException | NullPointerException exception)
         {
+            return false;
         }
-        return valid;
     }
 }
