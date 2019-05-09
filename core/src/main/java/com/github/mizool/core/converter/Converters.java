@@ -31,14 +31,10 @@ public class Converters
 {
     public <D, P> List<D> toDtos(List<P> pojos, Function<P, D> converter)
     {
-        List<D> results;
+        List<D> results = null;
         if (pojos != null)
         {
             results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
-        }
-        else
-        {
-            results = Collections.emptyList();
         }
         return results;
     }
@@ -83,14 +79,10 @@ public class Converters
 
     public <D, P> Set<D> toDtos(Set<P> pojos, Function<P, D> converter)
     {
-        Set<D> results;
+        Set<D> results = null;
         if (pojos != null)
         {
             results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
-        }
-        else
-        {
-            results = Collections.emptySet();
         }
         return results;
     }
