@@ -16,6 +16,8 @@
  */
 package com.github.mizool.core.rest.errorhandling;
 
+import java.util.Optional;
+
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.ClientErrorException;
@@ -23,29 +25,27 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.RuleViolationException;
-import com.github.mizool.core.exception.ServiceUnavailableException;
-import com.google.common.base.Optional;
 
 @Slf4j
 public class ErrorHandler
 {
-    private final ExceptionCatalog exceptionCatalog;
+    private final ErrorHandlingCatalog errorHandlingCatalog;
     private final ErrorMapper errorMapper;
     private final ConstraintViolationMapper constraintViolationMapper;
     private final RuleViolationMapper ruleViolationMapper;
 
     public ErrorHandler()
     {
-        this.exceptionCatalog = new ExceptionCatalog();
+        errorHandlingCatalog = new ErrorHandlingCatalog();
         errorMapper = new ErrorMapper();
         constraintViolationMapper = new ConstraintViolationMapper();
         ruleViolationMapper = new RuleViolationMapper();
     }
 
     @Inject
-    protected ErrorHandler(ExceptionCatalog exceptionCatalog)
+    protected ErrorHandler(ErrorHandlingCatalog errorHandlingCatalog)
     {
-        this.exceptionCatalog = exceptionCatalog;
+        this.errorHandlingCatalog = errorHandlingCatalog;
         errorMapper = new ErrorMapper();
         constraintViolationMapper = new ConstraintViolationMapper();
         ruleViolationMapper = new RuleViolationMapper();
@@ -63,10 +63,10 @@ public class ErrorHandler
         Throwable cursor = throwable;
         while (cursor != null)
         {
-            Optional<WhiteListEntry> whiteListEntry = exceptionCatalog.lookup(cursor);
-            if (whiteListEntry.isPresent())
+            Optional<ErrorHandlingBehavior> behaviourOptional = errorHandlingCatalog.lookup(cursor);
+            if (behaviourOptional.isPresent())
             {
-                result = errorMapper.handleWhitelistedException(cursor, whiteListEntry.get());
+                result = errorMapper.handleErrorAccordingToBehaviour(cursor, behaviourOptional.get());
                 break;
             }
             else if (isAssignable(ConstraintViolationException.class, cursor))
@@ -76,10 +76,6 @@ public class ErrorHandler
             else if (isAssignable(RuleViolationException.class, cursor))
             {
                 result = ruleViolationMapper.handleRuleViolationError((RuleViolationException) cursor);
-            }
-            else if (isAssignable(ServiceUnavailableException.class, cursor))
-            {
-                result = errorMapper.handleServiceUnavailableError((ServiceUnavailableException) cursor);
             }
             else if (isAssignable(ClientErrorException.class, cursor))
             {
