@@ -12,6 +12,8 @@ import com.google.common.collect.ImmutableMap;
 @Singleton
 class ErrorHandlingCatalog
 {
+    private static final String CORE_PACKAGE = ErrorHandlingCatalog.class.getPackage().getName();
+
     private final Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog;
 
     public ErrorHandlingCatalog()
@@ -20,10 +22,10 @@ class ErrorHandlingCatalog
         Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog = new HashMap<>();
         behaviours.forEach(behaviour -> {
             String behaviorPackage = behaviour.getClass().getPackage().getName();
-            String corePackage = getClass().getPackage().getName();
-            if (!catalog.containsKey(behaviour.getThrowableClass()) || !behaviorPackage.startsWith(corePackage))
+            Class<? extends Throwable> throwableClass = behaviour.getThrowableClass();
+            if (!catalog.containsKey(throwableClass) || !behaviorPackage.startsWith(CORE_PACKAGE))
             {
-                catalog.put(behaviour.getThrowableClass(), behaviour);
+                catalog.put(throwableClass, behaviour);
             }
         });
 
