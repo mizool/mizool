@@ -37,6 +37,7 @@ public class CheckEmail implements ConstraintValidator<Email, Object>
 
     private boolean isValidValue(Object validationObject)
     {
+        // TODO This will wrongly return 'false' for 'null', but luckily, ConstraintValidators never calls it for 'null'.
         boolean valid = false;
         if (validationObject instanceof String)
         {
