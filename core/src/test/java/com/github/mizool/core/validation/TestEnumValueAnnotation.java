@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,21 @@
  */
 package com.github.mizool.core.validation;
 
+import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.google.common.collect.ImmutableList;
+
 public class TestEnumValueAnnotation
 {
     private static enum TestEnum
     {
-        FOO, BAR
+        FOO,
+        BAR
     }
 
     @RequiredArgsConstructor
@@ -33,6 +38,20 @@ public class TestEnumValueAnnotation
     {
         @EnumValue(mandatory = false, value = TestEnum.class)
         private final String enumValue;
+    }
+
+    @RequiredArgsConstructor
+    private static class TestListData
+    {
+        @EnumValue(mandatory = false, value = TestEnum.class)
+        private final List<String> enumValues;
+    }
+
+    @RequiredArgsConstructor
+    private static class WrongDataTypeList
+    {
+        @EnumValue(mandatory = false, value = TestEnum.class)
+        private final List<Integer> enumValues;
     }
 
     @DataProvider
@@ -47,6 +66,20 @@ public class TestEnumValueAnnotation
         return new Object[][]{ { "" }, { "MOEP" } };
     }
 
+    @DataProvider
+    private Object[][] acceptableListValues()
+    {
+        return new Object[][]{ { null }, { ImmutableList.of("FOO") }, { ImmutableList.of("FOO", "BAR") } };
+    }
+
+    @DataProvider
+    private Object[][] unacceptableListValues()
+    {
+        return new Object[][]{
+            { ImmutableList.of("") }, { ImmutableList.of("MOEP") }, { ImmutableList.of("FOO", "MOEP") }
+        };
+    }
+
     @Test(dataProvider = "acceptableValues")
     public void testValidationOfAcceptableValues(String value)
     {
@@ -57,5 +90,24 @@ public class TestEnumValueAnnotation
     public void testValidationOfUnacceptableValues(String value)
     {
         ValidatorAnnotationTests.assertUnacceptableValue(new TestData(value), EnumValue.class);
+    }
+
+    @Test(dataProvider = "acceptableListValues")
+    public void testValidationOfAcceptableValues(List<String> values)
+    {
+        ValidatorAnnotationTests.assertAcceptableValue(new TestListData(values));
+    }
+
+    @Test(dataProvider = "unacceptableListValues")
+    public void testValidationOfUnacceptableListValues(List<String> values)
+    {
+        ValidatorAnnotationTests.assertUnacceptableValue(new TestListData(values), EnumValue.class);
+    }
+
+    @Test
+    public void testHandlesWrongDataType()
+    {
+        ValidatorAnnotationTests.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+            EnumValue.class);
     }
 }

@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import com.google.common.base.Enums;
 
-public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
+public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
 {
     private Class enumeration;
     private boolean mandatory;
@@ -34,13 +34,18 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, String>
     }
 
     @Override
-    public final boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public final boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        return Enums.getIfPresent(enumeration, validationObject).isPresent();
+        boolean valid = false;
+        if (validationObject instanceof String)
+        {
+            valid = Enums.getIfPresent(enumeration, (String) validationObject).isPresent();
+        }
+        return valid;
     }
 }

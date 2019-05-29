@@ -1,0 +1,188 @@
+= Data Types Reference
+incub8 Software Labs
+Version {project-version}
+
+== Supported
+
+[cols="1m,1m,1m,1m,1m,1m,1", options="header"]
+|===
+|CQL data type
+|DataStax Java type
+|JDBC column type signature
+|ResultSet getObject type
+|Enum constant
+|Pojo type
+|Remarks
+
+|decimal
+|java.{zwsp}math.{zwsp}BigDecimal
+|DECIMAL
+|java.{zwsp}math.{zwsp}BigDecimal
+|BIG_DECIMAL
+|java.{zwsp}math.{zwsp}BigDecimal
+|
+
+|boolean
+|boolean
+|BOOLEAN
+|java.{zwsp}lang.{zwsp}Boolean
+|BOOLEAN
+|java.{zwsp}lang.{zwsp}Boolean
+|
+
+|timestamp
+|java.{zwsp}time.{zwsp}Instant
+|TIMESTAMP
+|java.{zwsp}sql.{zwsp}Timestamp
+|INSTANT
+|java.{zwsp}time.{zwsp}Instant
+|must be converted with com.{zwsp}github.{zwsp}mizool.{zwsp}technology.{zwsp}typemapping.{zwsp}store.{zwsp}jdbc.{zwsp}JavaSqlTimestampConverter
+
+|double
+|double
+|DOUBLE
+|java.{zwsp}lang.{zwsp}Double
+|DOUBLE
+|java.{zwsp}lang.{zwsp}Double
+|
+
+|int
+|int
+|INTEGER
+|java.{zwsp}lang.{zwsp}Integer
+|INTEGER
+|java.{zwsp}lang.{zwsp}Integer
+|
+
+|bigint
+|long
+|BIGINT
+|java.{zwsp}lang.{zwsp}Long
+|LONG
+|java.{zwsp}lang.{zwsp}Long
+|
+
+|ascii
+|java.{zwsp}lang.{zwsp}String
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|STRING
+|java.{zwsp}lang.{zwsp}String
+|persisted as text column
+
+|text
+|java.{zwsp}lang.{zwsp}String
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|STRING
+|java.{zwsp}lang.{zwsp}String
+|
+
+|varchar
+|java.{zwsp}lang.{zwsp}String
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|STRING
+|java.{zwsp}lang.{zwsp}String
+|persisted as text column
+|===
+
+== Unsupported
+
+[cols="1m,1m,1m,1m,1", options="header"]
+|===
+|CQL data type
+|DataStax Java type
+|JDBC column type signature
+|ResultSet getObject type
+|Remarks
+
+|float
+|float
+|DOUBLE
+|java.{zwsp}lang.{zwsp}Double
+|we don't want to support this
+
+|blob
+|java.{zwsp}nio.{zwsp}ByteBuffer
+|VARBINARY
+|byte[]
+|we don't want to support this
+
+|list
+|java.{zwsp}util.{zwsp}List
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|would require specialized code to read the value
+
+|map
+|java.{zwsp}util.{zwsp}Map
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|would require specialized code to read the value
+
+|set
+|java.{zwsp}util.{zwsp}Set
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|would require specialized code to read the value
+
+|varint
+|java.{zwsp}math.{zwsp}BigInteger
+|VARCHAR
+|java.{zwsp}lang.{zwsp}String
+|we cannot reliably detect this column type
+
+|timeuuid
+|java.{zwsp}util.{zwsp}UUID
+|VARCHAR(36)
+|java.{zwsp}lang.{zwsp}String
+|we cannot reliably detect this column type
+
+|uuid
+|java.{zwsp}util.{zwsp}UUID
+|VARCHAR(36)
+|java.{zwsp}lang.{zwsp}String
+|we cannot reliably detect this column type
+
+|inet
+|java.{zwsp}net.{zwsp}InetAddress
+|VARCHAR(45)
+|java.{zwsp}lang.{zwsp}String
+|we cannot reliably detect this column type
+
+|counter
+|long
+|
+|
+|cannot be added to a non counter column family
+
+|date
+|LocalDate
+|
+|
+|presence of type breaks presto 0.150 selects on that table
+
+|smallint
+|short
+|
+|
+|presence of type breaks presto 0.150 selects on that table
+
+|time
+|long
+|
+|
+|presence of type breaks presto 0.150 selects on that table
+
+|tinyint
+|byte
+|
+|
+|presence of type breaks presto 0.150 selects on that table
+
+|tuple
+|TupleValue
+|
+|
+|unknown on testix

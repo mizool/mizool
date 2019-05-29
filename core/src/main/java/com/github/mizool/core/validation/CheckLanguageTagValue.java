@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2019 incub8 Software Labs GmbH
+ * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import com.google.common.collect.ImmutableSet;
 
-public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagValue, String>
+public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagValue, Object>
 {
     private static final Set<String> LANGUAGE_CODES = ImmutableSet.copyOf(Locale.getISOLanguages());
     private static final Set<String> COUNTRY_CODES = ImmutableSet.copyOf(Locale.getISOCountries());
@@ -37,15 +37,21 @@ public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagVal
     }
 
     @Override
-    public boolean isValid(String validationObject, ConstraintValidatorContext constraintValidatorContext)
+    public boolean isValid(Object validationObject, ConstraintValidatorContext constraintValidatorContext)
     {
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
-    private boolean isValidValue(String validationObject)
+    private boolean isValidValue(Object validationObject)
     {
-        Locale locale = Locale.forLanguageTag(validationObject);
-        return !validationObject.isEmpty() && isValidLanguage(locale) && isValidCountry(locale);
+        boolean valid = false;
+        if (validationObject instanceof String)
+        {
+            String validationString = (String) validationObject;
+            Locale locale = Locale.forLanguageTag(validationString);
+            valid = !validationString.isEmpty() && isValidLanguage(locale) && isValidCountry(locale);
+        }
+        return valid;
     }
 
     private boolean isValidLanguage(Locale locale)
