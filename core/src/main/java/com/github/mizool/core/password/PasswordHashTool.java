@@ -47,7 +47,7 @@ public class PasswordHashTool
                 }
             }
         }
-        catch (@SuppressWarnings("squid:S1166") ParameterException e)
+        catch (ParameterException ignored)
         {
             jCommander.usage();
         }
