@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.mizool.technology.table-access</groupId>
         <artifactId>table-access</artifactId>
-        <version>0.29-SNAPSHOT</version>
+        <version>0.29</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
