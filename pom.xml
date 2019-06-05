@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.28</version>
+    <version>0.29</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -219,6 +219,36 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>com.github.mizool.technology.table-access</groupId>
+                <artifactId>table-access-business</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.table-access.store</groupId>
+                <artifactId>store-cassandra</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.table-access.store</groupId>
+                <artifactId>store-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping</groupId>
+                <artifactId>typemapping-business</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping.store</groupId>
+                <artifactId>store-cassandra</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology.typemapping.store</groupId>
+                <artifactId>store-jdbc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>25.1-jre</version>
@@ -244,6 +274,11 @@
                 <artifactId>cdi-api</artifactId>
                 <version>1.2</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
             </dependency>
             <dependency>
                 <groupId>javax.mail</groupId>

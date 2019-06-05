@@ -29,7 +29,7 @@ public class Threads
     /**
      * @throws UncheckedInterruptedException If the thread was interrupted.
      */
-    public void sleep(int milliSeconds)
+    public void sleep(long milliSeconds)
     {
         try
         {

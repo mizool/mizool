@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,33 @@ import com.google.common.collect.ImmutableSet;
 @UtilityClass
 public class Converters
 {
-    public <D, P> List<D> fromPojos(List<P> pojos, Function<P, D> converter)
+    public <D, P> List<D> toDtos(List<P> pojos, Function<P, D> converter)
     {
         List<D> results = null;
+        if (pojos != null)
+        {
+            results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
+        }
+        return results;
+    }
+
+    public <R, P> List<R> toRecords(List<P> pojos, Function<P, R> converter)
+    {
+        List<R> results = null;
+        if (pojos != null && !pojos.isEmpty())
+        {
+            results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
+        }
+        return results;
+    }
+
+    /**
+     * @deprecated Use {@link Converters#toRecords(List, Function)} instead.
+     */
+    @Deprecated
+    public <R, P> List<R> fromPojos(List<P> pojos, Function<P, R> converter)
+    {
+        List<R> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
             results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
@@ -53,9 +77,34 @@ public class Converters
         return pojos;
     }
 
-    public <D, P> Set<D> fromPojos(Set<P> pojos, Function<P, D> converter)
+    public <D, P> Set<D> toDtos(Set<P> pojos, Function<P, D> converter)
     {
         Set<D> results = null;
+        if (pojos != null)
+        {
+            results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
+        }
+        return results;
+    }
+
+    public <R, P> Set<R> toRecords(Set<P> pojos, Function<P, R> converter)
+    {
+        Set<R> results = null;
+        if (pojos != null && !pojos.isEmpty())
+        {
+            results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
+        }
+
+        return results;
+    }
+
+    /**
+     * @deprecated Use {@link Converters#toRecords(Set, Function)} instead.
+     */
+    @Deprecated
+    public <R, P> Set<R> fromPojos(Set<P> pojos, Function<P, R> converter)
+    {
+        Set<R> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
             results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());

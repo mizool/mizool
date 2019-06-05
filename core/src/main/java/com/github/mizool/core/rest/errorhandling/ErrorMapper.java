@@ -24,7 +24,6 @@ import javax.ws.rs.ClientErrorException;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.MethodNotAllowedException;
-import com.github.mizool.core.exception.ServiceUnavailableException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.HashMultimap;
@@ -38,18 +37,24 @@ public class ErrorMapper
     @VisibleForTesting
     public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
 
-    public ErrorResponse handleWhitelistedException(Throwable t, WhiteListEntry whiteListEntry)
+    public ErrorResponse handleErrorAccordingToBehaviour(Throwable t, ErrorHandlingBehavior behaviour)
     {
-        log.debug("Whitelisted exception", t);
-        Map<String, String> parameters = null;
+        behaviour.getMessageLogLevel().log(log, t.getMessage());
+        behaviour.getStackTraceLogLevel().log(log, t.getMessage(), t);
 
-        if (whiteListEntry.getShouldIncludeDetails())
+        Map<String, String> parameters = null;
+        if (behaviour.includeDetails())
         {
             parameters = createExceptionParameters(t);
         }
-        ErrorDto error = new ErrorDto(t.getClass().getName(), parameters);
+
+        ErrorDto error = ErrorDto.createGenericError(parameters);
+        if (behaviour.includeErrorId())
+        {
+            error = new ErrorDto(t.getClass().getName(), parameters);
+        }
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
-        return new ErrorResponse(whiteListEntry.getStatusCode(), errorMessage);
+        return new ErrorResponse(behaviour.getStatusCode(), errorMessage);
     }
 
     public ErrorResponse handleClientError(ClientErrorException e)
@@ -75,16 +80,6 @@ public class ErrorMapper
                 errorClass = defaultErrorClass;
         }
         return errorClass;
-    }
-
-    public ErrorResponse handleServiceUnavailableError(ServiceUnavailableException serviceUnavailableException)
-    {
-        log.error("Service unavailable error", serviceUnavailableException);
-        Map<String, String> parameters = createExceptionParameters(serviceUnavailableException);
-
-        ErrorDto error = ErrorDto.createGenericError(parameters);
-        ErrorMessageDto errorMessage = createErrorMessageDto(error);
-        return new ErrorResponse(HttpServletResponse.SC_SERVICE_UNAVAILABLE, errorMessage);
     }
 
     public ErrorResponse handleUndefinedError(Throwable throwable)
