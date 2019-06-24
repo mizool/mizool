@@ -39,8 +39,7 @@ public class ErrorMapper
 
     public ErrorResponse handleErrorAccordingToBehaviour(Throwable t, ErrorHandlingBehavior behaviour)
     {
-        behaviour.getMessageLogLevel().log(log, t.getMessage());
-        behaviour.getStackTraceLogLevel().log(log, t.getMessage(), t);
+        logError(t, behaviour);
 
         Map<String, String> parameters = null;
         if (behaviour.includeDetails())
@@ -68,6 +67,40 @@ public class ErrorMapper
         return new ErrorResponse(statusCode, errorMessage);
     }
 
+    public ErrorResponse handleUndefinedError(Throwable throwable)
+    {
+        log.error("Unhandled error", throwable);
+        Map<String, String> parameters = createExceptionParameters(throwable);
+
+        ErrorDto error = ErrorDto.createGenericError(parameters);
+        ErrorMessageDto errorMessage = createErrorMessageDto(error);
+        return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
+    }
+
+    private void logError(Throwable t, ErrorHandlingBehavior behaviour)
+    {
+        Throwable rootCause = determineRootCause(t);
+        if (rootCause != t)
+        {
+            behaviour.getMessageLogLevel().log(log, "{} - {}", t.getMessage(), rootCause.getMessage());
+        }
+        else
+        {
+            behaviour.getMessageLogLevel().log(log, t.getMessage());
+        }
+        behaviour.getStackTraceLogLevel().log(log, t.getMessage(), t);
+    }
+
+    private Throwable determineRootCause(Throwable t)
+    {
+        Throwable rootCause = t;
+        while (rootCause.getCause() != null)
+        {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause;
+    }
+
     private Class<? extends Exception> determineErrorClass(int statusCode, Class<? extends Exception> defaultErrorClass)
     {
         Class<? extends Exception> errorClass;
@@ -80,16 +113,6 @@ public class ErrorMapper
                 errorClass = defaultErrorClass;
         }
         return errorClass;
-    }
-
-    public ErrorResponse handleUndefinedError(Throwable throwable)
-    {
-        log.error("Unhandled error", throwable);
-        Map<String, String> parameters = createExceptionParameters(throwable);
-
-        ErrorDto error = ErrorDto.createGenericError(parameters);
-        ErrorMessageDto errorMessage = createErrorMessageDto(error);
-        return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
     }
 
     private Map<String, String> createExceptionParameters(Throwable throwable)
