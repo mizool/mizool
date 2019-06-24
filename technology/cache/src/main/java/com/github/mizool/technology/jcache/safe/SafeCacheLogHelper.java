@@ -60,16 +60,27 @@ class SafeCacheLogHelper
         log(cacheName + " cache remove all failed", e, log);
     }
 
-    private void log(String message, Exception e, Logger log)
+    private Throwable rootCause(Throwable t)
     {
-        if (e instanceof CacheTimeoutException)
+        Throwable result = t;
+        while (result.getCause() != null)
         {
-            log.warn("{} - {}", message, e.getClass().getName());
-            log.debug(message, e);
+            result = result.getCause();
+        }
+        return result;
+    }
+
+    private void log(String message, Throwable t, Logger log)
+    {
+        if (t instanceof CacheTimeoutException)
+        {
+            t = rootCause(t);
+            log.warn("{} - {}", message, t.getClass().getName());
+            log.debug(message, t);
         }
         else
         {
-            log.warn("{} - {}", message, e);
+            log.warn("{} - {}", message, t);
         }
     }
 }
