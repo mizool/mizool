@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.mizool.technology.typemapping.store</groupId>
         <artifactId>store</artifactId>
-        <version>0.30</version>
+        <version>0.31-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
