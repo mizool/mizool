@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2019 incub8 Software Labs GmbH
  * Copyright 2017-2019 protel Hotelsoftware GmbH
  *
@@ -119,7 +119,7 @@ public class Optionals
      *     .map(Optional::get)
      * }</pre>
      */
-    public <T> Stream<T> streamPresentValue(Optional<T> optional)
+    public <T> Stream<T> streamPresentValue(@NonNull Optional<T> optional)
     {
         return optional.map(Stream::of).orElseGet(Stream::empty);
     }
