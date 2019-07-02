@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -32,28 +31,29 @@ import com.google.common.collect.ImmutableList;
 public class TestOptionals
 {
     @Test(dataProvider = "optionalStreams")
-    public <T> void testMapToValue(Collection<Optional<T>> input, Iterable<T> expected)
+    public <T> void testStreamPresentValue(String testName, Collection<Optional<T>> input, Iterable<T> expected)
     {
-        List<T> actual = input.stream().flatMap(Optionals::mapToValue).collect(Collectors.toList());
-        assertThat(actual).containsExactlyElementsOf(expected);
+        List<T> actual = input.stream().flatMap(Optionals::streamPresentValue).collect(ImmutableList.toImmutableList());
+        assertThat(actual).containsOnlyElementsOf(expected);
     }
 
     @DataProvider
     private Object[][] optionalStreams()
     {
-        List<Object> emptyList = Collections.emptyList();
+        List<Void> emptyList = Collections.emptyList();
 
-        Optional<Object> empty = Optional.empty();
+        Optional<Void> empty = Optional.empty();
         Optional<String> a = Optional.of("a");
         Optional<String> b = Optional.of("b");
         Optional<String> c = Optional.of("c");
 
         return new Object[][]{
-            { emptyList, emptyList },
-            { ImmutableList.of(empty), emptyList },
-            { ImmutableList.of(a), ImmutableList.of("a") },
-            { ImmutableList.of(a, b, c), ImmutableList.of("a", "b", "c") },
-            { ImmutableList.of(a, empty, c), ImmutableList.of("a", "c") }
+            { "empty stream", emptyList, emptyList },
+            { "isolated empty optional", ImmutableList.of(empty), emptyList },
+            { "single value", ImmutableList.of(a), ImmutableList.of("a") },
+            { "multiple values", ImmutableList.of(a, b, c), ImmutableList.of("a", "b", "c") },
+            { "empty optional among values", ImmutableList.of(a, empty, c), ImmutableList.of("a", "c") },
+            { "multiple equal values", ImmutableList.of(a, a), ImmutableList.of("a", "a") }
         };
     }
 }

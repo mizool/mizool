@@ -106,11 +106,12 @@ public class Optionals
     }
 
     /**
-     * Used in streams to {@linkplain Stream#flatMap(Function) flat-map} each {@link Optional} to its value if present.<br>
+     * Used in streams to {@linkplain Stream#flatMap(Function) flat-map} each {@link Optional} to its value if
+     * present.<br>
      * <br>
      * This method is intended to be used as follows:
      * <pre>{@code
-     *     .flatMap(Optionals::mapToValue)
+     *     .flatMap(Optionals::streamPresentValue)
      * }</pre>
      * Using this method is equivalent of chaining {@link Optional#isPresent()} and {@link Optional#get()} like this:
      * <pre>{@code
@@ -118,7 +119,7 @@ public class Optionals
      *     .map(Optional::get)
      * }</pre>
      */
-    public <T> Stream<T> mapToValue(Optional<T> optional)
+    public <T> Stream<T> streamPresentValue(Optional<T> optional)
     {
         return optional.map(Stream::of).orElseGet(Stream::empty);
     }
