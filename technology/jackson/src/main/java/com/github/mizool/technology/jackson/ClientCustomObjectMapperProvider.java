@@ -24,12 +24,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Provider
 public class ClientCustomObjectMapperProvider implements ContextResolver<ObjectMapper>
 {
-    // jax rs client has a problem injecting the ObjectMapper from our producer, so we get it manually
-    private final CustomObjectMapperProducer customObjectMapperProducer = new CustomObjectMapperProducer();
-
     @Override
     public ObjectMapper getContext(Class<?> type)
     {
-        return customObjectMapperProducer.produce();
+        return CustomObjectMapperFactory.create();
     }
 }
