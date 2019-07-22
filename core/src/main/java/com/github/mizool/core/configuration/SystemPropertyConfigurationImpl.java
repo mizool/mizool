@@ -9,8 +9,8 @@ class SystemPropertyConfigurationImpl implements Configuration
     }
 
     @Override
-    public String get(String key, String def)
+    public String get(String key, String defaultValue)
     {
-        return System.getProperty(key, def);
+        return System.getProperty(key, defaultValue);
     }
 }

@@ -2,8 +2,6 @@ package com.github.mizool.core.configuration;
 
 import javax.enterprise.inject.Vetoed;
 
-import com.google.common.base.Strings;
-
 @Vetoed
 public class EnvironmentVariableConfigurationImpl implements Configuration
 {
@@ -14,12 +12,12 @@ public class EnvironmentVariableConfigurationImpl implements Configuration
     }
 
     @Override
-    public String get(String key, String def)
+    public String get(String key, String defaultValue)
     {
         String result = System.getenv(key);
-        if (Strings.isNullOrEmpty(result))
+        if (result != null)
         {
-            result = def;
+            result = defaultValue;
         }
         return result;
     }
