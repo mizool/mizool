@@ -36,14 +36,9 @@ public class CheckPostDto implements ConstraintValidator<PostDto, Dto>
 
     private boolean isValidValue(Dto dto)
     {
-        boolean valid = false;
-        if (dto.getId() == null &&
+        return dto.getId() == null &&
             dto.getTimestamp() == null &&
             dto.getCreationTimestamp() == null &&
-            dto.getModificationTimestamp() == null)
-        {
-            valid = true;
-        }
-        return valid;
+            dto.getModificationTimestamp() == null;
     }
 }
