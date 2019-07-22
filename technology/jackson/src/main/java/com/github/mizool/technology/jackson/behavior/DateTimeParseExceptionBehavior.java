@@ -2,11 +2,10 @@ package com.github.mizool.technology.jackson.behavior;
 
 import java.time.format.DateTimeParseException;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.kohsuke.MetaInfServices;
 
 import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
+import com.github.mizool.core.rest.errorhandling.HttpStatus;
 import com.github.mizool.core.rest.errorhandling.LogLevel;
 
 @MetaInfServices
@@ -33,7 +32,7 @@ public class DateTimeParseExceptionBehavior implements ErrorHandlingBehavior
     @Override
     public int getStatusCode()
     {
-        return HttpServletResponse.SC_BAD_REQUEST;
+        return HttpStatus.BAD_REQUEST;
     }
 
     @Override

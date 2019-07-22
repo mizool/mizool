@@ -18,7 +18,6 @@ package com.github.mizool.core.rest.errorhandling;
 
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.ClientErrorException;
 
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +73,7 @@ public class ErrorMapper
 
         ErrorDto error = ErrorDto.createGenericError(parameters);
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
-        return new ErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
 
     private void logError(Throwable t, ErrorHandlingBehavior behaviour)
@@ -106,7 +105,7 @@ public class ErrorMapper
         Class<? extends Exception> errorClass;
         switch (statusCode)
         {
-            case HttpServletResponse.SC_METHOD_NOT_ALLOWED:
+            case HttpStatus.METHOD_NOT_ALLOWED:
                 errorClass = MethodNotAllowedException.class;
                 break;
             default:
