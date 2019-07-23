@@ -40,6 +40,14 @@ public class Optionals
 
     /**
      * Used when a user directly requests an object, resulting in an ObjectNotFoundException if it does not exist.
+     */
+    public <T> Function<Optional<T>, T> unwrapUserRequestedObject(@NonNull Class<T> classOfT)
+    {
+        return optional -> unwrapUserRequestedObject(optional, classOfT);
+    }
+
+    /**
+     * Used when a user directly requests an object, resulting in an ObjectNotFoundException if it does not exist.
      *
      * @deprecated Use {@link Optionals#unwrapUserRequestedObject(Optional, Class)} instead.
      */
@@ -66,6 +74,15 @@ public class Optionals
     /**
      * Used when an object can be reasonably expected to exist, resulting in a DataInconsistencyException if it does not
      * exist.
+     */
+    public <T> Function<Optional<T>, T> unwrapRequiredObject(@NonNull Class<T> classOfT)
+    {
+        return optional -> unwrapRequiredObject(optional, classOfT);
+    }
+
+    /**
+     * Used when an object can be reasonably expected to exist, resulting in a DataInconsistencyException if it does not
+     * exist.
      *
      * @deprecated Use {@link Optionals#unwrapRequiredObject(Optional, Class)} instead.
      */
@@ -86,6 +103,15 @@ public class Optionals
     public <T> T unwrapUserMentionedObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
         return wrapped.orElseThrow(() -> new UnprocessableEntityException(classOfT.getSimpleName() + " not found"));
+    }
+
+    /**
+     * Used when a user-submitted entity refers to another object, resulting in a UnprocessableEntityException if that
+     * object does not exist.
+     */
+    public <T> Function<Optional<T>, T> unwrapUserMentionedObject(@NonNull Class<T> classOfT)
+    {
+        return optional -> unwrapUserMentionedObject(optional, classOfT);
     }
 
     /**
