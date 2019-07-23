@@ -14,25 +14,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.technology.jackson;
+package com.github.mizool.technology.jackson.jaxrs;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 
-import org.glassfish.jersey.jackson.JacksonFeature;
-
-public class ClientProvider
+public class ClientProducer
 {
     @Produces
     @Singleton
     public Client produce()
     {
-        Client client = ClientBuilder.newClient().register(JacksonFeature.class)
-            // the JacksonFeature kills our custom ObjectMapper, so we have to register it afterwards
-            .register(ClientCustomObjectMapperProvider.class);
-
-        return client;
+        return ClientFactory.create();
     }
 }
