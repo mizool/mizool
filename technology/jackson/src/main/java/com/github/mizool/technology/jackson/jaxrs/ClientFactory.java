@@ -1,4 +1,4 @@
-package com.github.mizool.technology.jackson;
+package com.github.mizool.technology.jackson.jaxrs;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -6,6 +6,8 @@ import javax.ws.rs.client.ClientBuilder;
 import lombok.experimental.UtilityClass;
 
 import org.glassfish.jersey.jackson.JacksonFeature;
+
+import com.github.mizool.technology.jackson.ClientCustomObjectMapperProvider;
 
 @UtilityClass
 class ClientFactory

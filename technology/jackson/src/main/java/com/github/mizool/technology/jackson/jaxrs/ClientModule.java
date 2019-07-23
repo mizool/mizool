@@ -1,4 +1,4 @@
-package com.github.mizool.technology.jackson;
+package com.github.mizool.technology.jackson.jaxrs;
 
 import javax.ws.rs.client.Client;
 

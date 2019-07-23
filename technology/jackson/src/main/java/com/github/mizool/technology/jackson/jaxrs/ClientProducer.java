@@ -14,7 +14,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.technology.jackson;
+package com.github.mizool.technology.jackson.jaxrs;
 
 import javax.enterprise.inject.Produces;
 import javax.inject.Singleton;
