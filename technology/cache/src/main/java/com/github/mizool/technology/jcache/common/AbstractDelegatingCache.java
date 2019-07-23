@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
  */
 package com.github.mizool.technology.jcache.common;
 
-public interface CacheMethodsUsedByReferenceImplementation
+import javax.cache.Cache;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
+
+@RequiredArgsConstructor
+public abstract class AbstractDelegatingCache<K, V> implements Cache<K, V>
 {
-    <K, V> V get(K key);
-
-    <K, V> void put(K key, V value);
-
-    <K> boolean remove(K key);
-
-    void removeAll();
+    @Getter(AccessLevel.PROTECTED)
+    @Delegate
+    private final Cache<K, V> target;
 }
