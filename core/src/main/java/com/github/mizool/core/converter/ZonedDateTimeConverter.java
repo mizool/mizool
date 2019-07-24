@@ -17,6 +17,7 @@
 package com.github.mizool.core.converter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -56,7 +57,6 @@ public class ZonedDateTimeConverter
     public ZonedDateTime fromInstant(Instant value, ZoneId zoneId)
     {
         ZonedDateTime result = null;
-
         if (value != null)
         {
             result = value.atZone(zoneId);
@@ -67,10 +67,34 @@ public class ZonedDateTimeConverter
     public Instant toInstant(ZonedDateTime value)
     {
         Instant result = null;
-
         if (value != null)
         {
             result = value.toInstant();
+        }
+        return result;
+    }
+
+    public ZonedDateTime fromLocalDateTime(LocalDateTime value)
+    {
+        return fromLocalDateTime(value, ZoneOffset.UTC);
+    }
+
+    public ZonedDateTime fromLocalDateTime(LocalDateTime value, ZoneId zoneId)
+    {
+        ZonedDateTime result = null;
+        if (value != null)
+        {
+            result = value.atZone(zoneId);
+        }
+        return result;
+    }
+
+    public LocalDateTime toLocalDateTime(ZonedDateTime value)
+    {
+        LocalDateTime result = null;
+        if (value != null)
+        {
+            result = value.withZoneSameInstant(ZoneOffset.UTC).toLocalDateTime();
         }
         return result;
     }
