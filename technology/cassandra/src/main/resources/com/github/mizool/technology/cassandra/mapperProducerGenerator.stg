@@ -45,6 +45,7 @@ class $className$MapperProducer
         mapper.setDefaultGetOptions(Option.consistencyLevel(DefaultConsistencyLevel.READ));
         mapper.setDefaultSaveOptions(Option.consistencyLevel(DefaultConsistencyLevel.WRITE));
         mapper.setDefaultDeleteOptions(Option.consistencyLevel(DefaultConsistencyLevel.WRITE));
+        mapper.setDefaultSaveOptions(Mapper.Option.saveNullFields(false));
         return mapper;
     }
 }
