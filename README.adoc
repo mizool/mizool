@@ -1,3 +1,10 @@
+https://maven-badges.herokuapp.com/maven-central/com.github.mizool/mizool/[image:https://maven-badges.herokuapp.com/maven-central/com.github.mizool/mizool/badge.svg[mizool
+Maven Central]]
+
+https://sonarcloud.io/dashboard?id=com.github.mizool%3Amizool[image:https://sonarcloud.io/api/project_badges/measure?project=com.github.mizool%3Amizool&metric=alert_status[Quality
+Gate Status]]
+
+
 == About Mizool
 _TODO_
 

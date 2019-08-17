@@ -1,6 +1,6 @@
 /**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2019 incub8 Software Labs GmbH
+ * Copyright 2018-2019 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.technology.jackson;
+package com.github.mizool.technology.jcache.common;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
+import javax.cache.Cache;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.Delegate;
 
-public class CustomObjectMapperProducer
+@RequiredArgsConstructor
+public abstract class AbstractDelegatingCache<K, V> implements Cache<K, V>
 {
-    @Produces
-    @Singleton
-    public ObjectMapper produce()
-    {
-        return CustomObjectMapperFactory.create();
-    }
+    @Getter(AccessLevel.PROTECTED)
+    @Delegate
+    private final Cache<K, V> target;
 }

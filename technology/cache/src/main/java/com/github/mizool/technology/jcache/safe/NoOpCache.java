@@ -16,18 +16,14 @@
  */
 package com.github.mizool.technology.jcache.safe;
 
-import javax.cache.Cache;
+import com.github.mizool.technology.jcache.common.AbstractDelegatingCache;
 
-import lombok.experimental.Delegate;
-
-import com.github.mizool.technology.jcache.common.CacheMethodsUsedByReferenceImplementation;
-
-@SuppressWarnings("overrides")
-    //needed because of lombok @Delegate with varargs methods
-class NoOpCache<K, V> implements Cache<K, V>
+class NoOpCache<K, V> extends AbstractDelegatingCache<K, V>
 {
-    @Delegate(excludes = { CacheMethodsUsedByReferenceImplementation.class })
-    private final Cache<K, V> target = null;
+    public NoOpCache()
+    {
+        super(null);
+    }
 
     @Override
     public V get(K key)

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>0.31</version>
+        <version>0.32</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,8 +18,18 @@
             <artifactId>jcommander</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>javax.enterprise</groupId>

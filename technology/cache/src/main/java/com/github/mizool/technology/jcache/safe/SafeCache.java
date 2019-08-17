@@ -19,23 +19,20 @@ package com.github.mizool.technology.jcache.safe;
 import javax.cache.Cache;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
-import com.github.mizool.technology.jcache.common.CacheMethodsUsedByReferenceImplementation;
+import com.github.mizool.technology.jcache.common.AbstractDelegatingCache;
 
-@SuppressWarnings("overrides") //needed because of lombok @Delegate with varargs methods
 @Slf4j
-@RequiredArgsConstructor
-class SafeCache<K, V> implements Cache<K, V>
+class SafeCache<K, V> extends AbstractDelegatingCache<K, V>
 {
-    @Delegate(excludes = { CacheMethodsUsedByReferenceImplementation.class })
-    @NonNull
-    private final Cache<K, V> target;
-
-    @NonNull
     private final CacheWatchdog cacheWatchdog;
+
+    public SafeCache(@NonNull Cache<K, V> target, @NonNull CacheWatchdog cacheWatchdog)
+    {
+        super(target);
+        this.cacheWatchdog = cacheWatchdog;
+    }
 
     @Override
     public V get(K key)
@@ -47,12 +44,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
-            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
-            return target.get(key);
+            cacheWatchdog.resetCacheIfRequired(getTarget().getCacheManager());
+            return getTarget().get(key);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.onGet(target.getName(), key.toString(), e, log);
+            SafeCacheLogHelper.onGet(getTarget().getName(), key.toString(), e, log);
             cacheWatchdog.cacheOperationFailed();
             return null;
         }
@@ -68,12 +65,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
-            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
-            target.put(key, value);
+            cacheWatchdog.resetCacheIfRequired(getTarget().getCacheManager());
+            getTarget().put(key, value);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.onPut(target.getName(), key.toString(), e, log);
+            SafeCacheLogHelper.onPut(getTarget().getName(), key.toString(), e, log);
             cacheWatchdog.cacheOperationFailed();
         }
     }
@@ -88,12 +85,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
-            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
-            return target.remove(key);
+            cacheWatchdog.resetCacheIfRequired(getTarget().getCacheManager());
+            return getTarget().remove(key);
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.onRemove(target.getName(), key.toString(), e, log);
+            SafeCacheLogHelper.onRemove(getTarget().getName(), key.toString(), e, log);
             cacheWatchdog.cacheOperationFailed();
             return false;
         }
@@ -109,12 +106,12 @@ class SafeCache<K, V> implements Cache<K, V>
 
         try
         {
-            cacheWatchdog.resetCacheIfRequired(target.getCacheManager());
-            target.removeAll();
+            cacheWatchdog.resetCacheIfRequired(getTarget().getCacheManager());
+            getTarget().removeAll();
         }
         catch (RuntimeException e)
         {
-            SafeCacheLogHelper.onRemoveAll(target.getName(), e, log);
+            SafeCacheLogHelper.onRemoveAll(getTarget().getName(), e, log);
             cacheWatchdog.cacheOperationFailed();
         }
     }

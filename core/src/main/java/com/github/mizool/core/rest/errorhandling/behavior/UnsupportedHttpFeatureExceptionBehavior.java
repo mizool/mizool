@@ -1,11 +1,10 @@
 package com.github.mizool.core.rest.errorhandling.behavior;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.kohsuke.MetaInfServices;
 
 import com.github.mizool.core.exception.UnsupportedHttpFeatureException;
 import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
+import com.github.mizool.core.rest.errorhandling.HttpStatus;
 import com.github.mizool.core.rest.errorhandling.LogLevel;
 
 @MetaInfServices
@@ -32,7 +31,7 @@ public class UnsupportedHttpFeatureExceptionBehavior implements ErrorHandlingBeh
     @Override
     public int getStatusCode()
     {
-        return HttpServletResponse.SC_NOT_IMPLEMENTED;
+        return HttpStatus.NOT_IMPLEMENTED;
     }
 
     @Override

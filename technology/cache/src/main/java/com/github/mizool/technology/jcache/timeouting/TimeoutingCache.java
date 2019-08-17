@@ -21,28 +21,25 @@ import java.util.concurrent.Callable;
 import javax.cache.Cache;
 
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Delegate;
 import lombok.extern.slf4j.Slf4j;
 
-import com.github.mizool.technology.jcache.common.CacheMethodsUsedByReferenceImplementation;
+import com.github.mizool.technology.jcache.common.AbstractDelegatingCache;
 
-@SuppressWarnings("overrides") //needed because of lombok @Delegate with varargs methods
 @Slf4j
-@RequiredArgsConstructor
-class TimeoutingCache<K, V> implements Cache<K, V>
+class TimeoutingCache<K, V> extends AbstractDelegatingCache<K, V>
 {
-    @Delegate(excludes = { CacheMethodsUsedByReferenceImplementation.class })
-    @NonNull
-    private final Cache<K, V> target;
-
-    @NonNull
     private final TimeoutingExecutor timeoutingExecutor;
+
+    public TimeoutingCache(@NonNull Cache<K, V> target, @NonNull TimeoutingExecutor timeoutingExecutor)
+    {
+        super(target);
+        this.timeoutingExecutor = timeoutingExecutor;
+    }
 
     @Override
     public V get(K key)
     {
-        Callable<V> callable = () -> target.get(key);
+        Callable<V> callable = () -> getTarget().get(key);
         V result = timeoutingExecutor.execute(callable);
         return result;
     }
@@ -50,14 +47,14 @@ class TimeoutingCache<K, V> implements Cache<K, V>
     @Override
     public void put(K key, V value)
     {
-        Runnable runnable = () -> target.put(key, value);
+        Runnable runnable = () -> getTarget().put(key, value);
         timeoutingExecutor.execute(runnable);
     }
 
     @Override
     public boolean remove(K key)
     {
-        Callable<Boolean> callable = () -> target.remove(key);
+        Callable<Boolean> callable = () -> getTarget().remove(key);
         Boolean result = timeoutingExecutor.execute(callable);
         return result;
     }
@@ -65,7 +62,7 @@ class TimeoutingCache<K, V> implements Cache<K, V>
     @Override
     public void removeAll()
     {
-        Runnable runnable = target::removeAll;
+        Runnable runnable = getTarget()::removeAll;
         timeoutingExecutor.execute(runnable);
     }
 }

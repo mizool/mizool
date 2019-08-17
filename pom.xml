@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.31</version>
+    <version>0.32</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -219,39 +219,16 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology.table-access</groupId>
-                <artifactId>table-access-business</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.technology.table-access.store</groupId>
-                <artifactId>store-cassandra</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.technology.table-access.store</groupId>
-                <artifactId>store-jdbc</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.technology.typemapping</groupId>
-                <artifactId>typemapping-business</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.technology.typemapping.store</groupId>
-                <artifactId>store-cassandra</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.technology.typemapping.store</groupId>
-                <artifactId>store-jdbc</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>25.1-jre</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.inject</groupId>
+                <artifactId>guice-bom</artifactId>
+                <version>4.2.2</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <!-- force dependency convergence. 1.1.3 is intended for aws-java-sdk-dynamodb 1.11.75 -->
