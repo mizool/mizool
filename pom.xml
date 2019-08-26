@@ -94,7 +94,7 @@
         <!-- to fix a vulnerability, we use jackson 2.8.9 instead of 2.8.4 which would match jersey 2.25 -->
         <jackson.version>2.8.9</jackson.version>
         <java.version>1.8</java.version>
-        <jcache.ri.version>0.3</jcache.ri.version>
+        <jcache.ri.version>0.4-SNAPSHOT</jcache.ri.version>
         <jersey.version>2.25</jersey.version>
         <maven.version.minimum>3.2.2</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
@@ -244,7 +244,7 @@
             <dependency>
                 <groupId>javax.cache</groupId>
                 <artifactId>cache-api</artifactId>
-                <version>1.0.0</version>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>javax.enterprise</groupId>
