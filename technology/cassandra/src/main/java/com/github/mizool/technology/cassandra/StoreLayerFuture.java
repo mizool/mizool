@@ -25,6 +25,7 @@ import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
 import com.datastax.driver.core.exceptions.QueryValidationException;
 import com.github.mizool.core.concurrent.ResultVoidingFuture;
+import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.exception.StoreLayerException;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -68,7 +69,11 @@ public class StoreLayerFuture implements ListenableFuture<Void>
         {
             return target.get();
         }
-        catch (QueryExecutionException | QueryValidationException | NoHostAvailableException e)
+        catch (QueryValidationException e)
+        {
+            throw new CodeInconsistencyException(e);
+        }
+        catch (QueryExecutionException | NoHostAvailableException e)
         {
             throw new StoreLayerException(e);
         }
@@ -81,7 +86,11 @@ public class StoreLayerFuture implements ListenableFuture<Void>
         {
             return target.get(timeout, unit);
         }
-        catch (QueryExecutionException | QueryValidationException | NoHostAvailableException e)
+        catch (QueryValidationException e)
+        {
+            throw new CodeInconsistencyException(e);
+        }
+        catch (QueryExecutionException | NoHostAvailableException e)
         {
             throw new StoreLayerException(e);
         }
