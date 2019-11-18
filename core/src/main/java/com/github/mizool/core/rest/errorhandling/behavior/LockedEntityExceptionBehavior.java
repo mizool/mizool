@@ -25,7 +25,7 @@ public class LockedEntityExceptionBehavior implements ErrorHandlingBehavior
     @Override
     public boolean includeDetails()
     {
-        return false;
+        return true;
     }
 
     @Override
