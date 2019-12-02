@@ -5,6 +5,8 @@ https://sonarcloud.io/dashboard?id=com.github.mizool%3Amizool[image:https://sona
 Gate Status]]
 
 
+https://javadoc.io/doc/com.github.mizool/mizool-core[image:https://javadoc.io/badge2/com.github.mizool/mizool-core/javadoc.svg[[javadoc]]
+
 == About Mizool
 _TODO_
 
