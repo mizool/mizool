@@ -1,5 +1,7 @@
 package com.github.mizool.technology.web.healthcheck;
 
+import java.util.function.Supplier;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +12,7 @@ import org.jooq.exception.DataAccessException;
 @RequiredArgsConstructor
 public class JooqConnectivityCheck implements Check
 {
-    private final DSLContext dslContext;
+    private final Supplier<DSLContext> dslContextSupplier;
     private final String name;
 
     @Override
@@ -18,7 +20,7 @@ public class JooqConnectivityCheck implements Check
     {
         CheckResult.CheckResultBuilder resultBuilder = CheckResult.builder().name(name);
 
-        try
+        try (DSLContext dslContext = dslContextSupplier.get())
         {
             dslContext.selectOne().execute();
             resultBuilder = resultBuilder.success(true).message("OK");
