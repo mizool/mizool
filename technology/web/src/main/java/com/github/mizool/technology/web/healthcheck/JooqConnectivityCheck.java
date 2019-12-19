@@ -1,10 +1,12 @@
 package com.github.mizool.technology.web.healthcheck;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JooqConnectivityCheck implements Check
 {
@@ -23,6 +25,7 @@ public class JooqConnectivityCheck implements Check
         }
         catch (DataAccessException e)
         {
+            log.debug("Error checking the connecting to " + name, e);
             resultBuilder = resultBuilder.success(false).message("Connection problem");
         }
 
