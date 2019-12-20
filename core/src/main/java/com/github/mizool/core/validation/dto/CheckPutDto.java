@@ -16,18 +16,13 @@
  */
 package com.github.mizool.core.validation.dto;
 
-import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import com.github.mizool.core.validation.ConstraintValidatorAdapter;
 import com.github.mizool.core.validation.ConstraintValidators;
 
-public class CheckPutDto implements ConstraintValidator<PutDto, Dto>
+public class CheckPutDto extends ConstraintValidatorAdapter<PutDto, Dto>
 {
-    @Override
-    public void initialize(PutDto constraintAnnotation)
-    {
-    }
-
     @Override
     public final boolean isValid(Dto dto, ConstraintValidatorContext constraintValidatorContext)
     {
