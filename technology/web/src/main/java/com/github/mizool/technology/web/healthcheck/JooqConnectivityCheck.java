@@ -43,7 +43,7 @@ public class JooqConnectivityCheck implements Check
         }
         catch (DataAccessException e)
         {
-            log.debug("Error checking the connecting to " + name, e);
+            log.debug("Error checking the connection to " + name, e);
             resultBuilder = resultBuilder.success(false).message("Connection problem");
         }
 
