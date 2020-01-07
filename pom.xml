@@ -96,6 +96,7 @@
         <java.version>1.8</java.version>
         <jcache.ri.version>0.5</jcache.ri.version>
         <jersey.version>2.25</jersey.version>
+        <jooq.version>3.12.3</jooq.version>
         <maven.version.minimum>3.2.2</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
@@ -307,6 +308,11 @@
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
                 <artifactId>metainf-services</artifactId>
                 <version>1.6</version>
@@ -365,6 +371,7 @@
                         <createBackupFile>false</createBackupFile>
                         <expandEmptyElements>false</expandEmptyElements>
                         <keepBlankLines>true</keepBlankLines>
+                        <lineSeparator>\n</lineSeparator>
                         <nrOfIndentSpace>4</nrOfIndentSpace>
                     </configuration>
                 </plugin>
