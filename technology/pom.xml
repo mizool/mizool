@@ -17,6 +17,7 @@
         <module>cache</module>
         <module>cassandra</module>
         <module>jackson</module>
+        <module>sql</module>
         <module>web</module>
     </modules>
 </project>
