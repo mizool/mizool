@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.34</version>
+    <version>0.35</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -92,10 +92,11 @@
         <cassandra.driver.version>3.6.0</cassandra.driver.version>
         <encoding>UTF-8</encoding>
         <!-- to fix a vulnerability, we use jackson 2.8.9 instead of 2.8.4 which would match jersey 2.25 -->
-        <jackson.version>2.8.9</jackson.version>
+        <jackson.version>2.10.0</jackson.version>
         <java.version>1.8</java.version>
         <jcache.ri.version>0.5</jcache.ri.version>
         <jersey.version>2.25</jersey.version>
+        <jooq.version>3.12.3</jooq.version>
         <maven.version.minimum>3.2.2</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
@@ -307,6 +308,11 @@
                 <version>${jersey.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jooq</groupId>
+                <artifactId>jooq</artifactId>
+                <version>${jooq.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
                 <artifactId>metainf-services</artifactId>
                 <version>1.6</version>
@@ -365,6 +371,7 @@
                         <createBackupFile>false</createBackupFile>
                         <expandEmptyElements>false</expandEmptyElements>
                         <keepBlankLines>true</keepBlankLines>
+                        <lineSeparator>\n</lineSeparator>
                         <nrOfIndentSpace>4</nrOfIndentSpace>
                     </configuration>
                 </plugin>
