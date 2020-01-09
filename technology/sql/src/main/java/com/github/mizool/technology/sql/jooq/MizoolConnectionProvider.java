@@ -17,6 +17,7 @@
 package com.github.mizool.technology.sql.jooq;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 import org.jooq.ConnectionProvider;
 import org.jooq.SQLDialect;
@@ -28,7 +29,7 @@ public abstract class MizoolConnectionProvider implements ConnectionProvider
     @Getter
     private final SQLDialect sqlDialect;
 
-    protected MizoolConnectionProvider(String driverClassName, SQLDialect sqlDialect)
+    protected MizoolConnectionProvider(@NonNull String driverClassName, @NonNull SQLDialect sqlDialect)
     {
         this.sqlDialect = sqlDialect;
         System.setProperty("org.jooq.no-logo", "true");

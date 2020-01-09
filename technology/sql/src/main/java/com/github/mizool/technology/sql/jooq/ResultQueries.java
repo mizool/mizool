@@ -31,7 +31,7 @@ import com.github.mizool.core.exception.StoreLayerException;
 @UtilityClass
 public class ResultQueries
 {
-    public <R extends TableRecord<R>> Optional<R> fetchOptional(ResultQuery<R> resultQuery, Table<R> table)
+    public <R extends TableRecord<R>> Optional<R> read(ResultQuery<R> resultQuery, Table<R> table)
     {
         try
         {
@@ -43,17 +43,16 @@ public class ResultQueries
         }
     }
 
-    public <R extends TableRecord<R>> Stream<R> fetchStream(ResultQuery<R> resultQuery, Table<R> table)
+    /**
+     * @return A live {@code Stream} of the result data. The underlying connection is still open. You have to make sure
+     * the {@code Stream} is properly closed, either by <b>always</b> consuming it fully (risky due to exceptions) or
+     * preferrably by consuming it inside a <i>try-with-resources</i></i> block.
+     */
+    public <R extends TableRecord<R>> Stream<R> list(ResultQuery<R> resultQuery, Table<R> table)
     {
         try
         {
-            /*
-             * Note that we perform .fetch(), so all results are loaded into memory and the query can be closed. The
-             * results are then transformed into a stream for convenience.
-             * The ResultQuery directly supports .stream(). However, this is indeed a lazy operation on a cursor, and
-             * we would have to make sure the stream is properly closed after it has been consumed.
-             */
-            return resultQuery.fetch().stream();
+            return resultQuery.stream();
         }
         catch (DataAccessException e)
         {
