@@ -38,7 +38,11 @@ public abstract class AbstractEnvironmentLoaderListener extends EnvironmentLoade
         WebEnvironment environment = super.createEnvironment(pServletContext);
         AuthorizingSecurityManager securityManager = (AuthorizingSecurityManager) environment.getSecurityManager();
         securityManager.setRealms(getRealms());
-        securityManager.setAuthorizer(getAuthorizer());
+        Authorizer authorizer = getAuthorizer();
+        if (authorizer != null)
+        {
+            securityManager.setAuthorizer(authorizer);
+        }
 
         return environment;
     }
