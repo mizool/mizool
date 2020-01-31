@@ -8,16 +8,16 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>technology-aws</artifactId>
+    <artifactId>technology-sql</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-dynamodb</artifactId>
+            <groupId>com.github.mizool</groupId>
+            <artifactId>mizool-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>javax.enterprise</groupId>
-            <artifactId>cdi-api</artifactId>
+            <groupId>org.jooq</groupId>
+            <artifactId>jooq</artifactId>
         </dependency>
     </dependencies>
 </project>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>0.35</version>
+        <version>0.36</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -43,6 +43,11 @@
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-jackson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-sql</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
