@@ -1,6 +1,6 @@
-/**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,44 +23,39 @@ import java.util.regex.Pattern;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class CacheHeaderFilter extends FilterAdapter
+public class CacheHeaderFilter extends HttpFilterAdapter
 {
     private static final Pattern STATIC_ELEMENTS_PATH_PATTERN = Pattern.compile(
         "^/(webjars|\\d+(\\.\\d+)*(-[\\dA-Za-z]+)?)/.+$");
 
     @Override
-    public void doFilter(
-        ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+    protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws IOException, ServletException
     {
-        if (isStaticPathElement(servletRequest))
+        if (isStaticPathElement(request))
         {
-            addForeverCacheHeaders(servletResponse);
+            addForeverCacheHeaders(response);
         }
         else
         {
-            addNeverCacheHeaders(servletResponse);
+            addNeverCacheHeaders(response);
         }
-        filterChain.doFilter(servletRequest, servletResponse);
+        chain.doFilter(request, response);
     }
 
-    private boolean isStaticPathElement(ServletRequest servletRequest)
+    private boolean isStaticPathElement(HttpServletRequest request)
     {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
         String path = request.getServletPath();
         Matcher staticElementsPathMatcher = STATIC_ELEMENTS_PATH_PATTERN.matcher(path);
         boolean result = (staticElementsPathMatcher.matches() && !path.contains("-SNAPSHOT"));
         return result;
     }
 
-    private void addForeverCacheHeaders(ServletResponse servletResponse)
+    private void addForeverCacheHeaders(HttpServletResponse response)
     {
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setDateHeader("Expires", createExpiresTimestamp());
     }
 
@@ -72,9 +67,8 @@ public class CacheHeaderFilter extends FilterAdapter
         return result;
     }
 
-    private void addNeverCacheHeaders(ServletResponse servletResponse)
+    private void addNeverCacheHeaders(HttpServletResponse response)
     {
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
         response.setHeader("Pragma", "no-cache");
         response.setDateHeader("Expires", 0);
