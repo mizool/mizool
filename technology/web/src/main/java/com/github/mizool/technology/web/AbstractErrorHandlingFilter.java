@@ -42,15 +42,15 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
             chain.doFilter(request, transactionalResponseWrapper);
             transactionalResponseWrapper.commit();
         }
-        catch (Throwable t)
+        catch (Exception e)
         {
-            sendErrorMessage(t, response);
+            sendErrorMessage(e, response);
         }
     }
 
-    private void sendErrorMessage(Throwable t, HttpServletResponse response) throws IOException
+    private void sendErrorMessage(Exception e, HttpServletResponse response) throws IOException
     {
-        ErrorResponse errorResponse = errorHandler.handle(t);
+        ErrorResponse errorResponse = errorHandler.handle(e);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(errorResponse.getStatusCode());

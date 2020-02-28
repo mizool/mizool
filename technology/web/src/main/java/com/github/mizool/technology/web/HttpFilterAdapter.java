@@ -31,12 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class HttpFilterAdapter extends FilterAdapter
 {
     @Override
-    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
+    public final void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
         throws IOException, ServletException
     {
-        doFilter((HttpServletRequest) request, (HttpServletResponse) response, filterChain);
+        doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
     }
 
-    protected abstract void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected abstract void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
         throws IOException, ServletException;
 }
