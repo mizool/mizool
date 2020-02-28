@@ -1,6 +1,6 @@
-/**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,44 +20,41 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.github.mizool.core.rest.errorhandling.ErrorHandler;
 import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
 import com.github.mizool.core.rest.errorhandling.ErrorResponse;
 
-public abstract class AbstractErrorHandlingFilter extends FilterAdapter
+public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
 {
     @Inject
     private ErrorHandler errorHandler;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-        throws IOException, ServletException
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws IOException
     {
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
         try
         {
-            TransactionalResponseWrapper transactionalResponseWrapper = new TransactionalResponseWrapper(httpResponse);
+            TransactionalResponseWrapper transactionalResponseWrapper = new TransactionalResponseWrapper(response);
             chain.doFilter(request, transactionalResponseWrapper);
             transactionalResponseWrapper.commit();
         }
         catch (Throwable t)
         {
-            sendErrorMessage(t, httpResponse);
+            sendErrorMessage(t, response);
         }
     }
 
-    private void sendErrorMessage(Throwable t, HttpServletResponse httpResponse) throws IOException
+    private void sendErrorMessage(Throwable t, HttpServletResponse response) throws IOException
     {
         ErrorResponse errorResponse = errorHandler.handle(t);
 
-        httpResponse.setContentType("application/json;charset=UTF-8");
-        httpResponse.setStatus(errorResponse.getStatusCode());
-        httpResponse.getOutputStream().write(getErrorMessageJsonBytes(errorResponse.getBody()));
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(errorResponse.getStatusCode());
+        response.getOutputStream().write(getErrorMessageJsonBytes(errorResponse.getBody()));
     }
 
     protected abstract byte[] getErrorMessageJsonBytes(ErrorMessageDto errorMessageDto);
