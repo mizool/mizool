@@ -24,33 +24,21 @@ public class Argon2Hasher implements PasswordHasher
         return algorithm.equals(ALGORITHM_NAME);
     }
 
+    /**
+     * @param plaintextPassword this parameter should be wiped/cleaned in a try-finally block after usage
+     */
     @Override
     public String hashPassword(char[] plaintextPassword)
     {
-        String result;
-        try
-        {
-            result = argon2.hash(ITERATIONS_FOR_NEW_PASSWORDS, MEMORY, PARALLELISM, plaintextPassword);
-        }
-        finally
-        {
-            argon2.wipeArray(plaintextPassword);
-        }
-        return result;
+        return argon2.hash(ITERATIONS_FOR_NEW_PASSWORDS, MEMORY, PARALLELISM, plaintextPassword);
     }
 
+    /**
+     * @param submittedPlaintext this parameter should be wiped/cleaned in a try-finally block after usage
+     */
     @Override
     public boolean passwordsMatch(char[] submittedPlaintext, String digest)
     {
-        boolean result;
-        try
-        {
-            result = argon2.verify(digest, submittedPlaintext);
-        }
-        finally
-        {
-            argon2.wipeArray(submittedPlaintext);
-        }
-        return result;
+        return argon2.verify(digest, submittedPlaintext);
     }
 }
