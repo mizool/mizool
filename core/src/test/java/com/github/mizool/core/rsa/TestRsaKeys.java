@@ -2,10 +2,14 @@ package com.github.mizool.core.rsa;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 
 import org.testng.annotations.Test;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 
 public class TestRsaKeys
 {
@@ -17,11 +21,25 @@ public class TestRsaKeys
         = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqf8uXNl1vEst2dai5FhQVNnAtRiStlfIreF06KU+oP/yayTDMF+gfIhai4y37wF1Q4Um5xc/c1HeGuxrvyI/TJX2vAMF1obYCxym55navOJlpsxJka74ofwdcBY9PshN5E2j6/92BTnd5wSnmBcbKkNykviu2s3yXwrMS6wDja/XDxLsjPu7BZpUpyzOzbbMDtmOof70L7JyTFwOSIS/OosnO7xATPieYVMzDXli+u4li5B/6oBqCwrvNgPriCLnEPbYZ2Njp7pBOSRno7XMxcv5dfaWo46/h7egpGN367ObEkdzRI/BGH4WMNoCT/RDlmqQdcvd6SXAKAu5As8uriGWuRiTUBZeo8K9dfe3VhZ4uRkEZsas3bGtl9EugEKDoV65b+VXhKjpTmlZuH9sJ02A0ioaogJI01xHuJT7vSeQrC/Xb99LkeyzDsuVM2gpfcrnSuhFQJwhnhqQjiUsHp315E1SMnazcYtUmhL17LQE3HeHVpqnZ8MSq2KfQFi/zWGR8iuMtUsBsvvFR/Xxe/mVN02I5Bsp9hAB6YvETb2+C+R9G+va31kWDJZE13MHOlYfe7l4El5xweayOfOmTT6AF8tAS4jaC4NhPV2TyGvd+EYD0OcBqSGaYyeYlJnLmS+BSYoxBQXxbtIRXuTzHkfj7d75nE51yTIJiIHY84ECAwEAAQ==";
 
     @Test
-    public void testKeyCreationMethods()
+    public void testOneLineKeys()
     {
-        RSAPrivateKey rsaPrivateKey = RsaKeys.privateKeyFromPkcs8(PRIVATE_KEY);
+        assertParsedKeysFitTogether(PRIVATE_KEY, PUBLIC_KEY);
+    }
+
+    @Test
+    public void testMultiLineKeys() throws IOException
+    {
+        String privateKey = Resources.toString(Resources.getResource(getClass(), "key-pkcs8.pem"), Charsets.UTF_8);
+        String publicKey = Resources.toString(Resources.getResource(getClass(), "key.pub"), Charsets.UTF_8);
+
+        assertParsedKeysFitTogether(privateKey, publicKey);
+    }
+
+    private void assertParsedKeysFitTogether(String privateKey, String publicKey)
+    {
+        RSAPrivateKey rsaPrivateKey = RsaKeys.privateKeyFromPkcs8(privateKey);
         RSAPublicKey publicKeyFromPrivateKey = RsaKeys.publicKeyFromPrivateKey(rsaPrivateKey);
-        RSAPublicKey publicKeyFromX509 = RsaKeys.publicKeyFromX509(PUBLIC_KEY);
+        RSAPublicKey publicKeyFromX509 = RsaKeys.publicKeyFromX509(publicKey);
 
         assertThat(publicKeyFromPrivateKey).isEqualTo(publicKeyFromX509);
     }
