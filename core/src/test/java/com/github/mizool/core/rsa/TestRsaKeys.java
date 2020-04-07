@@ -1,0 +1,46 @@
+package com.github.mizool.core.rsa;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.io.IOException;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
+
+import org.testng.annotations.Test;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+
+public class TestRsaKeys
+{
+    private static final String
+        PRIVATE_KEY
+        = "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";
+    private static final String
+        PUBLIC_KEY
+        = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAqf8uXNl1vEst2dai5FhQVNnAtRiStlfIreF06KU+oP/yayTDMF+gfIhai4y37wF1Q4Um5xc/c1HeGuxrvyI/TJX2vAMF1obYCxym55navOJlpsxJka74ofwdcBY9PshN5E2j6/92BTnd5wSnmBcbKkNykviu2s3yXwrMS6wDja/XDxLsjPu7BZpUpyzOzbbMDtmOof70L7JyTFwOSIS/OosnO7xATPieYVMzDXli+u4li5B/6oBqCwrvNgPriCLnEPbYZ2Njp7pBOSRno7XMxcv5dfaWo46/h7egpGN367ObEkdzRI/BGH4WMNoCT/RDlmqQdcvd6SXAKAu5As8uriGWuRiTUBZeo8K9dfe3VhZ4uRkEZsas3bGtl9EugEKDoV65b+VXhKjpTmlZuH9sJ02A0ioaogJI01xHuJT7vSeQrC/Xb99LkeyzDsuVM2gpfcrnSuhFQJwhnhqQjiUsHp315E1SMnazcYtUmhL17LQE3HeHVpqnZ8MSq2KfQFi/zWGR8iuMtUsBsvvFR/Xxe/mVN02I5Bsp9hAB6YvETb2+C+R9G+va31kWDJZE13MHOlYfe7l4El5xweayOfOmTT6AF8tAS4jaC4NhPV2TyGvd+EYD0OcBqSGaYyeYlJnLmS+BSYoxBQXxbtIRXuTzHkfj7d75nE51yTIJiIHY84ECAwEAAQ==";
+
+    @Test
+    public void testOneLineKeys()
+    {
+        assertParsedKeysFitTogether(PRIVATE_KEY, PUBLIC_KEY);
+    }
+
+    @Test
+    public void testMultiLineKeys() throws IOException
+    {
+        String privateKey = Resources.toString(Resources.getResource(getClass(), "key-pkcs8.pem"), Charsets.UTF_8);
+        String publicKey = Resources.toString(Resources.getResource(getClass(), "key.pub"), Charsets.UTF_8);
+
+        assertParsedKeysFitTogether(privateKey, publicKey);
+    }
+
+    private void assertParsedKeysFitTogether(String privateKey, String publicKey)
+    {
+        RSAPrivateKey rsaPrivateKey = RsaKeys.privateKeyFromPkcs8(privateKey);
+        RSAPublicKey publicKeyFromPrivateKey = RsaKeys.publicKeyFromPrivateKey(rsaPrivateKey);
+        RSAPublicKey publicKeyFromX509 = RsaKeys.publicKeyFromX509(publicKey);
+
+        assertThat(publicKeyFromPrivateKey).isEqualTo(publicKeyFromX509);
+    }
+}

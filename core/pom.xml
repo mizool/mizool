@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>0.37</version>
+        <version>0.38</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -29,6 +29,11 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>de.mkammerer</groupId>
+            <artifactId>argon2-jvm</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>

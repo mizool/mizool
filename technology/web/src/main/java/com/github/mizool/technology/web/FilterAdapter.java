@@ -1,6 +1,6 @@
-/**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ import javax.servlet.Filter;
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 
+/**
+ * Avoids empty methods in filters.
+ */
 public abstract class FilterAdapter implements Filter
 {
     @Override
