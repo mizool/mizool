@@ -31,20 +31,6 @@ public class RsaKeys
         return generatePrivateKey(keySpec, keyFactory);
     }
 
-    private RSAPrivateKey generatePrivateKey(KeySpec keySpec, KeyFactory keyFactory)
-    {
-        RSAPrivateKey result;
-        try
-        {
-            result = (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
-        }
-        catch (InvalidKeySpecException e)
-        {
-            throw new ConfigurationException("Invalid key specification", e);
-        }
-        return result;
-    }
-
     public RSAPublicKey publicKeyFromX509(String src)
     {
         String strippedSrc = stripHeaderFooterAndLineBreaks(src);
@@ -61,6 +47,20 @@ public class RsaKeys
         return generatePublicKey(keySpec, keyFactory);
     }
 
+    private RSAPrivateKey generatePrivateKey(KeySpec keySpec, KeyFactory keyFactory)
+    {
+        RSAPrivateKey result;
+        try
+        {
+            result = (RSAPrivateKey) keyFactory.generatePrivate(keySpec);
+        }
+        catch (InvalidKeySpecException e)
+        {
+            throw new ConfigurationException("Invalid key specification", e);
+        }
+        return result;
+    }
+
     private RSAPublicKey generatePublicKey(KeySpec keySpec, KeyFactory keyFactory)
     {
         RSAPublicKey result;
@@ -75,7 +75,7 @@ public class RsaKeys
         return result;
     }
 
-    private static String stripHeaderFooterAndLineBreaks(String src)
+    private String stripHeaderFooterAndLineBreaks(String src)
     {
         return HEADER_FOOTER_AND_LINE_BREAKS.matcher(src).replaceAll("");
     }
