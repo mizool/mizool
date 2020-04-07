@@ -20,7 +20,7 @@ import com.github.mizool.core.exception.ConfigurationException;
 @UtilityClass
 public class RsaKeys
 {
-    private static final Pattern HEADER_FOOTER_AND_LINE_BREAKS = Pattern.compile(
+    private final Pattern HEADER_FOOTER_AND_LINE_BREAKS = Pattern.compile(
         "(?:-----(?:BEGIN|END).+?(?:PRIVATE|PUBLIC) KEY-----|\\n)");
 
     public RSAPrivateKey privateKeyFromPkcs8(String src)
