@@ -9,19 +9,19 @@ import org.testng.annotations.Test;
 
 public class TestExceptionCatalog
 {
-    private ErrorHandlingCatalog errorHandlingCatalog;
+    private ErrorHandlingBehaviorCatalog errorHandlingBehaviorCatalog;
 
     @BeforeMethod
     public void setUp()
     {
-        errorHandlingCatalog = new ErrorHandlingCatalog();
+        errorHandlingBehaviorCatalog = new ErrorHandlingBehaviorCatalog();
     }
 
     @Test
     public void whitelisted()
     {
         FooException test = new FooException();
-        Optional<ErrorHandlingBehavior> lookup = errorHandlingCatalog.lookup(test);
+        Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
         assertThat(lookup.isPresent()).isTrue();
         assertThat(lookup.get().getThrowableClass()).isEqualTo(FooException.class);
     }
@@ -30,7 +30,7 @@ public class TestExceptionCatalog
     public void whitelistedBySuperclass()
     {
         BarException test = new BarException();
-        Optional<ErrorHandlingBehavior> lookup = errorHandlingCatalog.lookup(test);
+        Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
         assertThat(lookup.isPresent()).isTrue();
         assertThat(lookup.get().getThrowableClass()).isEqualTo(FooException.class);
     }
@@ -39,7 +39,7 @@ public class TestExceptionCatalog
     public void notWhitelisted()
     {
         QuuxException test = new QuuxException();
-        Optional<ErrorHandlingBehavior> lookup = errorHandlingCatalog.lookup(test);
+        Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
         assertThat(lookup.isPresent()).isFalse();
     }
 
@@ -47,7 +47,7 @@ public class TestExceptionCatalog
     public void favorsDirectlyWhitelisted()
     {
         MoepException test = new MoepException();
-        Optional<ErrorHandlingBehavior> lookup = errorHandlingCatalog.lookup(test);
+        Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
         assertThat(lookup.isPresent()).isTrue();
         assertThat(lookup.get().getThrowableClass()).isEqualTo(MoepException.class);
     }

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2018 incub8 Software Labs GmbH
  * Copyright 2017-2018 protel Hotelsoftware GmbH
  *
@@ -16,9 +16,6 @@
  */
 package com.github.mizool.core.rest.errorhandling;
 
-import java.util.Optional;
-
-import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.ClientErrorException;
 
@@ -27,28 +24,19 @@ import lombok.extern.slf4j.Slf4j;
 import com.github.mizool.core.exception.RuleViolationException;
 
 @Slf4j
-public class ErrorHandler
+public class ErrorResponseFactory
 {
-    private final ErrorHandlingCatalog errorHandlingCatalog;
-    private final ErrorMapper errorMapper;
     private final ConstraintViolationMapper constraintViolationMapper;
     private final RuleViolationMapper ruleViolationMapper;
+    private final ClientErrorMapper clientErrorMapper;
+    private final GenericErrorMapper genericErrorMapper;
 
-    public ErrorHandler()
+    public ErrorResponseFactory()
     {
-        errorHandlingCatalog = new ErrorHandlingCatalog();
-        errorMapper = new ErrorMapper();
         constraintViolationMapper = new ConstraintViolationMapper();
         ruleViolationMapper = new RuleViolationMapper();
-    }
-
-    @Inject
-    protected ErrorHandler(ErrorHandlingCatalog errorHandlingCatalog)
-    {
-        this.errorHandlingCatalog = errorHandlingCatalog;
-        errorMapper = new ErrorMapper();
-        constraintViolationMapper = new ConstraintViolationMapper();
-        ruleViolationMapper = new RuleViolationMapper();
+        clientErrorMapper = new ClientErrorMapper();
+        genericErrorMapper = new GenericErrorMapper();
     }
 
     public ErrorMessageDto fromPojo(Throwable throwable)
@@ -63,10 +51,9 @@ public class ErrorHandler
         Throwable cursor = throwable;
         while (cursor != null)
         {
-            Optional<ErrorHandlingBehavior> behaviourOptional = errorHandlingCatalog.lookup(cursor);
-            if (behaviourOptional.isPresent())
+            result = genericErrorMapper.handleErrorAccordingToBehaviour(cursor);
+            if (result != null)
             {
-                result = errorMapper.handleErrorAccordingToBehaviour(cursor, behaviourOptional.get());
                 break;
             }
             else if (isAssignable(ConstraintViolationException.class, cursor))
@@ -79,14 +66,14 @@ public class ErrorHandler
             }
             else if (isAssignable(ClientErrorException.class, cursor))
             {
-                result = errorMapper.handleClientError((ClientErrorException) cursor);
+                result = clientErrorMapper.handleClientError((ClientErrorException) cursor);
             }
             cursor = cursor.getCause();
         }
 
         if (result == null)
         {
-            result = errorMapper.handleUndefinedError(throwable);
+            result = genericErrorMapper.handleUndefinedError(throwable);
         }
 
         return result;

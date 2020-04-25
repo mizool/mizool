@@ -1,4 +1,4 @@
-/**
+/*
  *  Copyright 2017 incub8 Software Labs GmbH
  *  Copyright 2017 protel Hotelsoftware GmbH
  *
@@ -16,29 +16,27 @@
  */
 package com.github.mizool.core.rest.errorhandling;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@Singleton
+@ApplicationScoped
 public class RestExceptionMapper implements ExceptionMapper<Exception>
 {
-    private final ErrorHandler errorHandler;
+    private final ErrorResponseFactory errorResponseFactory;
 
-    @Inject
-    public RestExceptionMapper(ErrorHandler errorHandler)
+    public RestExceptionMapper()
     {
-        this.errorHandler = errorHandler;
+        this.errorResponseFactory = new ErrorResponseFactory();
     }
 
     @Override
     public Response toResponse(Exception e)
     {
-        ErrorResponse errorResponse = errorHandler.handle(e);
+        ErrorResponse errorResponse = errorResponseFactory.handle(e);
         Response result = Response.status(errorResponse.getStatusCode())
             .type(MediaType.APPLICATION_JSON_TYPE)
             .entity(errorResponse.getBody())
