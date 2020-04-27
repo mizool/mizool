@@ -1,6 +1,6 @@
 /*
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+ *  Copyright 2017-2020 incub8 Software Labs GmbH
+ *  Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -26,12 +26,7 @@ import javax.ws.rs.ext.Provider;
 @ApplicationScoped
 public class RestExceptionMapper implements ExceptionMapper<Exception>
 {
-    private final ErrorResponseFactory errorResponseFactory;
-
-    public RestExceptionMapper()
-    {
-        this.errorResponseFactory = new ErrorResponseFactory();
-    }
+    private final ErrorResponseFactory errorResponseFactory = new ErrorResponseFactory();
 
     @Override
     public Response toResponse(Exception e)

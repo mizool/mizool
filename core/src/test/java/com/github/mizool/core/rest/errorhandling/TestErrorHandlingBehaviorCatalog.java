@@ -7,7 +7,7 @@ import java.util.Optional;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class TestExceptionCatalog
+public class TestErrorHandlingBehaviorCatalog
 {
     private ErrorHandlingBehaviorCatalog errorHandlingBehaviorCatalog;
 

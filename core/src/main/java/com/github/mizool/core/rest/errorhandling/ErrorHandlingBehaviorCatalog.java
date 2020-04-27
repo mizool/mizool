@@ -1,6 +1,6 @@
 /*
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2020 incub8 Software Labs GmbH
+ * Copyright 2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,13 @@ import java.util.Optional;
 
 import javax.inject.Singleton;
 
+import lombok.extern.slf4j.Slf4j;
+
 import com.github.mizool.core.MetaInfServices;
 import com.google.common.collect.ImmutableMap;
 
 @Singleton
+@Slf4j
 class ErrorHandlingBehaviorCatalog
 {
     private static final String CORE_PACKAGE = ErrorHandlingBehaviorCatalog.class.getPackage().getName();
@@ -34,14 +37,18 @@ class ErrorHandlingBehaviorCatalog
 
     public ErrorHandlingBehaviorCatalog()
     {
-        Iterable<ErrorHandlingBehavior> behaviours = MetaInfServices.instances(ErrorHandlingBehavior.class);
-        Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog = new HashMap<>();
-        behaviours.forEach(behaviour -> {
-            String behaviorPackage = behaviour.getClass().getPackage().getName();
-            Class<? extends Throwable> throwableClass = behaviour.getThrowableClass();
-            if (!catalog.containsKey(throwableClass) || !behaviorPackage.startsWith(CORE_PACKAGE))
+        Iterable<ErrorHandlingBehavior> behaviors = MetaInfServices.instances(ErrorHandlingBehavior.class);
+        final Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog = new HashMap<>();
+        behaviors.forEach(behavior -> {
+            String behaviorPackage = behavior.getClass().getPackage().getName();
+            Class<? extends Throwable> throwableClass = behavior.getThrowableClass();
+            if (notInCatalog(catalog, throwableClass) || isApplicationLevel(behaviorPackage))
             {
-                catalog.put(throwableClass, behaviour);
+                catalog.put(throwableClass, behavior);
+            }
+            else
+            {
+                log.debug("Ignoring behavior {}", behavior.getClass().getName());
             }
         });
 
@@ -50,18 +57,30 @@ class ErrorHandlingBehaviorCatalog
 
     public Optional<ErrorHandlingBehavior> lookup(Throwable t)
     {
-        ErrorHandlingBehavior behaviour = catalog.get(t.getClass());
-        if (behaviour == null)
+        ErrorHandlingBehavior behavior = catalog.get(t.getClass());
+        if (behavior == null)
         {
             for (Class<? extends Throwable> throwableClass : catalog.keySet())
             {
                 if (throwableClass.isAssignableFrom(t.getClass()))
                 {
-                    behaviour = catalog.get(throwableClass);
+                    behavior = catalog.get(throwableClass);
                 }
             }
         }
-        Optional<ErrorHandlingBehavior> result = Optional.ofNullable(behaviour);
+        Optional<ErrorHandlingBehavior> result = Optional.ofNullable(behavior);
         return result;
+    }
+
+    private boolean notInCatalog(
+        Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog,
+        Class<? extends Throwable> throwableClass)
+    {
+        return !catalog.containsKey(throwableClass);
+    }
+
+    private boolean isApplicationLevel(String behaviorPackage)
+    {
+        return !behaviorPackage.startsWith(CORE_PACKAGE);
     }
 }

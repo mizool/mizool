@@ -1,6 +1,6 @@
 /*
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,30 +41,10 @@ public class GenericErrorMapper
         errorHandlingBehaviorCatalog = new ErrorHandlingBehaviorCatalog();
     }
 
-    public ErrorResponse handleErrorAccordingToBehaviour(Throwable t)
+    public ErrorResponse handleErrorAccordingToBehavior(Throwable t)
     {
-        ErrorResponse result = null;
         Optional<ErrorHandlingBehavior> behaviorOptional = errorHandlingBehaviorCatalog.lookup(t);
-        if (behaviorOptional.isPresent())
-        {
-            ErrorHandlingBehavior behaviour = behaviorOptional.get();
-            logError(t, behaviour);
-
-            Map<String, String> parameters = null;
-            if (behaviour.includeDetails())
-            {
-                parameters = createExceptionParameters(t);
-            }
-
-            ErrorDto error = ErrorDto.createGenericError(parameters);
-            if (behaviour.includeErrorId())
-            {
-                error = new ErrorDto(t.getClass().getName(), parameters);
-            }
-            ErrorMessageDto errorMessage = createErrorMessageDto(error);
-            result = new ErrorResponse(behaviour.getStatusCode(), errorMessage);
-        }
-        return result;
+        return behaviorOptional.map(behavior -> buildErrorResponse(t, behavior)).orElse(null);
     }
 
     public ErrorResponse handleUndefinedError(Throwable throwable)
@@ -77,18 +57,37 @@ public class GenericErrorMapper
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
     }
 
-    private void logError(Throwable t, ErrorHandlingBehavior behaviour)
+    private ErrorResponse buildErrorResponse(Throwable t, ErrorHandlingBehavior behavior)
+    {
+        logError(t, behavior);
+
+        Map<String, String> parameters = null;
+        if (behavior.includeDetails())
+        {
+            parameters = createExceptionParameters(t);
+        }
+
+        ErrorDto error = ErrorDto.createGenericError(parameters);
+        if (behavior.includeErrorId())
+        {
+            error = new ErrorDto(t.getClass().getName(), parameters);
+        }
+        ErrorMessageDto errorMessage = createErrorMessageDto(error);
+        return new ErrorResponse(behavior.getStatusCode(), errorMessage);
+    }
+
+    private void logError(Throwable t, ErrorHandlingBehavior behavior)
     {
         Throwable rootCause = determineRootCause(t);
         if (rootCause != t)
         {
-            behaviour.getMessageLogLevel().log(log, "{} - {}", t.getMessage(), rootCause.getMessage());
+            behavior.getMessageLogLevel().log(log, "{} - {}", t.getMessage(), rootCause.getMessage());
         }
         else
         {
-            behaviour.getMessageLogLevel().log(log, t.getMessage());
+            behavior.getMessageLogLevel().log(log, t.getMessage());
         }
-        behaviour.getStackTraceLogLevel().log(log, t.getMessage(), t);
+        behavior.getStackTraceLogLevel().log(log, t.getMessage(), t);
     }
 
     private Throwable determineRootCause(Throwable t)

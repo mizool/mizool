@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,18 +26,10 @@ import com.github.mizool.core.exception.RuleViolationException;
 @Slf4j
 public class ErrorResponseFactory
 {
-    private final ConstraintViolationMapper constraintViolationMapper;
-    private final RuleViolationMapper ruleViolationMapper;
-    private final ClientErrorMapper clientErrorMapper;
-    private final GenericErrorMapper genericErrorMapper;
-
-    public ErrorResponseFactory()
-    {
-        constraintViolationMapper = new ConstraintViolationMapper();
-        ruleViolationMapper = new RuleViolationMapper();
-        clientErrorMapper = new ClientErrorMapper();
-        genericErrorMapper = new GenericErrorMapper();
-    }
+    private final ConstraintViolationMapper constraintViolationMapper = new ConstraintViolationMapper();
+    private final RuleViolationMapper ruleViolationMapper = new RuleViolationMapper();
+    private final ClientErrorMapper clientErrorMapper = new ClientErrorMapper();
+    private final GenericErrorMapper genericErrorMapper = new GenericErrorMapper();
 
     public ErrorMessageDto fromPojo(Throwable throwable)
     {
@@ -51,12 +43,7 @@ public class ErrorResponseFactory
         Throwable cursor = throwable;
         while (cursor != null)
         {
-            result = genericErrorMapper.handleErrorAccordingToBehaviour(cursor);
-            if (result != null)
-            {
-                break;
-            }
-            else if (isAssignable(ConstraintViolationException.class, cursor))
+            if (isAssignable(ConstraintViolationException.class, cursor))
             {
                 result = constraintViolationMapper.handleConstraintViolationError((ConstraintViolationException) cursor);
             }
@@ -67,6 +54,15 @@ public class ErrorResponseFactory
             else if (isAssignable(ClientErrorException.class, cursor))
             {
                 result = clientErrorMapper.handleClientError((ClientErrorException) cursor);
+            }
+            else
+            {
+                result = genericErrorMapper.handleErrorAccordingToBehavior(cursor);
+            }
+
+            if (result != null)
+            {
+                break;
             }
             cursor = cursor.getCause();
         }
