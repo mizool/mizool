@@ -1,19 +1,14 @@
-package com.github.mizool.technology.web.shiro;
+package com.github.mizool.core.rest.errorhandling;
 
-import org.apache.shiro.authz.UnauthorizedException;
 import org.kohsuke.MetaInfServices;
 
-import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
-import com.github.mizool.core.rest.errorhandling.HttpStatus;
-import com.github.mizool.core.rest.errorhandling.LogLevel;
-
 @MetaInfServices
-public class UnauthorizedExceptionBehaviour implements ErrorHandlingBehavior
+public class OriginalExceptionBehavior implements ErrorHandlingBehavior
 {
     @Override
     public Class<? extends Throwable> getThrowableClass()
     {
-        return UnauthorizedException.class;
+        return OriginalException.class;
     }
 
     @Override
@@ -31,13 +26,13 @@ public class UnauthorizedExceptionBehaviour implements ErrorHandlingBehavior
     @Override
     public int getStatusCode()
     {
-        return HttpStatus.FORBIDDEN;
+        return 666;
     }
 
     @Override
     public LogLevel getMessageLogLevel()
     {
-        return LogLevel.WARN;
+        return LogLevel.NONE;
     }
 
     @Override

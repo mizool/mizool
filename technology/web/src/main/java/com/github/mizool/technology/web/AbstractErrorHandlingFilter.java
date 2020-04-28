@@ -18,19 +18,25 @@ package com.github.mizool.technology.web;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.github.mizool.core.rest.errorhandling.ErrorHandler;
+import lombok.extern.slf4j.Slf4j;
+
 import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
 import com.github.mizool.core.rest.errorhandling.ErrorResponse;
+import com.github.mizool.core.rest.errorhandling.ErrorResponseFactory;
 
+@Slf4j
 public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
 {
-    @Inject
-    private ErrorHandler errorHandler;
+    private final ErrorResponseFactory errorResponseFactory;
+
+    protected AbstractErrorHandlingFilter()
+    {
+        this.errorResponseFactory = new ErrorResponseFactory();
+    }
 
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -38,9 +44,7 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
     {
         try
         {
-            TransactionalResponseWrapper transactionalResponseWrapper = new TransactionalResponseWrapper(response);
-            chain.doFilter(request, transactionalResponseWrapper);
-            transactionalResponseWrapper.commit();
+            chain.doFilter(request, response);
         }
         catch (Exception e)
         {
@@ -50,11 +54,17 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
 
     private void sendErrorMessage(Exception e, HttpServletResponse response) throws IOException
     {
-        ErrorResponse errorResponse = errorHandler.handle(e);
-
-        response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(errorResponse.getStatusCode());
-        response.getOutputStream().write(getErrorMessageJsonBytes(errorResponse.getBody()));
+        if (response.isCommitted())
+        {
+            log.error("Exception during response sending", e);
+        }
+        else
+        {
+            ErrorResponse errorResponse = errorResponseFactory.handle(e);
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(errorResponse.getStatusCode());
+            response.getOutputStream().write(getErrorMessageJsonBytes(errorResponse.getBody()));
+        }
     }
 
     protected abstract byte[] getErrorMessageJsonBytes(ErrorMessageDto errorMessageDto);
