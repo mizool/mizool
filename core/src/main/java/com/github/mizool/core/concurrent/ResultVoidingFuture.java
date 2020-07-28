@@ -18,7 +18,11 @@ import com.google.common.util.concurrent.SettableFuture;
  * <br>
  * Note that the reference to the original future is discarded as soon as possible. That allows to reduce the overall
  * memory footprint when working with multiple futures at once without caring for the results.
+ *
+ * @deprecated Use the factory method {@link com.github.mizool.core.concurrent.Futures#toVoidResult(ListenableFuture)}
+ * instead. This class will cease to be public at some point.
  */
+@Deprecated
 public class ResultVoidingFuture implements ListenableFuture<Void>
 {
     private class Callback<V> implements FutureCallback<V>
@@ -38,6 +42,12 @@ public class ResultVoidingFuture implements ListenableFuture<Void>
 
     private final SettableFuture<Void> target = SettableFuture.create();
 
+    /**
+     * @deprecated Use the factory method
+     * {@link com.github.mizool.core.concurrent.Futures#toVoidResult(ListenableFuture)} instead. This class will cease
+     * to be public at some point.
+     */
+    @Deprecated
     public <T> ResultVoidingFuture(ListenableFuture<T> target)
     {
         Futures.addCallback(target, new Callback<>(), MoreExecutors.directExecutor());
