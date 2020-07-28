@@ -1,6 +1,6 @@
-/**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import org.testng.annotations.AfterMethod;
@@ -33,21 +35,53 @@ import com.github.mizool.core.exception.StoreLayerException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
-public class TestBufferedStreamAdapter
+public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
 {
+    public static class CompletableFutureMode extends TestBufferedStreamAdapter<CompletableFuture<Object>>
+    {
+        @Override
+        protected Stream<Object> runTest(Stream<CompletableFuture<Object>> stream, int bufferSize)
+        {
+            return BufferedStreamAdapter.completable().adapt(stream, bufferSize, executorService);
+        }
+
+        @Override
+        protected ConcurrentTests.Suite<CompletableFuture<Object>> createSuite(int corePoolSize)
+        {
+            return ConcurrentTests.completableFutureSuite(corePoolSize);
+        }
+    }
+
+    public static class ListenableFutureMode extends TestBufferedStreamAdapter<ListenableFuture<Object>>
+    {
+        @Override
+        protected Stream<Object> runTest(Stream<ListenableFuture<Object>> stream, int bufferSize)
+        {
+            return BufferedStreamAdapter.listenable().adapt(stream, bufferSize, executorService);
+        }
+
+        @Override
+        protected ConcurrentTests.Suite<ListenableFuture<Object>> createSuite(int corePoolSize)
+        {
+            return ConcurrentTests.listenableFutureSuite(corePoolSize);
+        }
+    }
+
     private static final int IMMEDIATE = 0;
     private static final int FAST = 100;
     private static final int SLOW = 1000;
 
-    private ConcurrentTests.Suite suite;
-    private ExecutorService executorService;
+    private ConcurrentTests.Suite<F> suite;
+    protected ExecutorService executorService;
 
     @BeforeMethod
     public void setUp()
     {
-        suite = ConcurrentTests.suite(100);
+        suite = createSuite(100);
         executorService = Executors.newCachedThreadPool();
     }
+
+    protected abstract ConcurrentTests.Suite<F> createSuite(int i);
 
     @AfterMethod
     public void tearDown()
@@ -59,7 +93,7 @@ public class TestBufferedStreamAdapter
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testLowerTaskLimitBoundary()
     {
-        BufferedStreamAdapter.adapt(null, 0, null);
+        runTest(null, 0);
     }
 
     @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
@@ -67,7 +101,7 @@ public class TestBufferedStreamAdapter
     {
         suite.addItems(durations);
 
-        Stream<Object> actual = BufferedStreamAdapter.adapt(suite.stream(), bufferSize, executorService);
+        Stream<Object> actual = runTest(suite.stream(), bufferSize);
 
         suite.assertContainsExpectedResults(actual);
         suite.assertStartedFutures(durations.length);
@@ -76,7 +110,7 @@ public class TestBufferedStreamAdapter
     }
 
     @DataProvider
-    private Object[][] parallelizationVariants()
+    protected Object[][] parallelizationVariants()
     {
         return new Object[][]{
             { "empty stream", 1, new long[]{} },
@@ -92,9 +126,9 @@ public class TestBufferedStreamAdapter
     {
         suite.addItems(IMMEDIATE, IMMEDIATE, IMMEDIATE, IMMEDIATE, IMMEDIATE);
 
-        Stream<ListenableFuture<Object>> delayedFutures = suite.stream().peek(future -> Threads.sleep(200));
+        Stream<F> delayedFutures = suite.stream().peek(future -> Threads.sleep(200));
 
-        Stream<Object> actual = BufferedStreamAdapter.adapt(delayedFutures, 2, executorService);
+        Stream<Object> actual = runTest(delayedFutures, 2);
 
         suite.assertContainsExpectedResults(actual);
         suite.assertFinishedFutures(5);
@@ -108,7 +142,7 @@ public class TestBufferedStreamAdapter
         int bufferSize = 2;
         int sufficientWaitTime = FAST * 2;
 
-        Stream<Object> actual = BufferedStreamAdapter.adapt(suite.stream(), bufferSize, executorService);
+        Stream<Object> actual = runTest(suite.stream(), bufferSize);
 
         Threads.sleep(sufficientWaitTime);
         suite.assertStartedFutures(bufferSize);
@@ -126,7 +160,7 @@ public class TestBufferedStreamAdapter
 
         long start = System.currentTimeMillis();
 
-        Stream<Object> actual = BufferedStreamAdapter.adapt(suite.stream(), bufferSize, executorService);
+        Stream<Object> actual = runTest(suite.stream(), bufferSize);
 
         List<Long> timings = actual.mapToLong(result -> System.currentTimeMillis() - start)
             .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
@@ -153,7 +187,7 @@ public class TestBufferedStreamAdapter
     }
 
     @DataProvider
-    private Object[][] timingVariants()
+    protected Object[][] timingVariants()
     {
         return new Object[][]{
             { "single buffer slow future delays subsequent", 1, new long[]{ FAST, SLOW, FAST }, 900, 1, 2 },
@@ -166,10 +200,12 @@ public class TestBufferedStreamAdapter
     @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, expectedExceptions = UncheckedExecutionException.class)
     public void testTransportsExceptionInStream()
     {
-        Stream<ListenableFuture<Void>> stream = Stream.generate(() -> {
+        Stream<F> stream = Stream.generate(() -> {
             throw new StoreLayerException("some test exception");
         });
-        BufferedStreamAdapter.adapt(stream, 2, executorService).forEach(ignored -> {
+        runTest(stream, 2).forEach(ignored -> {
         });
     }
+
+    protected abstract Stream<Object> runTest(Stream<F> stream, int bufferSize);
 }

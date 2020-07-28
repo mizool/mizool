@@ -1,6 +1,6 @@
-/**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,10 @@ import com.google.common.util.concurrent.SettableFuture;
  * <pre>{@code
  * Stream<ListenableFuture<MyPojo>> stream;
  * stream.map(ResultVoidingFuture::new).collect(ListenableFutureCollector.concurrent(maximumConcurrentFutures)).get();}</pre>
+ *
+ * @deprecated This class does not propagate exceptions consistently and will be removed. Use {@link FutureStreamJoiner} instead.
  */
+@Deprecated
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ListenableFutureCollector implements Collector<ListenableFuture<Void>, Void, ListenableFuture<Void>>
 {
