@@ -43,7 +43,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.github.mizool.core.exception.CodeInconsistencyException;
-import com.github.mizool.core.exception.NotYetImplementedException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -70,6 +69,12 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         {
             return FutureStreamJoiner.completable().join(input, maximumConcurrentFutures, executorService);
         }
+
+        @Override
+        protected CompletableFuture<Void> runAsFuture(TestRunnable runnable)
+        {
+            return CompletableFuture.runAsync(runnable, executorService);
+        }
     }
 
     public static class ListenableFutureMode
@@ -88,10 +93,15 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         }
 
         @Override
-        protected ListenableFuture<Void> join(
-            Stream<ListenableFuture<Void>> input, int maximumConcurrentFutures)
+        protected ListenableFuture<Void> join(Stream<ListenableFuture<Void>> input, int maximumConcurrentFutures)
         {
             return FutureStreamJoiner.listenable().join(input, maximumConcurrentFutures, executorService);
+        }
+
+        @Override
+        protected ListenableFuture<Void> runAsFuture(TestRunnable runnable)
+        {
+            return listeningExecutorService.submit(runnable, null);
         }
     }
 
@@ -129,7 +139,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
 
     private ConcurrentTests.Suite<O> suite;
     protected ExecutorService executorService;
-    private ListeningExecutorService listeningExecutorService;
+    protected ListeningExecutorService listeningExecutorService;
 
     @BeforeMethod
     public void setUp()
@@ -150,7 +160,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testLowerTaskLimitBoundary()
     {
-        FutureStreamJoiner.listenable().join(Stream.empty(), 0, executorService);
+        join(Stream.empty(), 0);
     }
 
     @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
@@ -177,6 +187,8 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     protected abstract V join(Stream<V> input, int maximumConcurrentFutures);
 
     protected abstract V toVoidResult(O future);
+
+    protected abstract V runAsFuture(TestRunnable runnable);
 
     @DataProvider
     protected Object[][] parallelizationVariants()
@@ -226,54 +238,23 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     }
 
     @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, dataProvider = "exceptionHandlingRuns")
-    public void testFailingCompletableFutures(
-        String name, int startInclusive, int endInclusive, int failingRunnableNumber)
+    public void testFailingFutures(String name, int startInclusive, int endInclusive, int failingRunnableNumber)
     {
-        Stream<CompletableFuture<Void>> futures = getTestRunnableStream(startInclusive,
+        Stream<V> futures = getTestRunnableStream(startInclusive,
             endInclusive,
             failingRunnableNumber,
-            RuntimeException.class).map(this::runAsCompletableFuture);
+            RuntimeException.class).map(this::runAsFuture);
 
-        Future<?> future = FutureStreamJoiner.completable().join(futures, 1, executorService);
-
-        invokeAndAssert(future, failingRunnableNumber, RuntimeException.class);
-    }
-
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, dataProvider = "exceptionHandlingRuns")
-    public void testFailingListenableFutures(
-        String name, int startInclusive, int endInclusive, int failingRunnableNumber)
-    {
-        Stream<ListenableFuture<Void>> futures = getTestRunnableStream(startInclusive,
-            endInclusive,
-            failingRunnableNumber,
-            RuntimeException.class).map(this::runAsListenableFuture);
-
-        Future<?> future = FutureStreamJoiner.listenable().join(futures, 1, executorService);
+        Future<?> future = join(futures, 1);
 
         invokeAndAssert(future, failingRunnableNumber, RuntimeException.class);
     }
 
     @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, dataProvider = "causeExceptionClasses")
-    public void testThrowablesForCompletableFutures(String name, Class<IOException> desiredThrowableClass)
+    public void testThrowables(String name, Class<IOException> desiredThrowableClass)
     {
-        Stream<CompletableFuture<Void>>
-            futures
-            = getSingletonRunnableStream(desiredThrowableClass).map(this::runAsCompletableFuture);
-
-        Future<?> future = FutureStreamJoiner.completable().join(futures, 1, executorService);
-
-        invokeAndAssert(future, 1, desiredThrowableClass);
-    }
-
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, dataProvider = "causeExceptionClasses")
-    public void testThrowablesForListenableFutures(String name, Class<? extends Throwable> desiredThrowableClass)
-    {
-        Stream<ListenableFuture<Void>>
-            futures
-            = getSingletonRunnableStream(desiredThrowableClass).map(this::runAsListenableFuture);
-
-        Future<?> future = FutureStreamJoiner.listenable().join(futures, 1, executorService);
-
+        Stream<V> futures = getSingletonRunnableStream(desiredThrowableClass).map(this::runAsFuture);
+        Future<?> future = join(futures, 1);
         invokeAndAssert(future, 1, desiredThrowableClass);
     }
 
@@ -335,16 +316,6 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         }
 
         return result.toArray(new Object[][]{});
-    }
-
-    private CompletableFuture<Void> runAsCompletableFuture(TestRunnable runnable)
-    {
-        return CompletableFuture.runAsync(runnable, executorService);
-    }
-
-    private ListenableFuture<Void> runAsListenableFuture(TestRunnable task)
-    {
-        return listeningExecutorService.submit(task, null);
     }
 
     @Value
