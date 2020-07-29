@@ -37,7 +37,7 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
 {
-    public static class CompletableFutureMode extends TestBufferedStreamAdapter<CompletableFuture<Object>>
+    public static final class CompletableFutureMode extends TestBufferedStreamAdapter<CompletableFuture<Object>>
     {
         @Override
         protected Stream<Object> runTest(Stream<CompletableFuture<Object>> stream, int bufferSize)
@@ -52,7 +52,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         }
     }
 
-    public static class ListenableFutureMode extends TestBufferedStreamAdapter<ListenableFuture<Object>>
+    public static final class ListenableFutureMode extends TestBufferedStreamAdapter<ListenableFuture<Object>>
     {
         @Override
         protected Stream<Object> runTest(Stream<ListenableFuture<Object>> stream, int bufferSize)
@@ -200,6 +200,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
     @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, expectedExceptions = UncheckedExecutionException.class)
     public void testTransportsExceptionInStream()
     {
+        // TODO reuse stuff from FSJ test to cover more throwables & let different stream elements cause the exception
         Stream<F> stream = Stream.generate(() -> {
             throw new StoreLayerException("some test exception");
         });

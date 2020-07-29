@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -47,9 +48,10 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
+@Slf4j
 public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends Future<Void>>
 {
-    public static class CompletableFutureMode
+    public static final class CompletableFutureMode
         extends TestFutureStreamJoiner<CompletableFuture<Object>, CompletableFuture<Void>>
     {
         @Override
@@ -77,7 +79,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         }
     }
 
-    public static class ListenableFutureMode
+    public static final class ListenableFutureMode
         extends TestFutureStreamJoiner<ListenableFuture<Object>, ListenableFuture<Void>>
     {
         @Override
@@ -107,28 +109,28 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
 
     @Value
     @EqualsAndHashCode(callSuper = false)
-    private static class DummyError extends Error
+    private static final class DummyError extends Error
     {
         String message;
     }
 
     @Value
     @EqualsAndHashCode(callSuper = false)
-    private static class DummyThrowable extends Throwable
+    private static final class DummyThrowable extends Throwable
     {
         String message;
     }
 
     @Value
     @EqualsAndHashCode(callSuper = false)
-    private static class DummyCheckedException extends Exception
+    private static final class DummyCheckedException extends Exception
     {
         String message;
     }
 
     @Value
     @EqualsAndHashCode(callSuper = false)
-    private static class DummyRuntimeException extends RuntimeException
+    private static final class DummyRuntimeException extends RuntimeException
     {
         String message;
     }
@@ -319,7 +321,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     }
 
     @Value
-    private static class TestRunnable implements Runnable
+    private static final class TestRunnable implements Runnable
     {
         int number;
         Class<? extends Throwable> throwableClass;
@@ -330,14 +332,14 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         {
             String me = "Runnable #" + number;
 
-            // TODO replace sysout with log info
-            System.out.println(me + " running.");
+            log.info("{} running.", me);
             if (shouldFail())
             {
-                System.out.println(me + " throws Exception.");
+                log.info("{} throws Exception.", me);
+
                 throw instantiateThrowable(me + " failed");
             }
-            System.out.println(me + " completed.");
+            log.info("{} completed.", me);
         }
 
         private boolean shouldFail()

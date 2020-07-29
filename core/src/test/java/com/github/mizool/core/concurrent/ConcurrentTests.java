@@ -114,7 +114,7 @@ class ConcurrentTests
         }
     }
 
-    private class ListenableFutureSuite extends Suite<ListenableFuture<Object>>
+    private final class ListenableFutureSuite extends Suite<ListenableFuture<Object>>
     {
         protected final ScheduledExecutorService executorService;
 
@@ -148,7 +148,7 @@ class ConcurrentTests
         }
     }
 
-    private class CompletableFutureSuite extends Suite<CompletableFuture<Object>>
+    private final class CompletableFutureSuite extends Suite<CompletableFuture<Object>>
     {
         protected final ScheduledExecutorService executorService;
 

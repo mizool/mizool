@@ -23,10 +23,9 @@ import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.Value;
 import lombok.experimental.UtilityClass;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -68,7 +67,7 @@ public class FutureStreamJoiner
      * See {@link FutureStreamJoiner} for details.
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public class Listenable
+    public final class Listenable
     {
         /**
          * Returns a future that will complete normally once all futures in the given stream have completed
@@ -99,7 +98,7 @@ public class FutureStreamJoiner
      * See {@link FutureStreamJoiner} for details.
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public class Completable
+    public final class Completable
     {
         /**
          * Returns a future that will complete normally once all futures in the given stream have completed
@@ -120,6 +119,38 @@ public class FutureStreamJoiner
                 .adapt(completableFutures, concurrencyLimit, executorService);
 
             return CompletableFuture.runAsync(consumeStream(results), executorService);
+        }
+    }
+
+    @RequiredArgsConstructor
+    private final class StreamConsumingWorker implements Runnable
+    {
+        private final Stream<Void> stream;
+
+        @Override
+        @SneakyThrows
+        public void run()
+        {
+            try
+            {
+                stream.forEach(whatever -> {
+                });
+            }
+            catch (UncheckedExecutionException t)
+            {
+                throw tryUnwrap(t);
+            }
+        }
+
+        private Throwable tryUnwrap(Throwable t)
+        {
+            Throwable cause = t.getCause();
+            if (cause != null)
+            {
+                return cause;
+            }
+
+            return t;
         }
     }
 
@@ -158,38 +189,5 @@ public class FutureStreamJoiner
     private Runnable consumeStream(Stream<Void> stream)
     {
         return new StreamConsumingWorker(stream);
-    }
-
-    @Value
-    @Getter(value = AccessLevel.NONE)
-    private class StreamConsumingWorker implements Runnable
-    {
-        Stream<Void> stream;
-
-        @Override
-        @SneakyThrows
-        public void run()
-        {
-            try
-            {
-                stream.forEach(whatever -> {
-                });
-            }
-            catch (UncheckedExecutionException t)
-            {
-                throw tryUnwrap(t);
-            }
-        }
-
-        private Throwable tryUnwrap(Throwable t)
-        {
-            Throwable cause = t.getCause();
-            if (cause != null)
-            {
-                return cause;
-            }
-
-            return t;
-        }
     }
 }

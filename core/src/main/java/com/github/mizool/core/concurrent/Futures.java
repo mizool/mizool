@@ -52,6 +52,7 @@ public class Futures
      *
      * @return a void future
      */
+    @SuppressWarnings("deprecation")
     public ListenableFuture<Void> toVoidResult(ListenableFuture<?> future)
     {
         return new ResultVoidingFuture(future);

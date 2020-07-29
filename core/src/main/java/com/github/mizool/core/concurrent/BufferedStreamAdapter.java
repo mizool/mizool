@@ -31,9 +31,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -60,17 +59,18 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * Stream<ListenableFuture<V>> listenables;
  * Stream<V> values1 = BufferedStreamAdapter.listenable().adapt(listenables, bufferSize, executorService);}</pre>
  */
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BufferedStreamAdapter<F, V>
 {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Listenable
+    public static final class Listenable
     {
-        public <V> Stream<V> adapt(
-            Stream<ListenableFuture<V>> futures, int bufferSize, ExecutorService executorService)
+        public <E> Stream<E> adapt(
+            Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
         {
             verifyBufferSize(bufferSize);
 
-            return new BufferedStreamAdapter<ListenableFuture<V>, V>(futures,
+            return new BufferedStreamAdapter<ListenableFuture<E>, E>(futures,
                 bufferSize,
                 executorService,
                 this::addListener).adapt();
@@ -83,7 +83,7 @@ public final class BufferedStreamAdapter<F, V>
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class Completable
+    public static final class Completable
     {
         public <E> Stream<E> adapt(
             Stream<CompletableFuture<E>> futures, int bufferSize, ExecutorService executorService)
@@ -102,6 +102,65 @@ public final class BufferedStreamAdapter<F, V>
         }
     }
 
+    private static final class ValueHolder<E>
+    {
+        private final E value;
+        private final Throwable throwable;
+
+        public ValueHolder(E value)
+        {
+            this.value = value;
+            throwable = null;
+        }
+
+        public ValueHolder(Throwable throwable)
+        {
+            value = null;
+            this.throwable = throwable;
+        }
+
+        public E obtain()
+        {
+            if (throwable instanceof CompletionException)
+            {
+                throw (CompletionException) throwable;
+            }
+            else if (throwable != null)
+            {
+                throw new UncheckedExecutionException(throwable);
+            }
+            return value;
+        }
+    }
+
+    @RequiredArgsConstructor
+    private static final class ListenableFutureCallback<E> implements FutureCallback<E>
+    {
+        private final Listener<E> listener;
+
+        @Override
+        public void onSuccess(E value)
+        {
+            listener.accept(value, null);
+        }
+
+        @Override
+        public void onFailure(Throwable t)
+        {
+            listener.accept(null, t);
+        }
+    }
+
+    @FunctionalInterface
+    private interface ListenerAdder<T, E> extends BiConsumer<T, Listener<E>>
+    {
+    }
+
+    @FunctionalInterface
+    private interface Listener<E> extends BiConsumer<E, Throwable>
+    {
+    }
+
     public static Listenable listenable()
     {
         return new Listenable();
@@ -116,8 +175,8 @@ public final class BufferedStreamAdapter<F, V>
      * @deprecated Use {@link #listenable()} and {@link Listenable#adapt(Stream, int, ExecutorService)} instead.
      */
     @Deprecated
-    public static <V> Stream<V> adapt(
-        Stream<ListenableFuture<V>> futures, int bufferSize, ExecutorService executorService)
+    public static <E> Stream<E> adapt(
+        Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
     {
         return BufferedStreamAdapter.listenable().adapt(futures, bufferSize, executorService);
     }
@@ -130,62 +189,12 @@ public final class BufferedStreamAdapter<F, V>
         }
     }
 
-    private static class ValueHolder<V>
-    {
-        private final V value;
-        private final Throwable throwable;
-
-        public ValueHolder(V value)
-        {
-            this.value = value;
-            throwable = null;
-        }
-
-        public ValueHolder(Throwable throwable)
-        {
-            value = null;
-            this.throwable = throwable;
-        }
-
-        public V obtain()
-        {
-            if (throwable instanceof CompletionException)
-            {
-                throw (CompletionException) throwable;
-            }
-            else if (throwable != null)
-            {
-                throw new UncheckedExecutionException(throwable);
-            }
-            return value;
-        }
-    }
-
-    @Value
-    @Getter(value = AccessLevel.NONE)
-    private static class ListenableFutureCallback<E> implements FutureCallback<E>
-    {
-        BiConsumer<E, Throwable> biConsumer;
-
-        @Override
-        public void onSuccess(E value)
-        {
-            biConsumer.accept(value, null);
-        }
-
-        @Override
-        public void onFailure(Throwable t)
-        {
-            biConsumer.accept(null, t);
-        }
-    }
-
     private BooleanSupplier capacityAvailable()
     {
         return () -> runningFutures.get() + results.size() < bufferSize;
     }
 
-    private class BlockingSpliterator implements Spliterator<V>
+    private final class BlockingSpliterator implements Spliterator<V>
     {
         @Override
         public boolean tryAdvance(Consumer<? super V> action)
@@ -249,31 +258,10 @@ public final class BufferedStreamAdapter<F, V>
     private final ExecutorService executorService;
     private final ListenerAdder<F, V> listenerAdder;
 
-    private final Queue<ValueHolder<V>> results;
+    private final Queue<ValueHolder<V>> results = new LinkedList<>();
     private final Object semaphore = new Object();
     private final AtomicInteger runningFutures = new AtomicInteger();
-
     private final AtomicBoolean streamDepleted = new AtomicBoolean();
-
-    private BufferedStreamAdapter(
-        Stream<F> futures, int bufferSize, ExecutorService executorService, ListenerAdder<F, V> listenerAdder)
-    {
-        this.futures = futures;
-        this.bufferSize = bufferSize;
-        this.executorService = executorService;
-        this.listenerAdder = listenerAdder;
-        this.results = new LinkedList<>();
-    }
-
-    @FunctionalInterface
-    private interface ListenerAdder<T, E> extends BiConsumer<T, Listener<E>>
-    {
-    }
-
-    @FunctionalInterface
-    private interface Listener<E> extends BiConsumer<E, Throwable>
-    {
-    }
 
     private Stream<V> adapt()
     {

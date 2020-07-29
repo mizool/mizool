@@ -63,7 +63,7 @@ import com.google.common.util.concurrent.SettableFuture;
  */
 @Deprecated
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ListenableFutureCollector implements Collector<ListenableFuture<Void>, Void, ListenableFuture<Void>>
+public final class ListenableFutureCollector implements Collector<ListenableFuture<Void>, Void, ListenableFuture<Void>>
 {
     public static ListenableFutureCollector concurrent(int maximumConcurrentFutures)
     {
@@ -75,7 +75,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private class Callback implements FutureCallback<Void>
+    private final class Callback implements FutureCallback<Void>
     {
         @Override
         public void onSuccess(Void value)
