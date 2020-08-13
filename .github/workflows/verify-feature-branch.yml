@@ -18,13 +18,5 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2
 
-      - name: Set up JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-
-      - name: Set up toolchains.xml
-        run: cp .github/workflows/toolchains.xml /home/runner/.m2/toolchains.xml
-
-      - name: Maven 'verify' build
-        run: mvn -B -U -DperformRelease=true verify
+      - name: Build
+        uses: docker://incub8softwarelabs/pipelines-build-environment:master
