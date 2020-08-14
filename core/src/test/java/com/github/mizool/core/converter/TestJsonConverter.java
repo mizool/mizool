@@ -5,27 +5,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.Collection;
 import java.util.Map;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 public class TestJsonConverter
 {
-    @Value
-    @AllArgsConstructor(access = AccessLevel.PUBLIC)
-    @Builder(toBuilder = true)
+    @Data
     private static class Pojo
     {
-        private final Integer field;
+        /**
+         * Allows instantiation by Jackson.
+         */
+        @VisibleForTesting
+        private Pojo()
+        {
+        }
+
+        @Builder(toBuilder = true)
+        private Pojo(Integer field)
+        {
+            this.field = field;
+        }
+
+        private Integer field;
     }
 
     private JsonConverter jsonConverter;
@@ -122,7 +133,7 @@ public class TestJsonConverter
     }
 
     @Test
-    public void testPojoToPojo()
+    public void testRecordToPojo()
     {
         String record = "{\r\n  \"field\" : 1\r\n}";
         Pojo expected = Pojo.builder().field(1).build();

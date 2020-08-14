@@ -1,6 +1,6 @@
-/**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,17 +41,17 @@ import com.google.common.util.concurrent.SettableFuture;
 @UtilityClass
 class ConcurrentTests
 {
-    public static final int TEST_TIMEOUT = 5000;
+    public final int TEST_TIMEOUT = 5000;
 
     @Value
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static class StreamItem
+    private class StreamItem
     {
-        private final long duration;
-        private final Object value;
+        long duration;
+        Object value;
     }
 
-    public static class Suite
+    public final class Suite
     {
         private final List<StreamItem> streamItems;
         private final AtomicInteger started;
@@ -109,7 +109,7 @@ class ConcurrentTests
         public void assertContainsExpectedResults(Stream<Object> actual)
         {
             List<Object> results = actual.collect(ImmutableList.toImmutableList());
-            assertThat(results).containsOnlyElementsOf(getExpectedResults());
+            assertThat(results).containsExactlyInAnyOrderElementsOf(getExpectedResults());
         }
 
         private List<Object> getExpectedResults()
@@ -133,7 +133,7 @@ class ConcurrentTests
         }
     }
 
-    public static Suite suite(int corePoolSize)
+    public Suite suite(int corePoolSize)
     {
         return new Suite(corePoolSize);
     }
