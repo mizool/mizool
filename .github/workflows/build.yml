@@ -1,4 +1,4 @@
-name: Verify feature branch & PR
+name: Build
 
 on:
   push:
@@ -9,6 +9,8 @@ on:
     branches:
       - develop
 
+# TODO add master, hotfix, release, younameit
+
 jobs:
   build:
 
@@ -17,6 +19,12 @@ jobs:
     steps:
       - name: Check out
         uses: actions/checkout@v2
+
+      - name: Maven Repo Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2/repository
+          key: maven-repo
 
       - name: Build
         uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
