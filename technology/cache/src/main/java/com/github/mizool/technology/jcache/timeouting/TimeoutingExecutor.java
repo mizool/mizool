@@ -1,6 +1,6 @@
-/**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,16 +28,18 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.configuration.Config;
 import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 public class TimeoutingExecutor
 {
-    private static final String TIMEOUT_PROPERTY_NAME = "cache.timeout";
-    private static final String DEFAULT_CACHE_TIMEOUT = "10000";
-    private static final long CACHE_TIMEOUT = Long.parseLong(System.getProperty(TIMEOUT_PROPERTY_NAME,
-        DEFAULT_CACHE_TIMEOUT));
+    private static final long CACHE_TIMEOUT = Config.systemProperties()
+        .child("cache.timeout")
+        .longValue()
+        .read()
+        .orElse(10000L);
 
     private final ExecutorService executorService;
 

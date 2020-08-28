@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.github.mizool.core.configuration.Config;
+
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 class CacheWatchdog
 {
-    private static final String CACHE_RETRY_PERIOD_PROPERTY_NAME = "cache.retryPeriod";
-    private static final long CACHE_RETRY_PERIOD = Long.parseLong(System.getProperty(CACHE_RETRY_PERIOD_PROPERTY_NAME,
-        Long.toString(30000)));
+    private static final long CACHE_RETRY_PERIOD = Config.systemProperties()
+        .child("cache.retryPeriod")
+        .longValue()
+        .read()
+        .orElse(30000L);
 
     private final CacheWatchdogState cacheWatchdogState;
 
