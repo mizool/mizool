@@ -40,14 +40,16 @@ public final class Value<T>
 
     /**
      * @throws ConfigurationException if the present, non-empty value could not be parsed according to the type
-     *     specified
+     * specified
      */
     public Optional<T> read()
     {
         String valueOrNull = properties.getProperty(key);
         try
         {
-            return Optional.ofNullable(valueOrNull).filter(s -> !s.isEmpty()).map(valueConversionFunction);
+            return Optional.ofNullable(valueOrNull)
+                .filter(s -> !s.isEmpty())
+                .map(valueConversionFunction);
         }
         catch (RuntimeException e)
         {
@@ -57,7 +59,7 @@ public final class Value<T>
 
     /**
      * @throws ConfigurationException if the present, non-empty value could not be parsed according to the type
-     *     specified
+     * specified
      */
     public T obtain()
     {

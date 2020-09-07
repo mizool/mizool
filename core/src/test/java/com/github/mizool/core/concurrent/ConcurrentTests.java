@@ -84,7 +84,8 @@ class ConcurrentTests
 
         public Stream<ListenableFuture<Object>> stream()
         {
-            return streamItems.stream().map(this::toFuture);
+            return streamItems.stream()
+                .map(this::toFuture);
         }
 
         private ListenableFuture<Object> toFuture(StreamItem streamItem)

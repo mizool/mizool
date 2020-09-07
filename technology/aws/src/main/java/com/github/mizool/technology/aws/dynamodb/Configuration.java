@@ -22,15 +22,21 @@ import com.github.mizool.core.configuration.PropertyNode;
 
 public class Configuration
 {
-    private static final PropertyNode CONFIG = Config.systemProperties().child("aws");
+    private static final PropertyNode CONFIG = Config.systemProperties()
+        .child("aws");
 
     public Regions getAwsRegion()
     {
-        return CONFIG.child("region").convertedValue(Regions::valueOf).read().orElse(Regions.EU_CENTRAL_1);
+        return CONFIG.child("region")
+            .convertedValue(Regions::valueOf)
+            .read()
+            .orElse(Regions.EU_CENTRAL_1);
     }
 
     public String getEndpoint()
     {
-        return CONFIG.child("endpoint").stringValue().obtain();
+        return CONFIG.child("endpoint")
+            .stringValue()
+            .obtain();
     }
 }

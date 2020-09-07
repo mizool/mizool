@@ -50,7 +50,8 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
 
         public static Digest valueOf(String digest)
         {
-            List<String> parts = Splitter.on(SEPARATOR).splitToList(digest);
+            List<String> parts = Splitter.on(SEPARATOR)
+                .splitToList(digest);
             int iterations = Integer.parseInt(parts.get(0));
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] salt = decoder.decode(parts.get(1));
@@ -62,7 +63,8 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
         public String toString()
         {
             Base64.Encoder encoder = Base64.getEncoder();
-            return Joiner.on(SEPARATOR).join(iterations, encoder.encodeToString(salt), encoder.encodeToString(hash));
+            return Joiner.on(SEPARATOR)
+                .join(iterations, encoder.encodeToString(salt), encoder.encodeToString(hash));
         }
     }
 
@@ -71,7 +73,10 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
     private static final PropertyNode CONFIG = Config.systemProperties()
         .child(Pbkdf2WithHmacSha1Hasher.class.getName());
 
-    private static final int ITERATIONS_FOR_NEW_PASSWORDS = CONFIG.child("iterations").intValue().read().orElse(65536);
+    private static final int ITERATIONS_FOR_NEW_PASSWORDS = CONFIG.child("iterations")
+        .intValue()
+        .read()
+        .orElse(65536);
 
     private static final int PBE_KEY_LENGTH = 64 * 8;
 
@@ -129,7 +134,8 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
         {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(ALGORITHM_NAME);
             long startTime = System.currentTimeMillis();
-            result = secretKeyFactory.generateSecret(keySpec).getEncoded();
+            result = secretKeyFactory.generateSecret(keySpec)
+                .getEncoded();
             long elapsedTime = System.currentTimeMillis() - startTime;
             log.debug("Hashing with {} iterations took {}ms", iterations, elapsedTime);
         }

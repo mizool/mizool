@@ -44,7 +44,10 @@ class ReadableDurationValues
 
     private String getDurationUnitNames(Collector<CharSequence, ?, String> collector)
     {
-        return UNITS.stream().map(Enum::name).map(String::toLowerCase).collect(collector);
+        return UNITS.stream()
+            .map(Enum::name)
+            .map(String::toLowerCase)
+            .collect(collector);
     }
 
     public Duration parse(String s)
@@ -58,6 +61,7 @@ class ReadableDurationValues
                 getDurationUnitNames(Collectors.joining(", "))));
         }
         return Duration.of(Long.parseLong(matcher.group(1)),
-            ChronoUnit.valueOf(matcher.group(2).toUpperCase(Locale.ROOT)));
+            ChronoUnit.valueOf(matcher.group(2)
+                .toUpperCase(Locale.ROOT)));
     }
 }

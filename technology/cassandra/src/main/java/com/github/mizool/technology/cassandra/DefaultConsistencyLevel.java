@@ -25,7 +25,8 @@ import com.github.mizool.core.configuration.PropertyNode;
 @UtilityClass
 public class DefaultConsistencyLevel
 {
-    private final PropertyNode CONFIG = Config.systemProperties().child(DefaultConsistencyLevel.class.getName());
+    private final PropertyNode CONFIG = Config.systemProperties()
+        .child(DefaultConsistencyLevel.class.getName());
 
     public final ConsistencyLevel READ = CONFIG.child("READ")
         .convertedValue(ConsistencyLevel::valueOf)

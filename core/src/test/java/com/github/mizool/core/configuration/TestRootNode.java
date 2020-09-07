@@ -31,7 +31,9 @@ public class TestRootNode
         RootNode rootNode = Config.blank()
             .add(getClass().getResourceAsStream("TestRootNode.properties"), StandardCharsets.UTF_8);
 
-        String value = rootNode.child("content").stringValue().obtain();
+        String value = rootNode.child("content")
+            .stringValue()
+            .obtain();
 
         assertThat(value).isEqualTo("nonsense");
     }
@@ -43,15 +45,21 @@ public class TestRootNode
         properties.setProperty("content", "useful");
 
         RootNode original = Config.from(properties);
-        String valueBefore = original.child("content").stringValue().obtain();
+        String valueBefore = original.child("content")
+            .stringValue()
+            .obtain();
 
         RootNode added = original.add(getClass().getResourceAsStream("TestRootNode.properties"),
             StandardCharsets.UTF_8);
 
-        String value = added.child("content").stringValue().obtain();
+        String value = added.child("content")
+            .stringValue()
+            .obtain();
         assertThat(value).isEqualTo("nonsense");
 
-        String valueAfter = original.child("content").stringValue().obtain();
+        String valueAfter = original.child("content")
+            .stringValue()
+            .obtain();
         assertThat(valueAfter).isEqualTo(valueBefore);
     }
 }

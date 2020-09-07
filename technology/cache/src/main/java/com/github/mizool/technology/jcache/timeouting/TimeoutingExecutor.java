@@ -56,7 +56,8 @@ public class TimeoutingExecutor
         }
         catch (InterruptedException e)
         {
-            Thread.currentThread().interrupt();
+            Thread.currentThread()
+                .interrupt();
             throw new UncheckedInterruptedException(e);
         }
         catch (ExecutionException e)
@@ -69,7 +70,8 @@ public class TimeoutingExecutor
     {
         try
         {
-            executorService.submit(runnable).get(TimeoutingExecutor.CACHE_TIMEOUT, TimeUnit.MILLISECONDS);
+            executorService.submit(runnable)
+                .get(TimeoutingExecutor.CACHE_TIMEOUT, TimeUnit.MILLISECONDS);
         }
         catch (TimeoutException e)
         {
@@ -77,7 +79,8 @@ public class TimeoutingExecutor
         }
         catch (InterruptedException e)
         {
-            Thread.currentThread().interrupt();
+            Thread.currentThread()
+                .interrupt();
             throw new UncheckedInterruptedException(e);
         }
         catch (ExecutionException e)

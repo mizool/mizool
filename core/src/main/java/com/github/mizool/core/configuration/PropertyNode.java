@@ -272,7 +272,10 @@ public final class PropertyNode implements HasChildren
 
     private Stream<String> parseCommaSeparatedList(String string)
     {
-        Iterable<String> split = Splitter.on(',').trimResults().omitEmptyStrings().split(string);
+        Iterable<String> split = Splitter.on(',')
+            .trimResults()
+            .omitEmptyStrings()
+            .split(string);
         return StreamSupport.stream(split.spliterator(), false);
     }
 

@@ -39,7 +39,8 @@ public class TestValue
         Value<String> value = new Value<>(new Properties(), KEY, s -> fail("conversion was called for missing key"));
 
         assertThat(value.read()).isEmpty();
-        assertThatThrownBy(value::obtain).isInstanceOf(ConfigurationException.class).hasMessageContaining(KEY);
+        assertThatThrownBy(value::obtain).isInstanceOf(ConfigurationException.class)
+            .hasMessageContaining(KEY);
     }
 
     @Test

@@ -74,7 +74,9 @@ public class TestJsonConverter
     @Test
     public void testPojoToRecord()
     {
-        Pojo pojo = Pojo.builder().field(1).build();
+        Pojo pojo = Pojo.builder()
+            .field(1)
+            .build();
         String expected = "{\"field\":1}";
 
         String actual = jsonConverter.toRecord(pojo);
@@ -136,7 +138,9 @@ public class TestJsonConverter
     public void testRecordToPojo()
     {
         String record = "{\r\n  \"field\" : 1\r\n}";
-        Pojo expected = Pojo.builder().field(1).build();
+        Pojo expected = Pojo.builder()
+            .field(1)
+            .build();
 
         TypeReference<Pojo> typeReference = new TypeReference<Pojo>()
         {

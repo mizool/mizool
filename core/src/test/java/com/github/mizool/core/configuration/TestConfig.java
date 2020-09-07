@@ -67,8 +67,12 @@ public class TestConfig
     {
         RootNode root = Config.from(testProperties);
 
-        assertThat(root.child("answer").stringValue().obtain()).isEqualTo("forty-two");
-        assertThat(root.child("something").stringValue().obtain()).isEqualTo("interesting");
+        assertThat(root.child("answer")
+            .stringValue()
+            .obtain()).isEqualTo("forty-two");
+        assertThat(root.child("something")
+            .stringValue()
+            .obtain()).isEqualTo("interesting");
     }
 
     @Test
@@ -78,16 +82,24 @@ public class TestConfig
         propertiesWithDefaults.setProperty("greeting", "Hello, World!");
 
         RootNode root = Config.from(propertiesWithDefaults);
-        assertThat(root.child("answer").stringValue().obtain()).isEqualTo("forty-two");
-        assertThat(root.child("something").stringValue().obtain()).isEqualTo("interesting");
-        assertThat(root.child("greeting").stringValue().obtain()).isEqualTo("Hello, World!");
+        assertThat(root.child("answer")
+            .stringValue()
+            .obtain()).isEqualTo("forty-two");
+        assertThat(root.child("something")
+            .stringValue()
+            .obtain()).isEqualTo("interesting");
+        assertThat(root.child("greeting")
+            .stringValue()
+            .obtain()).isEqualTo("Hello, World!");
     }
 
     @Test
     public void testSystemProperties()
     {
         RootNode root = Config.systemProperties();
-        String lineSeparator = root.child("line.separator").stringValue().obtain();
+        String lineSeparator = root.child("line.separator")
+            .stringValue()
+            .obtain();
         assertThat(lineSeparator).isNotEmpty();
     }
 
@@ -95,17 +107,22 @@ public class TestConfig
     public void testConfigPicksUpPropertiesChangedLater()
     {
         Properties properties = new Properties();
-        PropertyNode node = Config.from(properties).child("breaking");
+        PropertyNode node = Config.from(properties)
+            .child("breaking");
 
         properties.setProperty("breaking", "news");
 
-        assertThat(node.stringValue().obtain()).isEqualTo("news");
+        assertThat(node.stringValue()
+            .obtain()).isEqualTo("news");
     }
 
     @Test
     public void testGetSuccess()
     {
-        Optional<String> answer = Config.from(testProperties).child("answer").stringValue().read();
+        Optional<String> answer = Config.from(testProperties)
+            .child("answer")
+            .stringValue()
+            .read();
 
         assertThat(answer).contains("forty-two");
     }
@@ -113,7 +130,10 @@ public class TestConfig
     @Test
     public void testGetFailure()
     {
-        Optional<String> answer = Config.from(testProperties).child("question").stringValue().read();
+        Optional<String> answer = Config.from(testProperties)
+            .child("question")
+            .stringValue()
+            .read();
 
         assertThat(answer).isEmpty();
     }
@@ -121,7 +141,10 @@ public class TestConfig
     @Test
     public void testObtainSuccess()
     {
-        String answer = Config.from(testProperties).child("answer").stringValue().obtain();
+        String answer = Config.from(testProperties)
+            .child("answer")
+            .stringValue()
+            .obtain();
 
         assertThat(answer).isEqualTo("forty-two");
     }
@@ -129,11 +152,14 @@ public class TestConfig
     @Test
     public void testObtainFailure()
     {
-        Value<String> configValue = Config.from(testProperties).child("question").stringValue();
+        Value<String> configValue = Config.from(testProperties)
+            .child("question")
+            .stringValue();
 
         Throwable throwable = catchThrowable(configValue::obtain);
 
-        assertThat(throwable).isExactlyInstanceOf(ConfigurationException.class).hasMessageContaining("question");
+        assertThat(throwable).isExactlyInstanceOf(ConfigurationException.class)
+            .hasMessageContaining("question");
     }
 
     @Test(dataProvider = "typeConversions")
@@ -141,9 +167,12 @@ public class TestConfig
     {
         Properties properties = new Properties();
         properties.setProperty("key", conversionSpec.getString());
-        PropertyNode node = Config.from(properties).child("key");
+        PropertyNode node = Config.from(properties)
+            .child("key");
 
-        T result = conversionSpec.getFunction().apply(node).obtain();
+        T result = conversionSpec.getFunction()
+            .apply(node)
+            .obtain();
         assertThat(result).isEqualTo(conversionSpec.expectedValue);
     }
 
@@ -157,8 +186,7 @@ public class TestConfig
                 "Long", new ConversionSpec<>(String.valueOf(Long.MAX_VALUE), PropertyNode::longValue, Long.MAX_VALUE)
             },
             new Object[]{
-                "BigDecimal",
-                new ConversionSpec<>("0.1", PropertyNode::bigDecimalValue, new BigDecimal("0.1"))
+                "BigDecimal", new ConversionSpec<>("0.1", PropertyNode::bigDecimalValue, new BigDecimal("0.1"))
             },
             new Object[]{ "Boolean", new ConversionSpec<>("false", PropertyNode::booleanValue, false) },
             new Object[]{
@@ -181,13 +209,15 @@ public class TestConfig
                 "Unix Timestamp",
                 new ConversionSpec<>("1597409235",
                     PropertyNode::unixTimestampValue,
-                    OffsetDateTime.of(2020, 8, 14, 12, 47, 15, 0, ZoneOffset.UTC).toInstant())
+                    OffsetDateTime.of(2020, 8, 14, 12, 47, 15, 0, ZoneOffset.UTC)
+                        .toInstant())
             },
             new Object[]{
                 "UTC Instant",
                 new ConversionSpec<>("2020-08-14T12:47:15.00Z",
                     PropertyNode::utcInstantValue,
-                    OffsetDateTime.of(2020, 8, 14, 12, 47, 15, 0, ZoneOffset.UTC).toInstant())
+                    OffsetDateTime.of(2020, 8, 14, 12, 47, 15, 0, ZoneOffset.UTC)
+                        .toInstant())
             },
             new Object[]{
                 "ISO Duration", new ConversionSpec<>("PT7H", PropertyNode::isoDurationValue, Duration.ofHours(7))
@@ -216,7 +246,11 @@ public class TestConfig
         Properties properties = new Properties();
         properties.setProperty("key", value);
 
-        List<String> result = Config.from(properties).child("key").stringsValue().obtain().collect(Collectors.toList());
+        List<String> result = Config.from(properties)
+            .child("key")
+            .stringsValue()
+            .obtain()
+            .collect(Collectors.toList());
 
         assertThat(result).isEqualTo(expectedResult);
     }
@@ -251,25 +285,34 @@ public class TestConfig
     @Test(dataProvider = "plainSuccess")
     public void testPlainObtainSuccess(String remark, HasChildren subject, String key)
     {
-        assertThat(subject.child(key).stringValue().obtain()).isEqualTo(VALUE);
+        assertThat(subject.child(key)
+            .stringValue()
+            .obtain()).isEqualTo(VALUE);
     }
 
     @Test(dataProvider = "plainSuccess")
     public void testPlainGetSuccess(String remark, HasChildren subject, String key)
     {
-        assertThat(subject.child(key).stringValue().read().orElseThrow(AssertionError::new)).isEqualTo(VALUE);
+        assertThat(subject.child(key)
+            .stringValue()
+            .read()
+            .orElseThrow(AssertionError::new)).isEqualTo(VALUE);
     }
 
     @Test(dataProvider = "plainFailure", expectedExceptions = ConfigurationException.class)
     public void testPlainObtainFailure(String remark, HasChildren subject, String key)
     {
-        subject.child(key).stringValue().obtain();
+        subject.child(key)
+            .stringValue()
+            .obtain();
     }
 
     @Test(dataProvider = "plainFailure")
     public void testPlainGetFailure(String remark, HasChildren subject, String key)
     {
-        assertThat(subject.child(key).stringValue().read()).isEmpty();
+        assertThat(subject.child(key)
+            .stringValue()
+            .read()).isEmpty();
     }
 
     @DataProvider
@@ -282,7 +325,12 @@ public class TestConfig
             new Object[]{ "root -> 'a' -> 'b'", Config.from(testProperties).child("a"), "b" },
             new Object[]{ "root -> 'a' -> 'b.c'", Config.from(testProperties).child("a"), "b.c" },
             new Object[]{ "root -> 'a.b' -> 'c'", Config.from(testProperties).child("a.b"), "c" },
-            new Object[]{ "root -> 'a' -> 'b' -> 'c'", Config.from(testProperties).child("a").child("b"), "c" }
+            new Object[]{
+                "root -> 'a' -> 'b' -> 'c'",
+                Config.from(testProperties)
+                    .child("a").child("b"),
+                "c"
+            }
         };
     }
 
@@ -296,7 +344,12 @@ public class TestConfig
             new Object[]{ "root -> 'a' -> 'x'", Config.from(testProperties).child("a"), "x" },
             new Object[]{ "root -> 'a' -> 'b.x'", Config.from(testProperties).child("a"), "b.x" },
             new Object[]{ "root -> 'a.b' -> x", Config.from(testProperties).child("a.b"), "x" },
-            new Object[]{ "root -> 'a' -> 'b' -> 'x'", Config.from(testProperties).child("a").child("b"), "x" }
+            new Object[]{
+                "root -> 'a' -> 'b' -> 'x'",
+                Config.from(testProperties)
+                    .child("a").child("b"),
+                "x"
+            }
         };
     }
 
@@ -324,7 +377,9 @@ public class TestConfig
     {
         return listNode.referencedNodes()
             .obtain()
-            .map(propertyNode -> propertyNode.child(childName).stringValue().obtain())
+            .map(propertyNode -> propertyNode.child(childName)
+                .stringValue()
+                .obtain())
             .collect(Collectors.toList());
     }
 

@@ -51,7 +51,8 @@ class CacheWatchdog
             {
                 for (String cacheName : cacheManager.getCacheNames())
                 {
-                    cacheManager.getCache(cacheName).removeAll();
+                    cacheManager.getCache(cacheName)
+                        .removeAll();
                 }
                 log.info("All caches reset.");
             }
