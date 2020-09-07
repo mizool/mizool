@@ -69,10 +69,10 @@ public class TestConfig
 
         assertThat(root.child("answer")
             .stringValue()
-            .obtain()).isEqualTo("forty-two");
+            .read()).contains("forty-two");
         assertThat(root.child("something")
             .stringValue()
-            .obtain()).isEqualTo("interesting");
+            .read()).contains("interesting");
     }
 
     @Test
@@ -84,22 +84,26 @@ public class TestConfig
         RootNode root = Config.from(propertiesWithDefaults);
         assertThat(root.child("answer")
             .stringValue()
-            .obtain()).isEqualTo("forty-two");
+            .read()).contains("forty-two");
         assertThat(root.child("something")
             .stringValue()
-            .obtain()).isEqualTo("interesting");
+            .read()).contains("interesting");
         assertThat(root.child("greeting")
             .stringValue()
-            .obtain()).isEqualTo("Hello, World!");
+            .read()).contains("Hello, World!");
     }
 
     @Test
     public void testSystemProperties()
     {
         RootNode root = Config.systemProperties();
-        String lineSeparator = root.child("line.separator")
+        Optional<String> lineSeparatorOptional = root.child("line.separator")
             .stringValue()
-            .obtain();
+            .read();
+        assertThat(lineSeparatorOptional).isPresent();
+
+        // We don't care about the value. Still, let's rule out bugs by making sure Config returned a non-empty string.
+        String lineSeparator = lineSeparatorOptional.get();
         assertThat(lineSeparator).isNotEmpty();
     }
 
@@ -110,10 +114,12 @@ public class TestConfig
         PropertyNode node = Config.from(properties)
             .child("breaking");
 
+        Value<String> stringValue = node.stringValue();
+        assertThat(stringValue.read()).isNotPresent();
+
         properties.setProperty("breaking", "news");
 
-        assertThat(node.stringValue()
-            .obtain()).isEqualTo("news");
+        assertThat(stringValue.read()).contains("news");
     }
 
     @Test
@@ -170,10 +176,10 @@ public class TestConfig
         PropertyNode node = Config.from(properties)
             .child("key");
 
-        T result = conversionSpec.getFunction()
+        Optional<T> result = conversionSpec.getFunction()
             .apply(node)
-            .obtain();
-        assertThat(result).isEqualTo(conversionSpec.expectedValue);
+            .read();
+        assertThat(result).contains(conversionSpec.expectedValue);
     }
 
     @DataProvider
@@ -249,7 +255,8 @@ public class TestConfig
         List<String> result = Config.from(properties)
             .child("key")
             .stringsValue()
-            .obtain()
+            .read()
+            .orElseThrow(AssertionError::new)
             .collect(Collectors.toList());
 
         assertThat(result).isEqualTo(expectedResult);
@@ -376,10 +383,12 @@ public class TestConfig
     public List<String> retrieveValuesViaReferencedParentNodes(PropertyNode listNode, String childName)
     {
         return listNode.referencedNodes()
-            .obtain()
+            .read()
+            .orElseThrow(() -> new AssertionError("no node list"))
             .map(propertyNode -> propertyNode.child(childName)
                 .stringValue()
-                .obtain())
+                .read()
+                .orElseThrow(() -> new AssertionError("no value")))
             .collect(Collectors.toList());
     }
 

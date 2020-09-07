@@ -17,11 +17,9 @@
 package com.github.mizool.core.configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.Assertions.fail;
 
-import java.util.Optional;
 import java.util.Properties;
 
 import org.testng.annotations.DataProvider;
@@ -32,16 +30,6 @@ import com.github.mizool.core.exception.ConfigurationException;
 public class TestValue
 {
     private static final String KEY = "some.property";
-
-    @Test
-    public void testMissingKey()
-    {
-        Value<String> value = new Value<>(new Properties(), KEY, s -> fail("conversion was called for missing key"));
-
-        assertThat(value.read()).isEmpty();
-        assertThatThrownBy(value::obtain).isInstanceOf(ConfigurationException.class)
-            .hasMessageContaining(KEY);
-    }
 
     @Test
     public void testConversionSuccess()
@@ -61,33 +49,58 @@ public class TestValue
         // Instantiating the Value will not fail as the conversion was not called yet
         Value<Integer> value = new Value<>(properties, KEY, Integer::parseInt);
 
-        Throwable throwable = catchThrowable(value::obtain);
+        Throwable throwable = catchThrowable(value::read);
 
         assertThat(throwable).isExactlyInstanceOf(ConfigurationException.class)
             .hasMessageContaining(KEY)
             .hasCauseExactlyInstanceOf(NumberFormatException.class);
     }
 
-    @Test(dataProvider = "values")
-    public void testValues(String remark, String rawPropertyValue, Optional<String> expected)
+    @Test
+    public void testConversionSkippedForMissingKey()
+    {
+        Value<String> value = new Value<>(new Properties(), KEY, s -> fail("conversion was called for missing key"));
+
+        // Ignore the result of 'read' as that is covered elsewhere
+        value.read();
+    }
+
+    @Test(dataProvider = "absentValues")
+    public void testAbsentValues(String remark, Properties properties)
+    {
+        Value<String> value = new Value<>(properties, KEY, s -> s);
+        assertThat(value.read()).isNotPresent();
+    }
+
+    @DataProvider
+    public Object[][] absentValues()
+    {
+        return new Object[][]{
+            new Object[]{ "unset", new Properties() },
+            new Object[]{ "set to empty string", singletonProperty("") }
+        };
+    }
+
+    @Test(dataProvider = "presentValues")
+    public void testPresentValues(String remark, String rawPropertyValue)
     {
         Properties properties = singletonProperty(rawPropertyValue);
 
         Value<String> value = new Value<>(properties, KEY, s -> s);
 
-        assertThat(value.read()).isEqualTo(expected);
+        // Ensure that the value is not altered in any way (e.g. by trimming whitespace).
+        assertThat(value.read()).contains(rawPropertyValue);
     }
 
     @DataProvider
-    public Object[][] values()
+    public Object[][] presentValues()
     {
         return new Object[][]{
-            new Object[]{ "regular", "quux", Optional.of("quux") },
-            new Object[]{ "empty", "", Optional.empty() },
-            new Object[]{ "one space only", " ", Optional.of(" ") },
-            new Object[]{ "trailing space", "foo ", Optional.of("foo ") },
-            new Object[]{ "leading space", " bar", Optional.of(" bar") },
-            new Object[]{ "leading & trailing space", " foobar ", Optional.of(" foobar ") }
+            new Object[]{ "regular value", "quux" },
+            new Object[]{ "one space only", " " },
+            new Object[]{ "trailing space", "foo " },
+            new Object[]{ "leading space", " bar" },
+            new Object[]{ "leading & trailing space", " foobar " }
         };
     }
 

@@ -19,6 +19,7 @@ package com.github.mizool.core.configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Properties;
 
 import org.testng.annotations.Test;
@@ -31,11 +32,11 @@ public class TestRootNode
         RootNode rootNode = Config.blank()
             .add(getClass().getResourceAsStream("TestRootNode.properties"), StandardCharsets.UTF_8);
 
-        String value = rootNode.child("content")
+        Optional<String> valueOptional = rootNode.child("content")
             .stringValue()
-            .obtain();
+            .read();
 
-        assertThat(value).isEqualTo("nonsense");
+        assertThat(valueOptional).contains("nonsense");
     }
 
     @Test
@@ -45,21 +46,21 @@ public class TestRootNode
         properties.setProperty("content", "useful");
 
         RootNode original = Config.from(properties);
-        String valueBefore = original.child("content")
+        Optional<String> valueOptionalBefore = original.child("content")
             .stringValue()
-            .obtain();
+            .read();
 
         RootNode added = original.add(getClass().getResourceAsStream("TestRootNode.properties"),
             StandardCharsets.UTF_8);
 
-        String value = added.child("content")
+        Optional<String> valueOptional = added.child("content")
             .stringValue()
-            .obtain();
-        assertThat(value).isEqualTo("nonsense");
+            .read();
+        assertThat(valueOptional).contains("nonsense");
 
-        String valueAfter = original.child("content")
+        Optional<String> valueOptionalAfter = original.child("content")
             .stringValue()
-            .obtain();
-        assertThat(valueAfter).isEqualTo(valueBefore);
+            .read();
+        assertThat(valueOptionalAfter).isEqualTo(valueOptionalBefore);
     }
 }

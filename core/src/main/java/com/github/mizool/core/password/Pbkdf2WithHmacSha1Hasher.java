@@ -31,7 +31,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.configuration.Config;
-import com.github.mizool.core.configuration.PropertyNode;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -70,10 +69,9 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
 
     public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
 
-    private static final PropertyNode CONFIG = Config.systemProperties()
-        .child(Pbkdf2WithHmacSha1Hasher.class.getName());
-
-    private static final int ITERATIONS_FOR_NEW_PASSWORDS = CONFIG.child("iterations")
+    private static final int ITERATIONS_FOR_NEW_PASSWORDS = Config.systemProperties()
+        .child(Pbkdf2WithHmacSha1Hasher.class.getName())
+        .child("iterations")
         .intValue()
         .read()
         .orElse(65536);
