@@ -1,5 +1,23 @@
+/*
+ * Copyright 2020 incub8 Software Labs GmbH
+ * Copyright 2020 protel Hotelsoftware GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mizool.core.password;
 
+import com.github.mizool.core.configuration.Config;
+import com.github.mizool.core.configuration.PropertyNode;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
@@ -7,14 +25,20 @@ public class Argon2Hasher implements PasswordHasher
 {
     public static final String ALGORITHM_NAME = "Argon2";
 
-    private static final String ITERATIONS_PROPERTY_NAME = Argon2Hasher.class.getName() + ".iterations";
-    private static final String MEMORY_PROPERTY_NAME = Argon2Hasher.class.getName() + ".memory";
-    private static final String PARALLELISM_PROPERTY_NAME = Argon2Hasher.class.getName() + ".parallelism";
-    private static final int
-        ITERATIONS_FOR_NEW_PASSWORDS
-        = Integer.parseInt(System.getProperty(ITERATIONS_PROPERTY_NAME, "10"));
-    private static final int MEMORY = Integer.parseInt(System.getProperty(MEMORY_PROPERTY_NAME, "65536"));
-    private static final int PARALLELISM = Integer.parseInt(System.getProperty(PARALLELISM_PROPERTY_NAME, "1"));
+    private static final PropertyNode CONFIG = Config.systemProperties()
+        .child(Argon2Hasher.class.getName());
+    private static final int ITERATIONS_FOR_NEW_PASSWORDS = CONFIG.child("iterations")
+        .intValue()
+        .read()
+        .orElse(10);
+    private static final int MEMORY = CONFIG.child("memory")
+        .intValue()
+        .read()
+        .orElse(65536);
+    private static final int PARALLELISM = CONFIG.child("parallelism")
+        .intValue()
+        .read()
+        .orElse(1);
 
     private final Argon2 argon2 = Argon2Factory.create();
 
