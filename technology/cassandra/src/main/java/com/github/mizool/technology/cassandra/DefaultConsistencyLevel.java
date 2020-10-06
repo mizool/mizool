@@ -1,6 +1,6 @@
-/**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,22 @@ package com.github.mizool.technology.cassandra;
 import lombok.experimental.UtilityClass;
 
 import com.datastax.driver.core.ConsistencyLevel;
+import com.github.mizool.core.configuration.Config;
+import com.github.mizool.core.configuration.PropertyNode;
 
 @UtilityClass
 public class DefaultConsistencyLevel
 {
-    private final String READ_CONSISTENCY_PROPERTY_NAME = DefaultConsistencyLevel.class.getName() + ".READ";
-    private final String WRITE_CONSISTENCY_PROPERTY_NAME = DefaultConsistencyLevel.class.getName() + ".WRITE";
+    private final PropertyNode CONFIG = Config.systemProperties()
+        .child(DefaultConsistencyLevel.class.getName());
 
-    public final ConsistencyLevel READ = ConsistencyLevel.valueOf(System.getProperty(READ_CONSISTENCY_PROPERTY_NAME,
-        "LOCAL_QUORUM"));
-    public final ConsistencyLevel WRITE = ConsistencyLevel.valueOf(System.getProperty(WRITE_CONSISTENCY_PROPERTY_NAME,
-        "LOCAL_QUORUM"));
+    public final ConsistencyLevel READ = CONFIG.child("READ")
+        .convertedValue(ConsistencyLevel::valueOf)
+        .read()
+        .orElse(ConsistencyLevel.LOCAL_QUORUM);
+
+    public final ConsistencyLevel WRITE = CONFIG.child("WRITE")
+        .convertedValue(ConsistencyLevel::valueOf)
+        .read()
+        .orElse(ConsistencyLevel.LOCAL_QUORUM);
 }

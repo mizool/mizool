@@ -1,18 +1,18 @@
-/**
- *  Copyright 2017 incub8 Software Labs GmbH
- *  Copyright 2017 protel Hotelsoftware GmbH
+/*
+ * Copyright 2017-2020 incub8 Software Labs GmbH
+ * Copyright 2017-2020 protel Hotelsoftware GmbH
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package com.github.mizool.core.password;
 
@@ -30,8 +30,8 @@ import javax.crypto.spec.PBEKeySpec;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import com.github.mizool.core.configuration.Config;
 import com.github.mizool.core.exception.CodeInconsistencyException;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
@@ -49,7 +49,8 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
 
         public static Digest valueOf(String digest)
         {
-            List<String> parts = Splitter.on(SEPARATOR).splitToList(digest);
+            List<String> parts = Splitter.on(SEPARATOR)
+                .splitToList(digest);
             int iterations = Integer.parseInt(parts.get(0));
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] salt = decoder.decode(parts.get(1));
@@ -61,18 +62,20 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
         public String toString()
         {
             Base64.Encoder encoder = Base64.getEncoder();
-            return Joiner.on(SEPARATOR).join(iterations, encoder.encodeToString(salt), encoder.encodeToString(hash));
+            return Joiner.on(SEPARATOR)
+                .join(iterations, encoder.encodeToString(salt), encoder.encodeToString(hash));
         }
     }
 
     public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
 
-    @VisibleForTesting
-    protected static final String ITERATIONS_PROPERTY_NAME = Pbkdf2WithHmacSha1Hasher.class.getName() + ".iterations";
+    private static final int ITERATIONS_FOR_NEW_PASSWORDS = Config.systemProperties()
+        .child(Pbkdf2WithHmacSha1Hasher.class.getName())
+        .child("iterations")
+        .intValue()
+        .read()
+        .orElse(65536);
 
-    private static final int
-        ITERATIONS_FOR_NEW_PASSWORDS
-        = Integer.parseInt(System.getProperty(ITERATIONS_PROPERTY_NAME, "65536"));
     private static final int PBE_KEY_LENGTH = 64 * 8;
 
     @Override
@@ -109,8 +112,9 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
     public boolean passwordsMatch(char[] submittedPlaintext, String digest)
     {
         Digest knownDigest = Digest.valueOf(digest);
-        Digest submittedDigest = calculateDigest(
-            submittedPlaintext, knownDigest.getSalt(), knownDigest.getIterations());
+        Digest submittedDigest = calculateDigest(submittedPlaintext,
+            knownDigest.getSalt(),
+            knownDigest.getIterations());
         return submittedDigest.equals(knownDigest);
     }
 
@@ -128,7 +132,8 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
         {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(ALGORITHM_NAME);
             long startTime = System.currentTimeMillis();
-            result = secretKeyFactory.generateSecret(keySpec).getEncoded();
+            result = secretKeyFactory.generateSecret(keySpec)
+                .getEncoded();
             long elapsedTime = System.currentTimeMillis() - startTime;
             log.debug("Hashing with {} iterations took {}ms", iterations, elapsedTime);
         }

@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.39.1</version>
+    <version>0.40</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -29,6 +29,12 @@
         <developer>
             <name>Jens Bannmann</name>
             <email>jensbannmann@incub8.de</email>
+            <organization>incub8 Software Labs</organization>
+            <organizationUrl>http://www.incub8.de</organizationUrl>
+        </developer>
+        <developer>
+            <name>Rick Striewe</name>
+            <email>rickstriewe@incub8.de</email>
             <organization>incub8 Software Labs</organization>
             <organizationUrl>http://www.incub8.de</organizationUrl>
         </developer>
@@ -309,7 +315,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>2.5.0</version>
+                <version>3.16.1</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -325,7 +331,7 @@
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
                 <artifactId>metainf-services</artifactId>
-                <version>1.6</version>
+                <version>1.8</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -337,7 +343,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.16.12</version>
+                <version>1.18.12</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
