@@ -61,7 +61,10 @@ public class TestListenableFutureCollector
     {
         suite.addItems(durations);
 
-        suite.stream().map(ResultVoidingFuture::new).collect(concurrent(maximumConcurrentFutures)).get();
+        suite.stream()
+            .map(ResultVoidingFuture::new)
+            .collect(concurrent(maximumConcurrentFutures))
+            .get();
 
         suite.assertStartedFutures(durations.length);
         suite.assertFinishedFutures(durations.length);
@@ -85,7 +88,9 @@ public class TestListenableFutureCollector
     {
         suite.addItems(IMMEDIATE);
 
-        ListenableFuture<Void> result = suite.stream().map(ResultVoidingFuture::new).collect(concurrent(1));
+        ListenableFuture<Void> result = suite.stream()
+            .map(ResultVoidingFuture::new)
+            .collect(concurrent(1));
 
         Thread.sleep(1);
 
@@ -102,7 +107,9 @@ public class TestListenableFutureCollector
 
         int sufficientWaitTime = FAST * 2;
 
-        ListenableFuture<Void> result = suite.stream().map(ResultVoidingFuture::new).collect(concurrent(5));
+        ListenableFuture<Void> result = suite.stream()
+            .map(ResultVoidingFuture::new)
+            .collect(concurrent(5));
 
         Thread.sleep(sufficientWaitTime);
 

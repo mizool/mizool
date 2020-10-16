@@ -74,7 +74,8 @@ class ConcurrentTests
 
         public Stream<F> stream()
         {
-            return streamItems.stream().map(this::toFuture);
+            return streamItems.stream()
+                .map(this::toFuture);
         }
 
         private F toFuture(StreamItem streamItem)
