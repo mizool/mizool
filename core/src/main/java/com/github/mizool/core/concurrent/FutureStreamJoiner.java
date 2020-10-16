@@ -34,29 +34,46 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * Joins a stream of futures, returning a single joint future. Accumulation or reduction of results is intentionally not
- * supported, so all futures must be of type {@link Void}.<br>
+ * supported, so all futures must be of (or converted to) type {@link Void} (see below).<br>
  * <br>
  * The stream is consumed as fast as possible without the number of incomplete futures exceeding {@code
  * concurrencyLimit}. The stream consumer is executed by the given {@link ExecutorService}.<br>
  * <br>
- * <h3>Exceptional completion</h3>
+ * <h3>Exceptional completion of futures</h3>
  * <ul>
  * <li>When one or more of the futures inside the stream complete exceptionally, so does the joint future. After that,
  * one more future will be consumed from the stream, but the joint future will not wait for it to complete.</li>
  * <li>The {@link Throwable} result of the joint future will be that of the first future to complete exceptionally;
  * others will be lost.</li>
- * <li>As with other futures, the original throwable will be wrapped inside an {@link ExecutionException}, e.g. when
- * invoking {@link Future#get() get()}. Note that this happens regardless of the type of throwable (checked
- * exception, runtime exception, error).</li>
+ * <li>As with other futures, the throwable result of a computation will be wrapped inside an
+ * {@link ExecutionException}, e.g. when invoking {@link Future#get() get()}. Note that this happens regardless of the
+ * type of throwable (checked exception, runtime exception, error).</li>
  * </ul>
- * <h3>Examples</h3>
+ * <h3>Exceptions thrown by the original stream</h3>
+ * If the original stream throws an exception instead of producing a future, the joint future will behave the same way
+ * as with exceptional completion of futures: the exception will be wrapped inside an {@link ExecutionException}, e.g.
+ * when invoking {@link Future#get() get()}.<br>
+ * <br>
+ * <h3>Usage examples</h3>
  * This class is intended to be used as follows:<br>
  * <pre>{@code
  * Stream<CompletableFuture<Void>> completables;
- * CompletableFuture<Void> join2 = FutureStreamJoiner.completable().join(completables, concurrencyLimit, executorService);}</pre>
+ * CompletableFuture<Void> jointFuture = FutureStreamJoiner.completable().join(completables, concurrencyLimit, executorService);}</pre>
  * <pre>{@code
  * Stream<ListenableFuture<Void>> listenables;
- * ListenableFuture<Void> join1 = FutureStreamJoiner.listenable().join(listenables, concurrencyLimit, executorService);}</pre>
+ * ListenableFuture<Void> jointFuture = FutureStreamJoiner.listenable().join(listenables, concurrencyLimit, executorService);}</pre>
+ * <br>
+ * As this class can't handle a future's result by design, it only accepts futures without result. If the futures in
+ * the stream <i>do</i> contain results, the intention to discard those results can be documented by using
+ * {@link Futures#toVoidResult(CompletableFuture)} or {@link Futures#toVoidResult(ListenableFuture)}:<br>
+ * <pre>{@code
+ * Stream<CompletableFuture<MyPojo>> resultFutures;
+ * Stream<CompletableFuture<Void>> voidFutures = resultFutures.map(Futures::toVoidResult);
+ * CompletableFuture<Void> jointFuture = FutureStreamJoiner.completable().join(voidFutures, concurrencyLimit, executorService);}</pre>
+ * <pre>{@code
+ * Stream<ListenableFuture<MyPojo>> resultFutures;
+ * Stream<ListenableFuture<Void>> voidFutures = resultFutures.map(Futures::toVoidResult);
+ * CompletableFuture<Void> jointFuture = FutureStreamJoiner.listenable().join(voidFutures, concurrencyLimit, executorService);}</pre>
  */
 @UtilityClass
 public class FutureStreamJoiner
@@ -70,8 +87,8 @@ public class FutureStreamJoiner
     public final class Listenable
     {
         /**
-         * Returns a future that will complete normally once all futures in the given stream have completed
-         * normally. <br>
+         * Returns a future that will complete normally once all futures in the given stream have completed normally.
+         * <br>
          * <br>
          * See {@link FutureStreamJoiner} for details.
          *
@@ -101,8 +118,8 @@ public class FutureStreamJoiner
     public final class Completable
     {
         /**
-         * Returns a future that will complete normally once all futures in the given stream have completed
-         * normally. <br>
+         * Returns a future that will complete normally once all futures in the given stream have completed normally.
+         * <br>
          * <br>
          * See {@link FutureStreamJoiner} for details.
          *

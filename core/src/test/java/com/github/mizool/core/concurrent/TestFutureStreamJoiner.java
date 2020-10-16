@@ -1,6 +1,6 @@
 /*
- * Copyright 2018-2020 incub8 Software Labs GmbH
- * Copyright 2018-2020 protel Hotelsoftware GmbH
+ * Copyright 2020 incub8 Software Labs GmbH
+ * Copyright 2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,6 @@
  */
 package com.github.mizool.core.concurrent;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
-
-import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -30,20 +23,19 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.stream.IntStream;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 
+import org.assertj.core.api.ThrowableAssert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -69,11 +61,12 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         @Override
         protected CompletableFuture<Void> join(Stream<CompletableFuture<Void>> input, int maximumConcurrentFutures)
         {
-            return FutureStreamJoiner.completable().join(input, maximumConcurrentFutures, executorService);
+            return FutureStreamJoiner.completable()
+                .join(input, maximumConcurrentFutures, executorService);
         }
 
         @Override
-        protected CompletableFuture<Void> runAsFuture(TestRunnable runnable)
+        protected CompletableFuture<Void> runAsFuture(ThrowingStreamHarness.Task runnable)
         {
             return CompletableFuture.runAsync(runnable, executorService);
         }
@@ -82,6 +75,15 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     public static final class ListenableFutureMode
         extends TestFutureStreamJoiner<ListenableFuture<Object>, ListenableFuture<Void>>
     {
+        protected ListeningExecutorService listeningExecutorService;
+
+        @BeforeMethod
+        public void setUp()
+        {
+            super.setUp();
+            listeningExecutorService = MoreExecutors.listeningDecorator(executorService);
+        }
+
         @Override
         public ConcurrentTests.Suite<ListenableFuture<Object>> createSuite(int corePoolSize)
         {
@@ -97,58 +99,45 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         @Override
         protected ListenableFuture<Void> join(Stream<ListenableFuture<Void>> input, int maximumConcurrentFutures)
         {
-            return FutureStreamJoiner.listenable().join(input, maximumConcurrentFutures, executorService);
+            return FutureStreamJoiner.listenable()
+                .join(input, maximumConcurrentFutures, executorService);
         }
 
         @Override
-        protected ListenableFuture<Void> runAsFuture(TestRunnable runnable)
+        protected ListenableFuture<Void> runAsFuture(ThrowingStreamHarness.Task runnable)
         {
             return listeningExecutorService.submit(runnable, null);
         }
     }
 
-    @Value
-    @EqualsAndHashCode(callSuper = false)
-    private static final class DummyError extends Error
+    @RequiredArgsConstructor
+    private static class FailingSupplier<T> implements Supplier<T>
     {
-        String message;
-    }
+        public static final String MESSAGE = "Failing by design.";
 
-    @Value
-    @EqualsAndHashCode(callSuper = false)
-    private static final class DummyThrowable extends Throwable
-    {
-        String message;
-    }
+        private final Class<? extends Throwable> throwableClass;
 
-    @Value
-    @EqualsAndHashCode(callSuper = false)
-    private static final class DummyCheckedException extends Exception
-    {
-        String message;
-    }
-
-    @Value
-    @EqualsAndHashCode(callSuper = false)
-    private static final class DummyRuntimeException extends RuntimeException
-    {
-        String message;
+        @Override
+        @SneakyThrows
+        public T get()
+        {
+            throw ExceptionTests.instantiateThrowable(throwableClass, MESSAGE);
+        }
     }
 
     private static final int IMMEDIATE = 0;
     private static final int FAST = 100;
-    private static final int SLOW = 1000;
 
+    private static final int SLOW = 1000;
     private ConcurrentTests.Suite<O> suite;
+
     protected ExecutorService executorService;
-    protected ListeningExecutorService listeningExecutorService;
 
     @BeforeMethod
     public void setUp()
     {
         suite = createSuite(100);
         executorService = Executors.newCachedThreadPool();
-        listeningExecutorService = MoreExecutors.listeningDecorator(executorService);
     }
 
     protected abstract ConcurrentTests.Suite<O> createSuite(int corePoolSize);
@@ -179,9 +168,10 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         suite.assertMaximumConcurrentFutures(Math.min(maximumConcurrentFutures, durations.length));
     }
 
-    private Future<?> joinSuite(int maximumConcurrentFutures) throws InterruptedException, ExecutionException
+    private Future<?> joinSuite(int maximumConcurrentFutures)
     {
-        Stream<V> input = suite.stream().map(this::toVoidResult);
+        Stream<V> input = suite.stream()
+            .map(this::toVoidResult);
         Future<?> future = join(input, maximumConcurrentFutures);
         return future;
     }
@@ -190,7 +180,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
 
     protected abstract V toVoidResult(O future);
 
-    protected abstract V runAsFuture(TestRunnable runnable);
+    protected abstract V runAsFuture(ThrowingStreamHarness.Task runnable);
 
     @DataProvider
     protected Object[][] parallelizationVariants()
@@ -239,137 +229,39 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         suite.assertMaximumConcurrentFutures(5);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, dataProvider = "exceptionHandlingRuns")
-    public void testFailingFutures(String name, int startInclusive, int endInclusive, int failingRunnableNumber)
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+        dataProvider = "throwablePositions",
+        dataProviderClass = ThrowingStreamHarness.class)
+    public void testThrowablePosition(ThrowingStreamHarness harness)
     {
-        Stream<V> futures = getTestRunnableStream(startInclusive,
-            endInclusive,
-            failingRunnableNumber,
-            RuntimeException.class).map(this::runAsFuture);
-
+        Stream<V> futures = harness.stream()
+            .map(this::runAsFuture);
         Future<?> future = join(futures, 1);
 
-        invokeAndAssert(future, failingRunnableNumber, RuntimeException.class);
+        harness.assertThrowsWrappedException(future::get, ExecutionException.class);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, dataProvider = "causeExceptionClasses")
-    public void testThrowables(String name, Class<IOException> desiredThrowableClass)
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+        dataProvider = "singletonStreamsForEachThrowableType",
+        dataProviderClass = ThrowingStreamHarness.class)
+    public void testThrowableType(ThrowingStreamHarness harness)
     {
-        Stream<V> futures = getSingletonRunnableStream(desiredThrowableClass).map(this::runAsFuture);
+        Stream<V> futures = harness.stream()
+            .map(this::runAsFuture);
         Future<?> future = join(futures, 1);
-        invokeAndAssert(future, 1, desiredThrowableClass);
+
+        harness.assertThrowsWrappedException(future::get, ExecutionException.class);
     }
 
-    private Stream<TestRunnable> getSingletonRunnableStream(Class<? extends Throwable> desiredThrowableClass)
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+        dataProvider = "consumptionFailingStreamsForEachThrowableType",
+        dataProviderClass = ThrowingStreamHarness.class)
+    public void testFailingStreamConsumption(ThrowingStreamHarness harness)
     {
-        return getTestRunnableStream(1, 1, 1, desiredThrowableClass);
-    }
+        Stream<V> futures = harness.stream()
+            .map(this::runAsFuture);
+        Future<?> future = join(futures, 1);
 
-    private Stream<TestRunnable> getTestRunnableStream(
-        int startInclusive,
-        int endInclusive,
-        int failingRunnableNumber,
-        Class<? extends Throwable> desiredThrowableClass)
-    {
-        return IntStream.rangeClosed(startInclusive, endInclusive)
-            .mapToObj(number -> new TestRunnable(number,
-                number == failingRunnableNumber ? desiredThrowableClass : null));
-    }
-
-    private void invokeAndAssert(
-        Future<?> future, int failingRunnableNumber, Class<? extends Throwable> causeExceptionClass)
-    {
-        Throwable result = catchThrowable(future::get);
-
-        assertThat(result).describedAs("wrapper").isExactlyInstanceOf(ExecutionException.class);
-
-        assertThat(result.getCause()).describedAs("cause")
-            .isInstanceOf(causeExceptionClass)
-            .hasNoCause()
-            .hasMessage("Runnable #" + failingRunnableNumber + " failed");
-    }
-
-    @DataProvider
-    protected Object[][] causeExceptionClasses()
-    {
-        return new Object[][]{
-            { "checked exception", DummyCheckedException.class },
-            { "runtime exception", DummyRuntimeException.class },
-            { "error", DummyError.class },
-            { "throwable", DummyThrowable.class }
-        };
-    }
-
-    @DataProvider
-    protected Object[][] exceptionHandlingRuns()
-    {
-        int first = 1;
-        int last = 5;
-
-        ArrayList<Object[]> result = new ArrayList<>();
-        for (int size = first; size <= last; size++)
-        {
-            for (int failing = first; failing <= size; failing++)
-            {
-                result.add(new Object[]{
-                    "'" + size + " runnables - #" + failing + " fails'", first, size, failing
-                });
-            }
-        }
-
-        return result.toArray(new Object[][]{});
-    }
-
-    @Value
-    private static final class TestRunnable implements Runnable
-    {
-        int number;
-        Class<? extends Throwable> throwableClass;
-
-        @SneakyThrows
-        @Override
-        public void run()
-        {
-            String me = "Runnable #" + number;
-
-            log.info("{} running.", me);
-            if (shouldFail())
-            {
-                log.info("{} throws Exception.", me);
-
-                throw instantiateThrowable(me + " failed");
-            }
-            log.info("{} completed.", me);
-        }
-
-        private boolean shouldFail()
-        {
-            return throwableClass != null;
-        }
-
-        private Throwable instantiateThrowable(String message)
-        {
-            try
-            {
-                return getStringArgConstructor(throwableClass).newInstance(message);
-            }
-            catch (InstantiationException | IllegalAccessException | InvocationTargetException e)
-            {
-                throw new CodeInconsistencyException("Could not instantiate " + throwableClass.getCanonicalName(), e);
-            }
-        }
-
-        private <T> Constructor<T> getStringArgConstructor(Class<T> theClass)
-        {
-            try
-            {
-                return theClass.getConstructor(String.class);
-            }
-            catch (NoSuchMethodException e)
-            {
-                throw new CodeInconsistencyException("Could not find String arg constructor for " +
-                    theClass.getCanonicalName(), e);
-            }
-        }
+        harness.assertThrowsWrappedException(future::get, ExecutionException.class);
     }
 }

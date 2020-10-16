@@ -26,14 +26,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
+import org.assertj.core.api.ThrowableAssert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.github.mizool.core.exception.StoreLayerException;
 import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.UncheckedExecutionException;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 
 public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
 {
@@ -42,7 +43,8 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         @Override
         protected Stream<Object> runTest(Stream<CompletableFuture<Object>> stream, int bufferSize)
         {
-            return BufferedStreamAdapter.completable().adapt(stream, bufferSize, executorService);
+            return BufferedStreamAdapter.completable()
+                .adapt(stream, bufferSize, executorService);
         }
 
         @Override
@@ -50,20 +52,42 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         {
             return ConcurrentTests.completableFutureSuite(corePoolSize);
         }
+
+        @Override
+        protected CompletableFuture<Object> runAsFuture(ThrowingStreamHarness.Task runnable)
+        {
+            return CompletableFuture.supplyAsync(runnable, executorService);
+        }
     }
 
     public static final class ListenableFutureMode extends TestBufferedStreamAdapter<ListenableFuture<Object>>
     {
+        protected ListeningExecutorService listeningExecutorService;
+
+        @BeforeMethod
+        public void setUp()
+        {
+            super.setUp();
+            listeningExecutorService = MoreExecutors.listeningDecorator(executorService);
+        }
+
         @Override
         protected Stream<Object> runTest(Stream<ListenableFuture<Object>> stream, int bufferSize)
         {
-            return BufferedStreamAdapter.listenable().adapt(stream, bufferSize, executorService);
+            return BufferedStreamAdapter.listenable()
+                .adapt(stream, bufferSize, executorService);
         }
 
         @Override
         protected ConcurrentTests.Suite<ListenableFuture<Object>> createSuite(int corePoolSize)
         {
             return ConcurrentTests.listenableFutureSuite(corePoolSize);
+        }
+
+        @Override
+        protected ListenableFuture<Object> runAsFuture(ThrowingStreamHarness.Task runnable)
+        {
+            return listeningExecutorService.submit(runnable, null);
         }
     }
 
@@ -82,6 +106,10 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
     }
 
     protected abstract ConcurrentTests.Suite<F> createSuite(int i);
+
+    protected abstract Stream<Object> runTest(Stream<F> stream, int bufferSize);
+
+    protected abstract F runAsFuture(ThrowingStreamHarness.Task runnable);
 
     @AfterMethod
     public void tearDown()
@@ -126,7 +154,8 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
     {
         suite.addItems(IMMEDIATE, IMMEDIATE, IMMEDIATE, IMMEDIATE, IMMEDIATE);
 
-        Stream<F> delayedFutures = suite.stream().peek(future -> Threads.sleep(200));
+        Stream<F> delayedFutures = suite.stream()
+            .peek(future -> Threads.sleep(200));
 
         Stream<Object> actual = runTest(delayedFutures, 2);
 
@@ -197,16 +226,44 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         };
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT, expectedExceptions = UncheckedExecutionException.class)
-    public void testTransportsExceptionInStream()
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+        dataProvider = "throwablePositions",
+        dataProviderClass = ThrowingStreamHarness.class)
+    public void testThrowablePosition(ThrowingStreamHarness harness)
     {
-        // TODO reuse stuff from FSJ test to cover more throwables & let different stream elements cause the exception
-        Stream<F> stream = Stream.generate(() -> {
-            throw new StoreLayerException("some test exception");
-        });
-        runTest(stream, 2).forEach(ignored -> {
-        });
+        ThrowableAssert.ThrowingCallable throwingCallable = prepareHarnessStreaming(harness);
+
+        harness.assertThrowsException(throwingCallable);
     }
 
-    protected abstract Stream<Object> runTest(Stream<F> stream, int bufferSize);
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+        dataProvider = "singletonStreamsForEachThrowableType",
+        dataProviderClass = ThrowingStreamHarness.class)
+    public void testThrowableType(ThrowingStreamHarness harness)
+    {
+        ThrowableAssert.ThrowingCallable throwingCallable = prepareHarnessStreaming(harness);
+
+        harness.assertThrowsException(throwingCallable);
+    }
+
+    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+        dataProvider = "consumptionFailingStreamsForEachThrowableType",
+        dataProviderClass = ThrowingStreamHarness.class)
+    public void testFailingStreamConsumption(ThrowingStreamHarness harness)
+    {
+        ThrowableAssert.ThrowingCallable throwingCallable = prepareHarnessStreaming(harness);
+
+        harness.assertThrowsException(throwingCallable);
+    }
+
+    private ThrowableAssert.ThrowingCallable prepareHarnessStreaming(ThrowingStreamHarness harness)
+    {
+        Stream<F> stream = harness.stream()
+            .map(this::runAsFuture);
+
+        return () -> {
+            runTest(stream, 1).forEach(ignored -> {
+            });
+        };
+    }
 }
