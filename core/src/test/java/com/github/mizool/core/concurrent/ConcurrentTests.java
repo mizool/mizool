@@ -91,7 +91,7 @@ class ConcurrentTests
         public void assertContainsExpectedResults(Stream<Object> actual)
         {
             List<Object> results = actual.collect(ImmutableList.toImmutableList());
-            assertThat(results).containsOnlyElementsOf(getExpectedResults());
+            assertThat(results).containsExactlyInAnyOrderElementsOf(getExpectedResults());
         }
 
         private List<Object> getExpectedResults()
