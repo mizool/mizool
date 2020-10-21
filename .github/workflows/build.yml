@@ -27,5 +27,23 @@ jobs:
           path: ~/.m2/repository
           key: maven-repo
 
-      - name: Build
-        uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
+      - name: diagnose-stuff1
+        run: bash ls -al /
+
+      - name: diagnose-stuff2
+        run: bash ls -al /home/runner
+
+      - name: diagnose-stuff3
+        run: bash ls -al /home/runner/work
+
+      - name: diagnose-stuff-pwd
+        run: pwd
+
+      - name: diagnose-stuff-who
+        run: whoami
+
+      - name: diagnose-stuff-home
+        run: bash echo ~
+
+      #- name: Build
+      #  uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
