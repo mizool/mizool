@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /home/runner/work/_temp/_github_home/talos-m2-repository
-          key: talos-maven-repo
+          key: talos-maven-repo-dummy3
 
       # TODO remove
       - name: diagnose-repo-cache-before-build
