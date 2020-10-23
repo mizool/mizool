@@ -27,15 +27,15 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /home/runner/work/_temp/_github_home/talos-m2-repository
-          key: maven-repo-dummy2
+          key: talos-maven-repo
 
+      # TODO remove
       - name: diagnose-repo-cache-before-build
         run: find /home/runner/work/_temp/_github_home/talos-m2-repository -name "*.jar"
 
-      # TODO:
-      # reconfigure docker build env to use (their) $HOME as follows: $HOME/talos-m2-repository
       - name: Build
         uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
 
+      # TODO remove
       - name: diagnose-repo-cache-after-build
         run: find /home/runner/work/_temp/_github_home/talos-m2-repository -name "*.jar"
