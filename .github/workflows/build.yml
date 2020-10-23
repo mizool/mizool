@@ -20,27 +20,22 @@ jobs:
       - name: Check out
         uses: actions/checkout@v2
 
-      # TODO:
-      # mkdir /home/runner/work/_temp/_github_home (if required)
-      # mkdir /home/runner/work/_temp/_github_home/talos-m2-repository (if required)
-      # cache the latter
-      # reconfigure docker build env to use (their) $HOME as follows: $HOME/talos-m2-repository
+      - name: Prepare directories
+        run: mkdir -p /home/runner/work/_temp/_github_home/talos-m2-repository
 
-      # TODO does this work?
       - name: Maven Repo Cache
         uses: actions/cache@v2
         with:
-          path: ~/.m2/repository
+          path: /home/runner/work/_temp/_github_home/talos-m2-repository
           key: maven-repo
 
-      - name: diagnose-stuff-echohomepath
-        run: echo $HOME
+      - name: diagnose-repo-cache-before-build
+        run: find /home/runner/work/_temp/_github_home/talos-m2-repository -name "*.jar"
 
-      - name: diagnose-stuff-touchenvhome
-        run: touch $HOME/.wewerehere
-
-      - name: diagnose-stuff-envhome
-        run: ls -al $HOME
-
+      # TODO:
+      # reconfigure docker build env to use (their) $HOME as follows: $HOME/talos-m2-repository
       - name: Build
         uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
+
+      - name: diagnose-repo-cache-after-build
+        run: find /home/runner/work/_temp/_github_home/talos-m2-repository -name "*.jar"
