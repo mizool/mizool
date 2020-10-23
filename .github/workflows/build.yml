@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /home/runner/work/_temp/_github_home/talos-m2-repository
-          key: maven-repo
+          key: maven-repo-dummy2
 
       - name: diagnose-repo-cache-before-build
         run: find /home/runner/work/_temp/_github_home/talos-m2-repository -name "*.jar"
