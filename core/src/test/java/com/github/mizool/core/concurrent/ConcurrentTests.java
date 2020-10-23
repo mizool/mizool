@@ -21,7 +21,9 @@ import static org.mockito.Mockito.mock;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -51,28 +53,16 @@ class ConcurrentTests
         Object value;
     }
 
-    public final class Suite
+    public abstract class Suite<F extends Future<?>>
     {
-        private final List<StreamItem> streamItems;
-        private final AtomicInteger started;
-        private final AtomicInteger running;
-        private final AtomicInteger maximumConcurrent;
-        private final AtomicInteger finished;
-        private final ScheduledExecutorService executorService;
-
-        private Suite(int corePoolSize)
-        {
-            streamItems = new ArrayList<>();
-            started = new AtomicInteger();
-            running = new AtomicInteger();
-            maximumConcurrent = new AtomicInteger();
-            finished = new AtomicInteger();
-            executorService = Executors.newScheduledThreadPool(corePoolSize);
-        }
+        protected final List<StreamItem> streamItems = new ArrayList<>();
+        protected final AtomicInteger started = new AtomicInteger();
+        protected final AtomicInteger running = new AtomicInteger();
+        protected final AtomicInteger maximumConcurrent = new AtomicInteger();
+        protected final AtomicInteger finished = new AtomicInteger();
 
         public void tearDown()
         {
-            executorService.shutdown();
         }
 
         public void addItems(long... durations)
@@ -82,30 +72,21 @@ class ConcurrentTests
                 .forEach(streamItems::add);
         }
 
-        public Stream<ListenableFuture<Object>> stream()
+        public Stream<F> stream()
         {
             return streamItems.stream()
                 .map(this::toFuture);
         }
 
-        private ListenableFuture<Object> toFuture(StreamItem streamItem)
+        private F toFuture(StreamItem streamItem)
         {
             started.incrementAndGet();
             int nowRunning = running.incrementAndGet();
             maximumConcurrent.accumulateAndGet(nowRunning, Math::max);
-            SettableFuture<Object> future = SettableFuture.create();
-            executorService.schedule(finishFuture(future, streamItem), streamItem.getDuration(), TimeUnit.MILLISECONDS);
-            return future;
+            return createFuture(streamItem);
         }
 
-        private Runnable finishFuture(SettableFuture<Object> future, StreamItem streamItem)
-        {
-            return () -> {
-                running.decrementAndGet();
-                finished.incrementAndGet();
-                future.set(streamItem.getValue());
-            };
-        }
+        protected abstract F createFuture(StreamItem streamItem);
 
         public void assertContainsExpectedResults(Stream<Object> actual)
         {
@@ -134,8 +115,81 @@ class ConcurrentTests
         }
     }
 
-    public Suite suite(int corePoolSize)
+    private final class ListenableFutureSuite extends Suite<ListenableFuture<Object>>
     {
-        return new Suite(corePoolSize);
+        protected final ScheduledExecutorService executorService;
+
+        private ListenableFutureSuite(int corePoolSize)
+        {
+            executorService = Executors.newScheduledThreadPool(corePoolSize);
+        }
+
+        @Override
+        public void tearDown()
+        {
+            super.tearDown();
+            executorService.shutdown();
+        }
+
+        @Override
+        protected ListenableFuture<Object> createFuture(StreamItem streamItem)
+        {
+            SettableFuture<Object> future = SettableFuture.create();
+            executorService.schedule(finishFuture(future, streamItem), streamItem.getDuration(), TimeUnit.MILLISECONDS);
+            return future;
+        }
+
+        private Runnable finishFuture(SettableFuture<Object> future, StreamItem streamItem)
+        {
+            return () -> {
+                running.decrementAndGet();
+                finished.incrementAndGet();
+                future.set(streamItem.getValue());
+            };
+        }
+    }
+
+    private final class CompletableFutureSuite extends Suite<CompletableFuture<Object>>
+    {
+        protected final ScheduledExecutorService executorService;
+
+        private CompletableFutureSuite(int corePoolSize)
+        {
+            executorService = Executors.newScheduledThreadPool(corePoolSize);
+        }
+
+        @Override
+        public void tearDown()
+        {
+            super.tearDown();
+            executorService.shutdown();
+        }
+
+        @Override
+        protected CompletableFuture<Object> createFuture(StreamItem streamItem)
+        {
+            CompletableFuture<Object> future = new CompletableFuture<>();
+            executorService.schedule(finishFuture(future, streamItem), streamItem.getDuration(), TimeUnit.MILLISECONDS);
+            return future;
+        }
+
+        private Runnable finishFuture(CompletableFuture<Object> future, StreamItem streamItem)
+        {
+            return () -> {
+                running.decrementAndGet();
+                finished.incrementAndGet();
+                future.complete(streamItem.getValue());
+            };
+        }
+    }
+
+    public Suite<ListenableFuture<Object>> listenableFutureSuite(int corePoolSize)
+    {
+        return new ListenableFutureSuite(corePoolSize);
+    }
+
+    public Suite<CompletableFuture<Object>> completableFutureSuite(int corePoolSize)
+    {
+        return new CompletableFutureSuite(corePoolSize);
     }
 }
