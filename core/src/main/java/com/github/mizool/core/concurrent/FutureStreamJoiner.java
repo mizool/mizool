@@ -49,13 +49,13 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * {@link ExecutionException}, e.g. when invoking {@link Future#get() get()}. Note that this happens regardless of the
  * type of throwable (checked exception, runtime exception, error).</li>
  * </ul>
+ * <br>
  * <h3>Exceptions thrown by the original stream</h3>
  * If the original stream throws an exception instead of producing a future, the joint future will behave the same way
  * as with exceptional completion of futures: the exception will be wrapped inside an {@link ExecutionException}, e.g.
  * when invoking {@link Future#get() get()}.<br>
  * <br>
  * <h3>Usage examples</h3>
- * This class is intended to be used as follows:<br>
  * <pre>{@code
  * Stream<CompletableFuture<Void>> completables;
  * CompletableFuture<Void> jointFuture = FutureStreamJoiner.completable().join(completables, concurrencyLimit, executorService);}</pre>

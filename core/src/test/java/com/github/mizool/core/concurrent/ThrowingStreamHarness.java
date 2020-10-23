@@ -64,7 +64,7 @@ public final class ThrowingStreamHarness
             log.info("{} running.", me);
             if (shouldFail())
             {
-                log.info("{} throws Exception.", me);
+                log.info("{} throws {}.", me, throwableClass.getSimpleName());
 
                 throw ExceptionTests.instantiateThrowable(throwableClass, me + " failed");
             }
@@ -163,7 +163,6 @@ public final class ThrowingStreamHarness
                 return IntStream.rangeClosed(1, count)
                     .mapToObj(number -> {
                         Task task = new Task(number, number == failingRunnableNumber ? desiredThrowableClass : null);
-                        Task t2 = new Task(1, desiredThrowableClass);
                         return task;
                     });
             }

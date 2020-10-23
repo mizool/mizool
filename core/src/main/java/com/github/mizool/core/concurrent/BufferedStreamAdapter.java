@@ -48,22 +48,23 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * Buffers a stream of futures and provides the results as a new stream. <br>
  * <br>
  * Futures are collected as fast as possible without the sum of concurrently running futures and available results
- * exceeding {@code bufferSize}.<br> The new stream contains the results in the completion order of the futures. It
- * blocks while no results are available and there are still futures to wait for.<br>
+ * exceeding {@code bufferSize}.<br>
+ * <br>
+ * The new stream contains the results in the completion order of the futures. It blocks while no results are available
+ * and there are still futures to wait for.<br>
  * <br>
  * <h3>Exceptional completion of futures</h3>
  * When one or more of the futures inside the stream complete exceptionally, the new stream will throw that exception
  * when an attempt is made to consume the next result. The exception is thrown as is (i.e. not wrapped in
- * {@link java.util.concurrent.ExecutionException ExecutionException} as with {@link Future#get()}). Basically, the new
- * stream behaves as if all computations were performed in a synchronous manner.<br>
+ * {@link java.util.concurrent.ExecutionException} as with {@link Future#get()}). Basically, the new stream behaves as
+ * if all computations were performed in a synchronous manner.<br>
  * <br>
  * <h3>Exceptions thrown by the original stream</h3>
  * If the original stream throws an exception instead of producing a future, the new stream will behave the same way
  * as with exceptional completion of futures: the exception will be thrown when an attempt is made to consume the next
  * result.<br>
  * <br>
- * <h3>Examples</h3>
- * This class is intended to be used as follows:<br>
+ * <h3>Usage examples</h3>
  * <pre>{@code
  * Stream<Completable<V>> completables;
  * Stream<V> values2 = BufferedStreamAdapter.completable().adapt(completables, bufferSize, executorService);}</pre>
@@ -206,7 +207,7 @@ public final class BufferedStreamAdapter<F, V>
             .adapt(futures, bufferSize, executorService);
     }
 
-    public static void verifyBufferSize(int bufferSize)
+    private static void verifyBufferSize(int bufferSize)
     {
         if (bufferSize <= 0)
         {
