@@ -1,6 +1,6 @@
-/**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,24 @@ package com.github.mizool.core.concurrent;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Spliterator;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -37,39 +45,94 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
- * Buffers a {@link java.util.stream.Stream} of {@link ListenableFuture}s and provides the results as a new
- * {@link java.util.stream.Stream}.<br>
+ * Buffers a stream of futures and provides the results as a new stream. <br>
  * <br>
  * Futures are collected as fast as possible without the sum of concurrently running futures and available results
  * exceeding {@code bufferSize}.<br>
+ * <br>
  * The new stream contains the results in the completion order of the futures. It blocks while no results are available
  * and there are still futures to wait for.<br>
- * Any {@link Throwable} thrown by one of the incoming futures is wrapped in an {@link UncheckedExecutionException} and
- * thrown while supplying the new stream with values.<br>
  * <br>
- * This buffer is intended to be used like so:<br>
+ * <h3>Exceptional completion of futures</h3>
+ * When one or more of the futures inside the stream complete exceptionally, the new stream will throw that exception
+ * when an attempt is made to consume the next result. The exception is thrown as is (i.e. not wrapped in
+ * {@link java.util.concurrent.ExecutionException} as with {@link Future#get()}). Basically, the new stream behaves as
+ * if all computations were performed in a synchronous manner.<br>
+ * <br>
+ * <h3>Exceptions thrown by the original stream</h3>
+ * If the original stream throws an exception instead of producing a future, the new stream will behave the same way
+ * as with exceptional completion of futures: the exception will be thrown when an attempt is made to consume the next
+ * result.<br>
+ * <br>
+ * <h3>Usage examples</h3>
  * <pre>{@code
- * Stream<ListenableFuture<V>> futureStream;
- * Stream<V> resultStream = BufferedStreamAdapter.adapt(futureStream, bufferSize, executorService);}</pre>
+ * Stream<Completable<V>> completables;
+ * Stream<V> values2 = BufferedStreamAdapter.completable().adapt(completables, bufferSize, executorService);}</pre>
+ * <pre>{@code
+ * Stream<ListenableFuture<V>> listenables;
+ * Stream<V> values1 = BufferedStreamAdapter.listenable().adapt(listenables, bufferSize, executorService);}</pre>
  */
-public final class BufferedStreamAdapter<V>
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+public final class BufferedStreamAdapter<F, V>
 {
-    public static <V> Stream<V> adapt(
-        Stream<ListenableFuture<V>> futures, int bufferSize, ExecutorService executorService)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class Listenable
     {
-        if (bufferSize <= 0)
+        public <E> Stream<E> adapt(
+            Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
         {
-            throw new IllegalArgumentException("Buffer size must be greater than 0");
+            verifyBufferSize(bufferSize);
+
+            return new BufferedStreamAdapter<ListenableFuture<E>, E>(futures,
+                bufferSize,
+                executorService,
+                this::addListener,
+                this::unwrapException).adapt();
         }
-        return new BufferedStreamAdapter<>(futures, bufferSize, executorService).adapt();
+
+        private <E> void addListener(ListenableFuture<E> future, Listener<E> listener)
+        {
+            Futures.addCallback(future, new ListenableFutureCallback<>(listener), MoreExecutors.directExecutor());
+        }
+
+        private Throwable unwrapException(@NonNull Throwable throwable)
+        {
+            return throwable instanceof UncheckedExecutionException ? throwable.getCause() : throwable;
+        }
     }
 
-    private static class ValueHolder<V>
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static final class Completable
     {
-        private final V value;
+        public <E> Stream<E> adapt(
+            Stream<CompletableFuture<E>> futures, int bufferSize, ExecutorService executorService)
+        {
+            verifyBufferSize(bufferSize);
+
+            return new BufferedStreamAdapter<CompletableFuture<E>, E>(futures,
+                bufferSize,
+                executorService,
+                this::addListener,
+                this::unwrapException).adapt();
+        }
+
+        private <E> void addListener(CompletableFuture<E> future, Listener<E> listener)
+        {
+            future.whenComplete(listener);
+        }
+
+        private Throwable unwrapException(@NonNull Throwable throwable)
+        {
+            return throwable instanceof CompletionException ? throwable.getCause() : throwable;
+        }
+    }
+
+    private static final class ValueHolder<E>
+    {
+        private final E value;
         private final Throwable throwable;
 
-        public ValueHolder(V value)
+        public ValueHolder(E value)
         {
             this.value = value;
             throwable = null;
@@ -81,61 +144,78 @@ public final class BufferedStreamAdapter<V>
             this.throwable = throwable;
         }
 
-        public V obtain()
+        @SneakyThrows
+        public E obtain()
         {
             if (throwable != null)
             {
-                throw new UncheckedExecutionException(throwable);
+                throw throwable;
             }
             return value;
         }
     }
 
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private class Callback implements FutureCallback<V>
+    @RequiredArgsConstructor
+    private static final class ListenableFutureCallback<E> implements FutureCallback<E>
     {
+
+        private final Listener<E> listener;
+
         @Override
-        public void onSuccess(V value)
+        public void onSuccess(E value)
         {
-            synchronized (semaphore)
-            {
-                runningFutures.decrementAndGet();
-                results.add(new ValueHolder<>(value));
-                semaphore.notifyAll();
-            }
+            listener.accept(value, null);
         }
 
         @Override
         public void onFailure(Throwable t)
         {
-            synchronized (semaphore)
-            {
-                runningFutures.decrementAndGet();
-                results.add(new ValueHolder<>(t));
-                semaphore.notifyAll();
-            }
+            listener.accept(null, t);
         }
     }
 
-    private class BlockingConsumer implements Consumer<ListenableFuture<V>>
+    @FunctionalInterface
+    private interface ListenerAdder<T, E> extends BiConsumer<T, Listener<E>>
     {
-        @Override
-        public void accept(ListenableFuture<V> future)
-        {
-            Runnable accept = () -> {
-                runningFutures.incrementAndGet();
-                Futures.addCallback(future, new Callback(), MoreExecutors.directExecutor());
-            };
-            Threads.doAndWaitUntil(accept, capacityAvailable(), semaphore);
-        }
 
-        private BooleanSupplier capacityAvailable()
+    }
+
+    @FunctionalInterface
+    private interface Listener<E> extends BiConsumer<E, Throwable>
+    {
+
+    }
+
+    public static Listenable listenable()
+    {
+        return new Listenable();
+    }
+
+    public static Completable completable()
+    {
+        return new Completable();
+    }
+
+    /**
+     * @deprecated Use {@link #listenable()} and {@link Listenable#adapt(Stream, int, ExecutorService)} instead.
+     */
+    @Deprecated
+    public static <E> Stream<E> adapt(
+        Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
+    {
+        return BufferedStreamAdapter.listenable()
+            .adapt(futures, bufferSize, executorService);
+    }
+
+    private static void verifyBufferSize(int bufferSize)
+    {
+        if (bufferSize <= 0)
         {
-            return () -> runningFutures.get() + results.size() < bufferSize;
+            throw new IllegalArgumentException("Buffer size must be greater than 0");
         }
     }
 
-    private class BlockingSpliterator implements Spliterator<V>
+    private final class BlockingSpliterator implements Spliterator<V>
     {
         @Override
         public boolean tryAdvance(Consumer<? super V> action)
@@ -194,44 +274,88 @@ public final class BufferedStreamAdapter<V>
         }
     }
 
-    private final Stream<ListenableFuture<V>> futures;
+    private final Stream<F> futures;
     private final int bufferSize;
     private final ExecutorService executorService;
-    private final Queue<ValueHolder<V>> results;
+    private final ListenerAdder<F, V> listenerAdder;
+    private final UnaryOperator<Throwable> exceptionUnwrapper;
 
+    private final Queue<ValueHolder<V>> results = new LinkedList<>();
     private final Object semaphore = new Object();
     private final AtomicInteger runningFutures = new AtomicInteger();
     private final AtomicBoolean streamDepleted = new AtomicBoolean();
 
-    private BufferedStreamAdapter(Stream<ListenableFuture<V>> futures, int bufferSize, ExecutorService executorService)
-    {
-        this.futures = futures;
-        this.bufferSize = bufferSize;
-        this.executorService = executorService;
-        this.results = new LinkedList<>();
-    }
-
     private Stream<V> adapt()
     {
-        executorService.submit(() -> {
-            try
-            {
-                futures.forEach(new BlockingConsumer());
-            }
-            catch (RuntimeException e)
-            {
-                synchronized (semaphore)
-                {
-                    results.add(new ValueHolder<>(e));
-                    semaphore.notifyAll();
-                }
-            }
+        executorService.submit(this::consumeStream);
+        return StreamSupport.stream(new BlockingSpliterator(), false);
+    }
+
+    private void consumeStream()
+    {
+        try
+        {
+            futures.forEach(this::consumeFuture);
+        }
+        catch (Throwable throwable)
+        {
             synchronized (semaphore)
             {
-                streamDepleted.set(true);
+                /*
+                 * Unlike convertFutureResultToValueHolder(), we are dealing with "synchronous" exceptions here that we
+                 * don't need to unwrap.
+                 */
+                results.add(new ValueHolder<>(throwable));
                 semaphore.notifyAll();
             }
-        });
-        return StreamSupport.stream(new BlockingSpliterator(), false);
+        }
+
+        synchronized (semaphore)
+        {
+            streamDepleted.set(true);
+            semaphore.notifyAll();
+        }
+    }
+
+    private void consumeFuture(F future)
+    {
+        Runnable trackFuture = () -> {
+            runningFutures.incrementAndGet();
+            listenerAdder.accept(future, this::handleFutureResult);
+        };
+        Threads.doAndWaitUntil(trackFuture, capacityAvailable(), semaphore);
+    }
+
+    private void handleFutureResult(V value, Throwable throwable)
+    {
+        synchronized (semaphore)
+        {
+            runningFutures.decrementAndGet();
+
+            ValueHolder<V> valueHolder = convertFutureResultToValueHolder(value, throwable);
+            results.add(valueHolder);
+
+            semaphore.notifyAll();
+        }
+    }
+
+    private ValueHolder<V> convertFutureResultToValueHolder(V value, Throwable throwable)
+    {
+        ValueHolder<V> valueHolder;
+        if (throwable != null)
+        {
+            Throwable cause = exceptionUnwrapper.apply(throwable);
+            valueHolder = new ValueHolder<>(cause);
+        }
+        else
+        {
+            valueHolder = new ValueHolder<>(value);
+        }
+        return valueHolder;
+    }
+
+    private BooleanSupplier capacityAvailable()
+    {
+        return () -> runningFutures.get() + results.size() < bufferSize;
     }
 }

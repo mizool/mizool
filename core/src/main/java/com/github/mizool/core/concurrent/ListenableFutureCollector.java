@@ -1,6 +1,6 @@
-/**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+/*
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,13 +39,13 @@ import com.google.common.util.concurrent.SettableFuture;
 /**
  * Collects a {@link java.util.stream.Stream} of {@link ListenableFuture}s of {@link Void} into one.<br>
  * <br>
- * Futures are collected as fast as possible without the amount of concurrently running futures exceeding
- * {@code maximumConcurrentFutures}. The resulting future allows to wait for all futures to complete.<br>
- * Any {@link java.util.concurrent.ExecutionException} thrown by one of the incoming futures is either thrown during
- * collection or forwarded to the result future if the consumer was already finished.<br>
+ * Futures are collected as fast as possible without the amount of concurrently running futures exceeding {@code
+ * maximumConcurrentFutures}. The resulting future allows to wait for all futures to complete.<br> Any {@link
+ * java.util.concurrent.ExecutionException} thrown by one of the incoming futures is either thrown during collection or
+ * forwarded to the result future if the consumer was already finished.<br>
  * <br>
- * This collector cannot be used for parallel streams as it would not be able to enforce the limit of
- * {@code maximumConcurrentFutures}.<br>
+ * This collector cannot be used for parallel streams as it would not be able to enforce the limit of {@code
+ * maximumConcurrentFutures}.<br>
  * <br>
  * This collector is intended to be used like so:<br>
  * <pre>{@code
@@ -53,14 +53,18 @@ import com.google.common.util.concurrent.SettableFuture;
  * stream.collect(ListenableFutureCollector.concurrent(maximumConcurrentFutures)).get();}</pre>
  * <br>
  * As the collector can't handle a future's result by design, it only accepts futures without result. If the futures in
- * the stream <i>do</i> contain results, the intention to discard those results can be documented by using the
- * {@link ResultVoidingFuture}:<br>
+ * the stream <i>do</i> contain results, the intention to discard those results can be documented by using the {@link
+ * ResultVoidingFuture}:<br>
  * <pre>{@code
  * Stream<ListenableFuture<MyPojo>> stream;
  * stream.map(ResultVoidingFuture::new).collect(ListenableFutureCollector.concurrent(maximumConcurrentFutures)).get();}</pre>
+ *
+ * @deprecated This class does not propagate exceptions consistently and will be removed. Use {@link FutureStreamJoiner}
+ *     instead.
  */
+@Deprecated
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ListenableFutureCollector implements Collector<ListenableFuture<Void>, Void, ListenableFuture<Void>>
+public final class ListenableFutureCollector implements Collector<ListenableFuture<Void>, Void, ListenableFuture<Void>>
 {
     public static ListenableFutureCollector concurrent(int maximumConcurrentFutures)
     {
@@ -72,7 +76,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     }
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    private class Callback implements FutureCallback<Void>
+    private final class Callback implements FutureCallback<Void>
     {
         @Override
         public void onSuccess(Void value)
@@ -110,7 +114,7 @@ public class ListenableFutureCollector implements Collector<ListenableFuture<Voi
     private final int maximumConcurrentFutures;
     private final Object semaphore = new Object();
 
-    private AtomicInteger runningFutures = new AtomicInteger();
+    private final AtomicInteger runningFutures = new AtomicInteger();
     private Throwable throwable;
     private SettableFuture<Void> result;
 
