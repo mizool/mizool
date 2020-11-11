@@ -210,6 +210,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-gson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-jackson</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -229,6 +234,11 @@
                 <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-web</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>2.7</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

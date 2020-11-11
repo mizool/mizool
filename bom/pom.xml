@@ -42,6 +42,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-gson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-jackson</artifactId>
                 <version>${project.version}</version>
             </dependency>
