@@ -21,8 +21,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
@@ -47,24 +45,52 @@ import com.github.mizool.core.exception.CodeInconsistencyException;
  *         Creating a {@code UrlRef} never throws checked exceptions.
  *     </li>
  *     <li>
- *         Offers a convenient way to build a child URL regardless if the base URL is a {@link URL}, a {@link URI} or a
- *         {@code UrlRef}.
+ *         Unlike {@link URI}, an {@code UrlRef} instance can be used to build a child URI - just like {@link URL}
+ *         with its {@link URL#URL(URL, String) two-arg constructor}.
  *     </li>
  * </ul>
  */
 @EqualsAndHashCode
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class UrlRef
 {
+    private final String spec;
+
+    /**
+     * @throws NullPointerException if {@code uri} is {@code null}
+     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URL}
+     */
+    public UrlRef(@NonNull URI uri)
+    {
+        verifyValidUrl(uri.toString());
+        this.spec = uri.toString();
+    }
+
     /**
      * @throws NullPointerException if {@code url} is {@code null}
+     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI}
+     */
+    public UrlRef(@NonNull URL url)
+    {
+        verifyValidUri(url.toString());
+        this.spec = url.toString();
+    }
+
+    /**
+     * @throws NullPointerException if {@code spec} is {@code null}
      * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
      */
-    public static UrlRef of(@NonNull URL url)
+    public UrlRef(@NonNull String spec)
+    {
+        verifyValidUri(spec);
+        verifyValidUrl(spec);
+        this.spec = spec;
+    }
+
+    private void verifyValidUri(String spec)
     {
         try
         {
-            return new UrlRef(url.toURI());
+            new URI(spec);
         }
         catch (URISyntaxException e)
         {
@@ -72,114 +98,73 @@ public final class UrlRef
         }
     }
 
-    private static IllegalArgumentException createArgumentException(Exception e)
+    private void verifyValidUrl(String spec)
+    {
+        try
+        {
+            new URL(spec);
+        }
+        catch (MalformedURLException e)
+        {
+            throw createArgumentException(e);
+        }
+    }
+
+    /**
+     * Creates a new {@code UrlRef} by combining the URL referenced by this instance (the "context") with the given
+     * spec. <br>
+     * <br>
+     * The new URL is constructed as if using {@link URL#URL(URL, String)}. Note that the result differs based on
+     * whether the context has a trailing slash, the spec has a leading slash, both, or none.
+     *
+     * @throws NullPointerException if {@code spec} is {@code null}
+     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
+     */
+    public UrlRef resolve(@NonNull String spec)
+    {
+        try
+        {
+            return new UrlRef(new URL(toUrl(), spec));
+        }
+        catch (MalformedURLException e)
+        {
+            throw createArgumentException(e);
+        }
+    }
+
+    private IllegalArgumentException createArgumentException(Exception e)
     {
         return new IllegalArgumentException("Could not construct valid UrlRef", e);
     }
 
-    /**
-     * @throws NullPointerException if {@code context} or {@code spec} is {@code null}
-     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
-     */
-    public static UrlRef of(@NonNull URL context, @NonNull String spec)
-    {
-        try
-        {
-            return of(new URL(context, spec));
-        }
-        catch (MalformedURLException e)
-        {
-            throw createArgumentException(e);
-        }
-    }
-
-    /**
-     * @throws NullPointerException if {@code context} or {@code spec} is {@code null}
-     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
-     */
-    public static UrlRef of(@NonNull UrlRef context, @NonNull String spec)
-    {
-        try
-        {
-            return of(new URL(context.toUrl(), spec));
-        }
-        catch (MalformedURLException e)
-        {
-            throw createArgumentException(e);
-        }
-    }
-
-    /**
-     * @throws NullPointerException if {@code uri} is {@code null}
-     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
-     */
-    public static UrlRef of(@NonNull URI uri)
-    {
-        try
-        {
-            return new UrlRef(uri.toURL()
-                .toURI());
-        }
-        catch (URISyntaxException | MalformedURLException e)
-        {
-            throw createArgumentException(e);
-        }
-    }
-
-    /**
-     * @throws NullPointerException if {@code context} or {@code spec} is {@code null}
-     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
-     */
-    public static UrlRef of(@NonNull URI context, @NonNull String spec)
-    {
-        try
-        {
-            return of(context.toURL(), spec);
-        }
-        catch (MalformedURLException e)
-        {
-            throw createArgumentException(e);
-        }
-    }
-
-    /**
-     * @throws NullPointerException if {@code spec} is null
-     * @throws IllegalArgumentException if the resulting {@code UrlRef} would cause exceptions when converted to {@link URI} or {@link URL}
-     */
-    public static UrlRef of(@NonNull String spec)
-    {
-        try
-        {
-            return new UrlRef(new URL(spec).toURI());
-        }
-        catch (URISyntaxException | MalformedURLException e)
-        {
-            throw new IllegalArgumentException("String cannot be converted to URL and/or URI", e);
-        }
-    }
-
-    URI reference;
-
     public URI toUri()
     {
-        return reference;
+        try
+        {
+            return new URI(spec);
+        }
+        catch (URISyntaxException e)
+        {
+            // Should have been rejected at construction time.
+            throw new CodeInconsistencyException(e);
+        }
     }
 
     public URL toUrl()
     {
         try
         {
-            return reference.toURL();
+            return new URL(spec);
         }
         catch (MalformedURLException e)
         {
             // Should have been rejected at construction time.
-            throw new CodeInconsistencyException();
+            throw new CodeInconsistencyException(e);
         }
     }
 
     public String toString()
     {
-        return reference.toString();
+        return spec;
     }
 }

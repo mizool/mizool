@@ -22,73 +22,37 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public class TestUrlRef
 {
-    public interface ThrowingFunction<T, R>
+    @Test(dataProvider = "urlSpecs")
+    public void testUriConstructor(String spec) throws Exception
     {
-        R apply(T t) throws Exception;
+        URI uri = new URI(spec);
+        assertUrlRef(new UrlRef(uri), spec);
     }
 
     @Test(dataProvider = "urlSpecs")
-    public void testInstantiateViaUrl(String spec) throws Exception
+    public void testUrlConstructor(String spec) throws Exception
     {
-        testInstantiation(URL::new, spec, UrlRef::of);
+        URL url = new URL(spec);
+        assertUrlRef(new UrlRef(url), spec);
     }
 
     @Test(dataProvider = "urlSpecs")
-    public void testInstantiateViaUri(String spec) throws Exception
+    public void testStringConstructor(String spec) throws Exception
     {
-        testInstantiation(URI::new, spec, UrlRef::of);
-    }
-
-    @Test(dataProvider = "urlSpecs")
-    public void testInstantiateViaString(String spec) throws Exception
-    {
-        testInstantiation(URL::new, spec, UrlRef::of);
-    }
-
-    public <T> void testInstantiation(
-        ThrowingFunction<String, T> inputFactory, String spec, Function<T, UrlRef> factory) throws Exception
-    {
-        T input = inputFactory.apply(spec);
-        UrlRef result = factory.apply(input);
-
-        assertUrlRef(result, spec);
+        assertUrlRef(new UrlRef(spec), spec);
     }
 
     @Test(dataProvider = "contextualUrlSpecs")
-    public void testInstantiateViaUrlContext(String contextSpec, String spec, String resultSpec) throws Exception
+    public void testResolve(String contextSpec, String spec, String resultSpec) throws Exception
     {
-        testContextualInstantiation(contextSpec, URL::new, spec, UrlRef::of, resultSpec);
-    }
-
-    @Test(dataProvider = "contextualUrlSpecs")
-    public void testInstantiateViaUriContext(String contextSpec, String spec, String resultSpec) throws Exception
-    {
-        testContextualInstantiation(contextSpec, URI::new, spec, UrlRef::of, resultSpec);
-    }
-
-    @Test(dataProvider = "contextualUrlSpecs")
-    public void testInstantiateViaUrlRefContext(String contextSpec, String spec, String resultSpec) throws Exception
-    {
-        testContextualInstantiation(contextSpec, UrlRef::of, spec, UrlRef::of, resultSpec);
-    }
-
-    public <T> void testContextualInstantiation(
-        String contextSpec,
-        ThrowingFunction<String, T> contextFactory,
-        String spec,
-        BiFunction<T, String, UrlRef> resultFactory,
-        String resultSpec) throws Exception
-    {
-        T context = contextFactory.apply(contextSpec);
-        UrlRef result = resultFactory.apply(context, spec);
+        UrlRef context = new UrlRef(contextSpec);
+        UrlRef result = context.resolve(spec);
 
         assertUrlRef(result, resultSpec);
     }
