@@ -67,8 +67,6 @@ public class TestGsonMessageBodyHandler
         {
             return (T) this.fromJsonResult;
         }
-
-        ;
     }
 
     @Test
