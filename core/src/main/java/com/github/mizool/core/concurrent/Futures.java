@@ -104,9 +104,11 @@ public class Futures
      * @param future the future to wrap
      *
      * @return a void future
+     *
+     * @throws NullPointerException if {@code future} is {@code null}
      */
     @SuppressWarnings("deprecation")
-    public ListenableFuture<Void> toVoidResult(ListenableFuture<?> future)
+    public ListenableFuture<Void> toVoidResult(@NonNull ListenableFuture<?> future)
     {
         return new ResultVoidingFuture(future);
     }
@@ -121,8 +123,10 @@ public class Futures
      * @param future the future to wrap
      *
      * @return a void future
+     *
+     * @throws NullPointerException if {@code future} is {@code null}
      */
-    public CompletableFuture<Void> toVoidResult(CompletableFuture<?> future)
+    public CompletableFuture<Void> toVoidResult(@NonNull CompletableFuture<?> future)
     {
         return future.thenAccept(o -> {
         });
