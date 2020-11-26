@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>0.41</version>
+        <version>0.42</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -38,6 +38,11 @@
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-cassandra</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-gson</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
