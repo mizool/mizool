@@ -48,7 +48,8 @@ public class Identifier<T> implements Serializable
         {
             if (value.isEmpty())
             {
-                throw new IllegalArgumentException("Identifier value is empty");
+                // TODO remove again (test case for distinguishing new sonar violations from existing ones)
+                throw new RuntimeException("Identifier value is empty");
             }
             return new Identifier<T>(pojoClass, value);
         }
