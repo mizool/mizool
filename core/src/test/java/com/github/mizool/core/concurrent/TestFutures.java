@@ -1,28 +1,91 @@
+/*
+ * Copyright 2020 incub8 Software Labs GmbH
+ * Copyright 2020 protel Hotelsoftware GmbH
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.mizool.core.concurrent;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 
 import org.assertj.core.api.Assertions;
 import org.mockito.Mockito;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
+import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 public class TestFutures
 {
+    @RequiredArgsConstructor
+    private static class FailingComputation<T> implements Supplier<T>, Callable<T>
+    {
+        @NonNull
+        protected final Class<? extends Throwable> throwableClass;
+
+        @Override
+        public T call()
+        {
+            return fail();
+        }
+
+        @Override
+        public T get()
+        {
+            return fail();
+        }
+
+        @SneakyThrows
+        public T fail()
+        {
+            throw ExceptionTests.instantiateThrowable(throwableClass, "Simulated failure");
+        }
+
+        @Override
+        public String toString()
+        {
+            return "FailingComputation{" + throwableClass.getSimpleName() + "}";
+        }
+    }
+
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ListeningExecutorService listeningExecutorService = MoreExecutors.listeningDecorator(executorService);
 
     @AfterMethod
     public void tearDown()
@@ -97,5 +160,72 @@ public class TestFutures
                 .interrupt();
             throw new UncheckedInterruptedException(e);
         }
+    }
+
+    @Test
+    public void testToVoidResultWithCompletable() throws Exception
+    {
+        CompletableFuture<Integer> future = CompletableFuture.completedFuture(42);
+
+        Object result = Futures.toVoidResult(future)
+            .get();
+
+        assertThat(result).isNull();
+    }
+
+    @Test
+    public void testToVoidResultWithListenable() throws Exception
+    {
+        ListenableFuture<Integer> future = com.google.common.util.concurrent.Futures.immediateFuture(42);
+
+        Object result = Futures.toVoidResult(future)
+            .get();
+
+        assertThat(result).isNull();
+    }
+
+    @Test(dataProvider = "failingComputationsForEachThrowableType")
+    public void testToVoidResultWithCompletableKeepsThrowables(FailingComputation<?> failingComputation)
+    {
+        CompletableFuture<?> originalFuture = CompletableFuture.supplyAsync(failingComputation, executorService);
+
+        CompletableFuture<Void> voidFuture = Futures.toVoidResult(originalFuture);
+
+        assertThat(causalChainThrownBy(voidFuture)).isEqualTo(causalChainThrownBy(originalFuture));
+    }
+
+    @Test(dataProvider = "failingComputationsForEachThrowableType")
+    public void testToVoidResultWithListenableKeepsThrowables(FailingComputation<?> failingComputation)
+    {
+        ListenableFuture<?> originalFuture = listeningExecutorService.submit(failingComputation);
+
+        ListenableFuture<Void> voidFuture = Futures.toVoidResult(originalFuture);
+
+        assertThat(causalChainThrownBy(voidFuture)).isEqualTo(causalChainThrownBy(originalFuture));
+    }
+
+    private List<? extends Class<?>> causalChainThrownBy(Future<?> future)
+    {
+        Throwable throwable = catchThrowable(future::get);
+        return getCausalChainClasses(throwable);
+    }
+
+    private List<? extends Class<?>> getCausalChainClasses(Throwable throwable)
+    {
+        return Throwables.getCausalChain(throwable)
+            .stream()
+            .map(Object::getClass)
+            .collect(Collectors.toList());
+    }
+
+    @DataProvider
+    protected static Object[][] failingComputationsForEachThrowableType()
+    {
+        return new Object[][]{
+            { new FailingComputation<>(DummyCheckedException.class) },
+            { new FailingComputation<>(DummyRuntimeException.class) },
+            { new FailingComputation<>(DummyError.class) },
+            { new FailingComputation<>(DummyThrowable.class) }
+        };
     }
 }
