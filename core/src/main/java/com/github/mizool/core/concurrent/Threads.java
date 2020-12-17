@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2018 incub8 Software Labs GmbH
  * Copyright 2018 protel Hotelsoftware GmbH
  *
