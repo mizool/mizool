@@ -46,21 +46,22 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
         {
             chain.doFilter(request, response);
         }
-        catch (Exception e)
+        catch (@SuppressWarnings("java:S1181") Throwable throwable)
         {
-            sendErrorMessage(e, response);
+            // We need to catch Throwable so that RuntimeExceptions or Errors don't cause HTML error pages
+            sendErrorMessage(throwable, response);
         }
     }
 
-    private void sendErrorMessage(Exception e, HttpServletResponse response) throws IOException
+    private void sendErrorMessage(Throwable throwable, HttpServletResponse response) throws IOException
     {
         if (response.isCommitted())
         {
-            log.error("Exception during response sending", e);
+            log.error("Exception during response sending", throwable);
         }
         else
         {
-            ErrorResponse errorResponse = errorResponseFactory.handle(e);
+            ErrorResponse errorResponse = errorResponseFactory.handle(throwable);
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(errorResponse.getStatusCode());
             response.getOutputStream().write(getErrorMessageJsonBytes(errorResponse.getBody()));
