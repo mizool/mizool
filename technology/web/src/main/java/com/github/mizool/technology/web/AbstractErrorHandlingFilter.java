@@ -19,6 +19,7 @@ package com.github.mizool.technology.web;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,12 +32,7 @@ import com.github.mizool.core.rest.errorhandling.ErrorResponseFactory;
 @Slf4j
 public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
 {
-    private final ErrorResponseFactory errorResponseFactory;
-
-    protected AbstractErrorHandlingFilter()
-    {
-        this.errorResponseFactory = new ErrorResponseFactory();
-    }
+    protected final ErrorResponseFactory errorResponseFactory = new ErrorResponseFactory();
 
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -44,7 +40,7 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
     {
         try
         {
-            chain.doFilter(request, response);
+            invokeNextFilter(request, response, chain);
         }
         catch (@SuppressWarnings("java:S1181") Throwable throwable)
         {
@@ -53,11 +49,17 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
         }
     }
 
-    private void sendErrorMessage(Throwable throwable, HttpServletResponse response) throws IOException
+    protected void invokeNextFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+        throws IOException, ServletException
+    {
+        chain.doFilter(request, response);
+    }
+
+    protected void sendErrorMessage(Throwable throwable, HttpServletResponse response) throws IOException
     {
         if (response.isCommitted())
         {
-            log.error("Exception during response sending", throwable);
+            log.error("Exception occurred after response was committed (during body writing)", throwable);
         }
         else
         {
