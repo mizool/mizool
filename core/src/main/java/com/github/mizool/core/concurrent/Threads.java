@@ -1,6 +1,6 @@
 /*
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2020 incub8 Software Labs GmbH
+ * Copyright 2018-2020 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  * limitations under the License.
  */
 package com.github.mizool.core.concurrent;
-
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
 
 import lombok.experimental.UtilityClass;
 
@@ -41,88 +38,6 @@ public class Threads
         }
     }
 
-    public void doAndWaitUntil(Runnable runnable, BooleanSupplier state, Object semaphore)
-    {
-        synchronized (semaphore)
-        {
-            runnable.run();
-
-            try
-            {
-                while (!state.getAsBoolean())
-                {
-                    semaphore.wait();
-                }
-            }
-            catch (InterruptedException e)
-            {
-                rethrowInterrupt(e);
-            }
-        }
-    }
-
-    public <T> T doAndWaitUntil(Supplier<T> supplier, BooleanSupplier state, Object semaphore)
-    {
-        T result;
-        synchronized (semaphore)
-        {
-            result = supplier.get();
-
-            try
-            {
-                while (!state.getAsBoolean())
-                {
-                    semaphore.wait();
-                }
-            }
-            catch (InterruptedException e)
-            {
-                rethrowInterrupt(e);
-            }
-        }
-        return result;
-    }
-
-    public void waitUntilAndDo(BooleanSupplier state, Runnable runnable, Object semaphore)
-    {
-        synchronized (semaphore)
-        {
-            try
-            {
-                while (!state.getAsBoolean())
-                {
-                    semaphore.wait();
-                }
-            }
-            catch (InterruptedException e)
-            {
-                rethrowInterrupt(e);
-            }
-
-            runnable.run();
-        }
-    }
-
-    public <T> T waitUntilAndDo(BooleanSupplier state, Supplier<T> supplier, Object semaphore)
-    {
-        synchronized (semaphore)
-        {
-            try
-            {
-                while (!state.getAsBoolean())
-                {
-                    semaphore.wait();
-                }
-            }
-            catch (InterruptedException e)
-            {
-                rethrowInterrupt(e);
-            }
-
-            return supplier.get();
-        }
-    }
-
     /**
      * Wraps the given {@link InterruptedException} in an {@link UncheckedInterruptedException} and re-interrupts the
      * thread.
@@ -131,7 +46,8 @@ public class Threads
      */
     public void rethrowInterrupt(InterruptedException e)
     {
-        Thread.currentThread().interrupt();
+        Thread.currentThread()
+            .interrupt();
         throw new UncheckedInterruptedException(e);
     }
 }
