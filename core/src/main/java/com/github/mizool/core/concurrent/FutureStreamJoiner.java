@@ -104,8 +104,8 @@ public class FutureStreamJoiner
             Stream<Void> results = BufferedStreamAdapter.listenable()
                 .adapt(listenableFutures, concurrencyLimit, executorService);
 
-            return (ListenableFuture<Void>) MoreExecutors.listeningDecorator(executorService)
-                .submit(consumeStream(results));
+            return Futures.toVoidResult(MoreExecutors.listeningDecorator(executorService)
+                .submit(consumeStream(results)));
         }
     }
 

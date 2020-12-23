@@ -68,10 +68,10 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * <h3>Usage examples</h3>
  * <pre>{@code
  * Stream<Completable<V>> completables;
- * Stream<V> values2 = BufferedStreamAdapter.completable().adapt(completables, bufferSize, executorService);}</pre>
+ * Stream<V> values = BufferedStreamAdapter.completable().adapt(completables, bufferSize, executorService);}</pre>
  * <pre>{@code
  * Stream<ListenableFuture<V>> listenables;
- * Stream<V> values1 = BufferedStreamAdapter.listenable().adapt(listenables, bufferSize, executorService);}</pre>
+ * Stream<V> values = BufferedStreamAdapter.listenable().adapt(listenables, bufferSize, executorService);}</pre>
  */
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class BufferedStreamAdapter<F, V>
@@ -79,8 +79,26 @@ public final class BufferedStreamAdapter<F, V>
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class Listenable
     {
+        @RequiredArgsConstructor
+        private static final class CallbackAdapter<E> implements FutureCallback<E>
+        {
+            private final Listener<E> listener;
+
+            @Override
+            public void onSuccess(E value)
+            {
+                listener.accept(value, null);
+            }
+
+            @Override
+            public void onFailure(Throwable t)
+            {
+                listener.accept(null, t);
+            }
+        }
+
         public <E> Stream<E> adapt(
-            Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
+            @NonNull Stream<ListenableFuture<E>> futures, int bufferSize, @NonNull ExecutorService executorService)
         {
             verifyBufferSize(bufferSize);
 
@@ -93,7 +111,7 @@ public final class BufferedStreamAdapter<F, V>
 
         private <E> void addListener(ListenableFuture<E> future, Listener<E> listener)
         {
-            Futures.addCallback(future, new ListenableFutureCallback<>(listener), MoreExecutors.directExecutor());
+            Futures.addCallback(future, new CallbackAdapter<>(listener), MoreExecutors.directExecutor());
         }
 
         private Throwable unwrapException(@NonNull Throwable throwable)
@@ -106,7 +124,7 @@ public final class BufferedStreamAdapter<F, V>
     public static final class Completable
     {
         public <E> Stream<E> adapt(
-            Stream<CompletableFuture<E>> futures, int bufferSize, ExecutorService executorService)
+            @NonNull Stream<CompletableFuture<E>> futures, int bufferSize, @NonNull ExecutorService executorService)
         {
             verifyBufferSize(bufferSize);
 
@@ -156,35 +174,14 @@ public final class BufferedStreamAdapter<F, V>
         }
     }
 
-    @RequiredArgsConstructor
-    private static final class ListenableFutureCallback<E> implements FutureCallback<E>
-    {
-
-        private final Listener<E> listener;
-
-        @Override
-        public void onSuccess(E value)
-        {
-            listener.accept(value, null);
-        }
-
-        @Override
-        public void onFailure(Throwable t)
-        {
-            listener.accept(null, t);
-        }
-    }
-
     @FunctionalInterface
     private interface ListenerAdder<T, E> extends BiConsumer<T, Listener<E>>
     {
-
     }
 
     @FunctionalInterface
     private interface Listener<E> extends BiConsumer<E, Throwable>
     {
-
     }
 
     public static Listenable listenable()

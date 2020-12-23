@@ -121,7 +121,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testLowerTaskLimitBoundary()
     {
-        runTest(null, 0);
+        runTest(Stream.of(), 0);
     }
 
     @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
