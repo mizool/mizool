@@ -17,6 +17,7 @@
 package com.github.mizool.core.concurrent;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 import java.util.Spliterator;
 import java.util.concurrent.CompletableFuture;
@@ -220,15 +221,17 @@ public final class BufferedStreamAdapter<F, V>
         @Override
         public boolean tryAdvance(Consumer<? super V> action)
         {
-            ValueHolder<V> valueHolder = Threads.waitUntilAndDo(resultOrCompletion(), () -> {
-                ValueHolder<V> removedValue = null;
-                if (resultsAvailable())
-                {
-                    removedValue = results.remove();
-                    semaphore.notifyAll();
-                }
-                return removedValue;
-            }, semaphore);
+            ValueHolder<V> valueHolder = synchronizer.buildSequenceOf()
+                .sleepUntil(resultOrCompletion())
+                .get(() -> {
+                    if (resultsAvailable())
+                    {
+                        return results.remove();
+                    }
+                    return null;
+                })
+                .andWakeOthersIf(Objects::nonNull)
+                .invokeSequence();
 
             boolean valueEmitted = false;
             if (valueHolder != null)
@@ -281,7 +284,7 @@ public final class BufferedStreamAdapter<F, V>
     private final UnaryOperator<Throwable> exceptionUnwrapper;
 
     private final Queue<ValueHolder<V>> results = new LinkedList<>();
-    private final Object semaphore = new Object();
+    private final Synchronizer synchronizer = new Synchronizer();
     private final AtomicInteger runningFutures = new AtomicInteger();
     private final AtomicBoolean streamDepleted = new AtomicBoolean();
 
@@ -297,46 +300,46 @@ public final class BufferedStreamAdapter<F, V>
         {
             futures.forEach(this::consumeFuture);
         }
-        catch (Throwable throwable)
+        catch (@SuppressWarnings("java:S1181") Throwable throwable)
         {
-            synchronized (semaphore)
-            {
-                /*
-                 * Unlike convertFutureResultToValueHolder(), we are dealing with "synchronous" exceptions here that we
-                 * don't need to unwrap.
-                 */
-                results.add(new ValueHolder<>(throwable));
-                semaphore.notifyAll();
-            }
+            /*
+             * Unlike convertFutureResultToValueHolder(), we are dealing with "synchronous" exceptions here that we
+             * don't need to unwrap.
+             */
+            synchronizer.buildSequenceOf()
+                .run(() -> results.add(new ValueHolder<>(throwable)))
+                .andWakeOthers()
+                .invokeSequence();
         }
 
-        synchronized (semaphore)
-        {
-            streamDepleted.set(true);
-            semaphore.notifyAll();
-        }
+        synchronizer.buildSequenceOf()
+            .run(() -> streamDepleted.set(true))
+            .andWakeOthers()
+            .invokeSequence();
     }
 
     private void consumeFuture(F future)
     {
-        Runnable trackFuture = () -> {
-            runningFutures.incrementAndGet();
-            listenerAdder.accept(future, this::handleFutureResult);
-        };
-        Threads.doAndWaitUntil(trackFuture, capacityAvailable(), semaphore);
+        synchronizer.buildSequenceOf()
+            .run(() -> {
+                runningFutures.incrementAndGet();
+                listenerAdder.accept(future, this::handleFutureResult);
+            })
+            .thenSleepUntil(capacityAvailable())
+            .invokeSequence();
     }
 
     private void handleFutureResult(V value, Throwable throwable)
     {
-        synchronized (semaphore)
-        {
-            runningFutures.decrementAndGet();
+        synchronizer.buildSequenceOf()
+            .run(() -> {
+                runningFutures.decrementAndGet();
 
-            ValueHolder<V> valueHolder = convertFutureResultToValueHolder(value, throwable);
-            results.add(valueHolder);
-
-            semaphore.notifyAll();
-        }
+                ValueHolder<V> valueHolder = convertFutureResultToValueHolder(value, throwable);
+                results.add(valueHolder);
+            })
+            .andWakeOthers()
+            .invokeSequence();
     }
 
     private ValueHolder<V> convertFutureResultToValueHolder(V value, Throwable throwable)
