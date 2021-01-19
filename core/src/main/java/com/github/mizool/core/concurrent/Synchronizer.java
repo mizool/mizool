@@ -23,6 +23,8 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
  *     <li>"wake others" = {@link Object#notifyAll()}</li>
  * </ul>
  *
+ * <img src="doc-files/synchronizer-railroad-diagram.svg">
+ *
  * <pre>{@code
  * synchronizer.buildSequenceOf()
  *     .run(...)
