@@ -77,19 +77,6 @@ public final class ThrowingStreamHarness
         }
     }
 
-    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class FailingTaskSupplier implements Supplier<Task>
-    {
-        private final Class<? extends Throwable> throwableClass;
-
-        @SneakyThrows
-        @Override
-        public Task get()
-        {
-            throw ExceptionTests.instantiateThrowable(throwableClass, "stream consumption failed");
-        }
-    }
-
     private interface TaskStreamFactory
     {
         Stream<Task> createStream(@NonNull Class<? extends Throwable> desiredThrowableClass);
@@ -185,51 +172,6 @@ public final class ThrowingStreamHarness
             { createSingletonStream(DummyError.class) },
             { createSingletonStream(DummyThrowable.class) }
         };
-    }
-
-    private Stream<Task> createStreamThatFailsConsumptionWith(Class<? extends Throwable> throwableClass)
-    {
-        return Stream.generate(new FailingSupplier<>(throwableClass));
-    }
-
-    @RequiredArgsConstructor
-    private static class FailingSupplier<T> implements Supplier<T>
-    {
-        private final Class<? extends Throwable> throwableClass;
-
-        @Override
-        @SneakyThrows
-        public T get()
-        {
-            throw ExceptionTests.instantiateThrowable(throwableClass, "Failing by design.");
-        }
-    }
-
-    private static ThrowingStreamHarness createFailingStream(Class<? extends Throwable> desiredThrowableClass)
-    {
-        return builder().taskStreamFactory(streamOfSometimesFailingTasks(1, 1))
-            .desiredThrowableClass(desiredThrowableClass)
-            .label(desiredThrowableClass.getSimpleName())
-            .build();
-    }
-
-    private static TaskStreamFactory streamThatFailsConsumption()
-    {
-        TaskStreamFactory result = new TaskStreamFactory()
-        {
-            @Override
-            public Stream<Task> createStream(Class<? extends Throwable> desiredThrowableClass)
-            {
-                return Stream.generate(new FailingTaskSupplier(desiredThrowableClass));
-            }
-
-            @Override
-            public String getAssertableExceptionMessage()
-            {
-                return "stream consumption failed";
-            }
-        };
-        return result;
     }
 
     @NonNull
