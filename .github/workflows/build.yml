@@ -37,9 +37,21 @@ jobs:
           TALOS_SONAR_HOST: ${{ secrets.TALOS_SONAR_HOST }}
           TALOS_SONAR_ORGANIZATION: ${{ secrets.TALOS_SONAR_ORGANIZATION }}
           TALOS_SONAR_LOGIN: ${{ secrets.TALOS_SONAR_LOGIN }}
+          CI: ${{ env.CI }}
+          GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
+          GITHUB_RUN_ID: ${{ env.GITHUB_RUN_ID }}
+          GITHUB_RUN_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
+          GITHUB_ACTION: ${{ env.GITHUB_ACTION }}
+          GITHUB_ACTIONS: ${{ env.GITHUB_ACTIONS }}
+          GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
+          GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}
+          GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
+          GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
+          GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}
+          GITHUB_SHA: ${{ env.GITHUB_SHA }}
           GITHUB_REF: ${{ env.GITHUB_REF }}
           GITHUB_HEAD_REF: ${{ env.GITHUB_HEAD_REF }}
           GITHUB_BASE_REF: ${{ env.GITHUB_BASE_REF }}
-          XGITHUB_REF: env.GITHUB_REF
-          XGITHUB_HEAD_REF: env.GITHUB_HEAD_REF
-          XGITHUB_BASE_REF: env.GITHUB_BASE_REF
+          GITHUB_SERVER_URL: ${{ env.GITHUB_SERVER_URL }}
+          GITHUB_API_URL: ${{ env.GITHUB_API_URL }}
+          GITHUB_GRAPHQL_URL: ${{ env.GITHUB_GRAPHQL_URL }}
