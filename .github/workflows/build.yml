@@ -37,6 +37,7 @@ jobs:
           # Talos-specific variables
           TALOS_SIGNING_ENABLED: ${{ secrets.TALOS_SIGNING_ENABLED }}
           TALOS_SIGNING_KEY: ${{ secrets.TALOS_SIGNING_KEY }}
+          TALOS_SIGNING_PROFILE: ${{ secrets.TALOS_SIGNING_PROFILE }}
           TALOS_SONAR_ENABLED: ${{ secrets.TALOS_SONAR_ENABLED }}
           TALOS_SONAR_HOST: ${{ secrets.TALOS_SONAR_HOST }}
           TALOS_SONAR_ORGANIZATION: ${{ secrets.TALOS_SONAR_ORGANIZATION }}
