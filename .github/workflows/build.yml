@@ -35,6 +35,8 @@ jobs:
         uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
         env:
           # Talos-specific variables
+          TALOS_SIGNING_ENABLED: ${{ secrets.TALOS_SIGNING_ENABLED }}
+          TALOS_SIGNING_KEY: ${{ secrets.TALOS_SIGNING_KEY }}
           TALOS_SONAR_ENABLED: ${{ secrets.TALOS_SONAR_ENABLED }}
           TALOS_SONAR_HOST: ${{ secrets.TALOS_SONAR_HOST }}
           TALOS_SONAR_ORGANIZATION: ${{ secrets.TALOS_SONAR_ORGANIZATION }}
