@@ -16,6 +16,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # TODO remove
+      - name: Look around
+        run: printenv
+
       - name: Check out
         uses: actions/checkout@v2
         with:
