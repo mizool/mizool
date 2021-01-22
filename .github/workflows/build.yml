@@ -33,10 +33,18 @@ jobs:
       - name: Build
         uses: docker://incub8softwarelabs/pipelines-build-environment:feature_CCCP-37-add-github-support
         env:
+          # Talos-specific variables
           TALOS_SONAR_ENABLED: ${{ secrets.TALOS_SONAR_ENABLED }}
           TALOS_SONAR_HOST: ${{ secrets.TALOS_SONAR_HOST }}
           TALOS_SONAR_ORGANIZATION: ${{ secrets.TALOS_SONAR_ORGANIZATION }}
           TALOS_SONAR_LOGIN: ${{ secrets.TALOS_SONAR_LOGIN }}
+
+          # Token to use when SonarScanner invokes Github APIs
+          # https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+
+          # Standard environment variables provided by Github
+          # https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
           CI: ${{ env.CI }}
           GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
           GITHUB_RUN_ID: ${{ env.GITHUB_RUN_ID }}
