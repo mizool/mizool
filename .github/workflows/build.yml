@@ -41,7 +41,7 @@ jobs:
 
           # Token to use when SonarScanner invokes Github APIs
           # https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           # Standard environment variables provided by Github
           # https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
