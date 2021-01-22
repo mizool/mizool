@@ -4,12 +4,13 @@ on:
   push:
     branches:
       - 'feature/**'
+      - 'release/**'
 
   pull_request:
     branches:
       - develop
 
-# TODO add master, hotfix, release, younameit
+# TODO add master, hotfix, younameit
 
 jobs:
   build:
