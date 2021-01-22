@@ -16,10 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # TODO remove
-      - name: Look around
-        run: printenv
-
       - name: Check out
         uses: actions/checkout@v2
         with:
@@ -32,6 +28,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /home/runner/work/_temp/_github_home/talos-m2-repository
+          # TODO finalize name and/or make configurable
           key: talos-maven-repo-dummy3
 
       - name: Build
@@ -46,24 +43,3 @@ jobs:
           # Token to use when SonarScanner invokes Github APIs
           # https://docs.github.com/en/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-          # Standard environment variables provided by Github
-          # https://docs.github.com/en/actions/reference/environment-variables#default-environment-variables
-          #CI: ${{ env.CI }}
-          #GITHUB_WORKFLOW: ${{ env.GITHUB_WORKFLOW }}
-          #GITHUB_RUN_ID: ${{ env.GITHUB_RUN_ID }}
-          #GITHUB_RUN_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-          #GITHUB_ACTION: ${{ env.GITHUB_ACTION }}
-          #GITHUB_ACTIONS: ${{ env.GITHUB_ACTIONS }}
-          #GITHUB_ACTOR: ${{ env.GITHUB_ACTOR }}
-          #GITHUB_REPOSITORY: ${{ env.GITHUB_REPOSITORY }}
-          #GITHUB_EVENT_NAME: ${{ env.GITHUB_EVENT_NAME }}
-          #GITHUB_EVENT_PATH: ${{ env.GITHUB_EVENT_PATH }}
-          #GITHUB_WORKSPACE: ${{ env.GITHUB_WORKSPACE }}
-          #GITHUB_SHA: ${{ env.GITHUB_SHA }}
-          #GITHUB_REF: ${{ env.GITHUB_REF }}
-          #GITHUB_HEAD_REF: ${{ env.GITHUB_HEAD_REF }}
-          #GITHUB_BASE_REF: ${{ env.GITHUB_BASE_REF }}
-          #GITHUB_SERVER_URL: ${{ env.GITHUB_SERVER_URL }}
-          #GITHUB_API_URL: ${{ env.GITHUB_API_URL }}
-          #GITHUB_GRAPHQL_URL: ${{ env.GITHUB_GRAPHQL_URL }}
