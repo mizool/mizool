@@ -3,14 +3,11 @@ name: Build
 on:
   push:
     branches:
-      - 'feature/**'
-      - 'release/**'
+      - '**'
 
   pull_request:
     branches:
       - develop
-
-# TODO add master, hotfix, younameit
 
 jobs:
   build:
