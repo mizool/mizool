@@ -57,7 +57,8 @@ public class Optionals
     {
         if (!wrapped.isPresent())
         {
-            throw new ObjectNotFoundException(classOfT.getSimpleName() + " not found");
+            // TODO remove again (test case for distinguishing new sonar violations from existing ones)
+            throw new RuntimeException(classOfT.getSimpleName() + " not found");
         }
         return wrapped.get();
     }
