@@ -26,8 +26,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: /home/runner/work/_temp/_github_home/talos-m2-repository
-          # TODO finalize name and/or make configurable
-          key: talos-maven-repo-dummy3
+          key: talos-maven-repo
 
       - name: Build
         uses: docker://incub8softwarelabs/talos:feature_CCCP-37-add-github-support
