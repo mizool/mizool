@@ -219,13 +219,7 @@ public final class BufferedStreamAdapter<F, V>
         public boolean tryAdvance(Consumer<? super V> action)
         {
             ValueHolder<V> valueHolder = synchronizer.sleepUntil(resultOrCompletion())
-                .get(() -> {
-                    if (resultsAvailable())
-                    {
-                        return results.remove();
-                    }
-                    return null;
-                })
+                .get(this::getResultOrNull)
                 .andWakeOthersIf(Objects::nonNull)
                 .invoke();
 
@@ -252,6 +246,15 @@ public final class BufferedStreamAdapter<F, V>
         private boolean completed()
         {
             return streamDepleted.get() && runningFutures.get() == 0;
+        }
+
+        private ValueHolder<V> getResultOrNull()
+        {
+            if (resultsAvailable())
+            {
+                return results.remove();
+            }
+            return null;
         }
 
         @Override
@@ -314,26 +317,34 @@ public final class BufferedStreamAdapter<F, V>
 
     private void consumeFuture(F future)
     {
-        Runnable consumption = () -> {
-            runningFutures.incrementAndGet();
-            listenerAdder.accept(future, this::handleFutureResult);
-        };
-        synchronizer.run(consumption)
+        synchronizer.run(runnableConsumeFuture(future))
             .thenSleepUntil(capacityAvailable())
             .invoke();
     }
 
+    private Runnable runnableConsumeFuture(F future)
+    {
+        return () -> {
+            runningFutures.incrementAndGet();
+            listenerAdder.accept(future, this::handleFutureResult);
+        };
+    }
+
     private void handleFutureResult(V value, Throwable throwable)
     {
-        Runnable handling = () -> {
+        synchronizer.run(runnableHandleFutureResult(value, throwable))
+            .andWakeOthers()
+            .invoke();
+    }
+
+    private Runnable runnableHandleFutureResult(V value, Throwable throwable)
+    {
+        return () -> {
             runningFutures.decrementAndGet();
 
             ValueHolder<V> valueHolder = convertFutureResultToValueHolder(value, throwable);
             results.add(valueHolder);
         };
-        synchronizer.run(handling)
-            .andWakeOthers()
-            .invoke();
     }
 
     private ValueHolder<V> convertFutureResultToValueHolder(V value, Throwable throwable)
