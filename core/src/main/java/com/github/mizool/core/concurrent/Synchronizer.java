@@ -12,7 +12,8 @@ import lombok.With;
 import com.github.mizool.core.exception.UncheckedInterruptedException;
 
 /**
- * TODO write docs
+ * TODO write docs.
+ *
  * <ul>
  *     <li>define a sequence of actions, all executed inside the same synchronized block</li>
  *     <li>sleep until <i>condition</i><ul>
@@ -26,94 +27,128 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
  * <img src="doc-files/synchronizer-railroad-diagram.svg">
  *
  * <pre>{@code
- * synchronizer.buildSequenceOf()
- *     .run(...)
+ * synchronizer.run(...)
  *     .thenSleepUntil(...)
- *     .invokeSequence();
+ *     .invoke();
  *
- * synchronizer.buildSequenceOf()
- *     .sleepUntil(...)
+ * synchronizer.sleepUntil(...)
  *     .run(...)
  *     .andWakeOthers()
- *     .invokeSequence();
+ *     .invoke();
  *
- * ResultClass result = synchronizer.buildSequenceOf()
- *     .get(...)
- *     .invokeSequence();
+ * ResultClass result = synchronizer.get(...)
+ *     .invoke();
  *
- * Spline result = synchronizer.buildSequenceOf()
- *     .get(...)
+ * Spline result = synchronizer.get(...)
  *     .andWakeOthersIf(Spline::isReticulated)
- *     .invokeSequence();}</pre>
+ *     .invoke();}</pre>
  */
-public final class Synchronizer
+public final class Synchronizer implements SynchronizerDsl.Pre
 {
-    public interface Definition
+    @With
+    @Builder
+    private static final class RunAction implements SynchronizerDsl.RunPostMayWake
     {
-        interface Pre extends Action
+        @NonNull
+        private final Lock lock;
+
+        private final BooleanSupplier preState;
+
+        @NonNull
+        private final Runnable runnable;
+
+        private final BooleanSupplier postState;
+
+        private final boolean wakeOthers;
+
+        @Override
+        public void invoke()
         {
-            Action sleepUntil(BooleanSupplier state);
-        }
+            synchronized (lock)
+            {
+                lock.sleepUntil(preState);
 
-        interface Action
-        {
-            RunPostMayWake run(Runnable runnable);
+                runnable.run();
 
-            <T> GetPostMayWake<T> get(Supplier<T> getter);
-        }
+                if (wakeOthers)
+                {
+                    lock.notifyAll();
+                }
 
-        interface RunPostMayWake extends RunPostMaySleep
-        {
-            RunPostMaySleep andWakeOthers();
-        }
-
-        interface RunPostMaySleep extends RunInvokable
-        {
-            RunInvokable thenSleepUntil(BooleanSupplier state);
-        }
-
-        interface RunInvokable
-        {
-            void invokeSequence();
-        }
-
-        interface GetPostMayWake<T> extends GetPostMaySleep<T>
-        {
-            GetPostMaySleep<T> andWakeOthers();
-
-            GetPostMaySleep<T> andWakeOthersIf(Predicate<T> predicate);
-        }
-
-        interface GetPostMaySleep<T> extends GetInvokable<T>
-        {
-            GetInvokable<T> thenSleepUntil(BooleanSupplier state);
-        }
-
-        interface GetInvokable<T>
-        {
-            T invokeSequence();
-        }
-    }
-
-    private static final class PreChoice extends ActionChoice implements Definition.Pre
-    {
-        private PreChoice(@NonNull Synchronizer.Lock lock)
-        {
-            super(lock, null);
+                lock.sleepUntil(postState);
+            }
         }
 
         @Override
-        public Definition.Action sleepUntil(BooleanSupplier state)
+        public SynchronizerDsl.RunPostMaySleep andWakeOthers()
         {
-            return ActionChoice.builder()
-                .lock(lock)
-                .preState(state)
-                .build();
+            return withWakeOthers(true);
+        }
+
+        @Override
+        public SynchronizerDsl.RunInvokable thenSleepUntil(BooleanSupplier state)
+        {
+            return withPostState(state);
+        }
+    }
+
+    @With
+    @Builder
+    private static final class GetAction<T> implements SynchronizerDsl.GetPostMayWake<T>
+    {
+        @NonNull
+        private final Lock lock;
+
+        private final BooleanSupplier preState;
+
+        @NonNull
+        private final Supplier<T> getter;
+
+        private final Predicate<T> wakeOthersPredicate;
+
+        private final BooleanSupplier postState;
+
+        @Override
+        public T invoke()
+        {
+            synchronized (lock)
+            {
+                lock.sleepUntil(preState);
+
+                T result = getter.get();
+
+                if (wakeOthersPredicate != null && wakeOthersPredicate.test(result))
+                {
+                    lock.notifyAll();
+                }
+
+                lock.sleepUntil(postState);
+
+                return result;
+            }
+        }
+
+        @Override
+        public SynchronizerDsl.GetPostMaySleep<T> andWakeOthers()
+        {
+            return andWakeOthersIf(t -> true);
+        }
+
+        @Override
+        public SynchronizerDsl.GetPostMaySleep<T> andWakeOthersIf(Predicate<T> predicate)
+        {
+            return withWakeOthersPredicate(predicate);
+        }
+
+        @Override
+        public SynchronizerDsl.GetInvokable<T> thenSleepUntil(BooleanSupplier state)
+        {
+            return withPostState(state);
         }
     }
 
     @Builder
-    private static class ActionChoice implements Definition.Action
+    private static class ActionChoice implements SynchronizerDsl.Action
     {
         @NonNull
         protected final Lock lock;
@@ -121,7 +156,7 @@ public final class Synchronizer
         private final BooleanSupplier preState;
 
         @Override
-        public Definition.RunPostMayWake run(Runnable runnable)
+        public SynchronizerDsl.RunPostMayWake run(Runnable runnable)
         {
             return RunAction.builder()
                 .lock(lock)
@@ -131,7 +166,7 @@ public final class Synchronizer
         }
 
         @Override
-        public <T> Definition.GetPostMayWake<T> get(Supplier<T> getter)
+        public <T> SynchronizerDsl.GetPostMayWake<T> get(Supplier<T> getter)
         {
             return GetAction.<T>builder().lock(lock)
                 .preState(preState)
@@ -170,112 +205,32 @@ public final class Synchronizer
         }
     }
 
-    @With
-    @Builder
-    private static final class RunAction implements Definition.RunPostMayWake
-    {
-        @NonNull
-        private final Lock lock;
-
-        private final BooleanSupplier preState;
-
-        @NonNull
-        private final Runnable runnable;
-
-        private final BooleanSupplier postState;
-
-        private final boolean wakeOthers;
-
-        @Override
-        public void invokeSequence()
-        {
-            synchronized (lock)
-            {
-                lock.sleepUntil(preState);
-
-                runnable.run();
-
-                if (wakeOthers)
-                {
-                    lock.notifyAll();
-                }
-
-                lock.sleepUntil(postState);
-            }
-        }
-
-        @Override
-        public Definition.RunPostMaySleep andWakeOthers()
-        {
-            return withWakeOthers(true);
-        }
-
-        @Override
-        public Definition.RunInvokable thenSleepUntil(BooleanSupplier state)
-        {
-            return withPostState(state);
-        }
-    }
-
-    @With
-    @Builder
-    private static final class GetAction<T> implements Definition.GetPostMayWake<T>
-    {
-        @NonNull
-        private final Lock lock;
-
-        private final BooleanSupplier preState;
-
-        @NonNull
-        private final Supplier<T> getter;
-
-        private final Predicate<T> wakeOthersPredicate;
-
-        private final BooleanSupplier postState;
-
-        @Override
-        public T invokeSequence()
-        {
-            synchronized (lock)
-            {
-                lock.sleepUntil(preState);
-
-                T result = getter.get();
-
-                if (wakeOthersPredicate != null && wakeOthersPredicate.test(result))
-                {
-                    lock.notifyAll();
-                }
-
-                lock.sleepUntil(postState);
-
-                return result;
-            }
-        }
-
-        @Override
-        public Definition.GetPostMaySleep<T> andWakeOthers()
-        {
-            return andWakeOthersIf(t -> true);
-        }
-
-        @Override
-        public Definition.GetPostMaySleep<T> andWakeOthersIf(Predicate<T> predicate)
-        {
-            return withWakeOthersPredicate(predicate);
-        }
-
-        @Override
-        public Definition.GetInvokable<T> thenSleepUntil(BooleanSupplier state)
-        {
-            return withPostState(state);
-        }
-    }
-
     private final Lock lock = new Lock();
 
-    public Definition.Pre buildSequenceOf()
+    @Override
+    public SynchronizerDsl.RunPostMayWake run(Runnable runnable)
     {
-        return new PreChoice(lock);
+        return actionChoiceBuilder().build()
+            .run(runnable);
+    }
+
+    @Override
+    public <T> SynchronizerDsl.GetPostMayWake<T> get(Supplier<T> getter)
+    {
+        return actionChoiceBuilder().build()
+            .get(getter);
+    }
+
+    @Override
+    public SynchronizerDsl.Action sleepUntil(BooleanSupplier state)
+    {
+        return actionChoiceBuilder().preState(state)
+            .build();
+    }
+
+    private ActionChoice.ActionChoiceBuilder actionChoiceBuilder()
+    {
+        return ActionChoice.builder()
+            .lock(lock);
     }
 }

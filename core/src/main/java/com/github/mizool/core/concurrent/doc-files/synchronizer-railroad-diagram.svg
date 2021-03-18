@@ -1,4 +1,4 @@
-<svg class="railroad-diagram" width="846" height="162" viewBox="0 0 846 162" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg class="railroad-diagram" width="778" height="162" viewBox="0 0 778 162" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <g transform="translate(.5 .5)">
         <g>
             <path d="M20 41v20m10 -20v20m-10 -10h20"></path>
@@ -112,12 +112,12 @@
         <path d="M647 51h10"></path>
         <g class="non-terminal ">
             <path d="M657 51h0"></path>
-            <path d="M796 51h0"></path>
-            <rect x="657" y="40" width="139" height="22"></rect>
-            <text x="726.5" y="55">invokeSequence</text>
+            <path d="M728 51h0"></path>
+            <rect x="657" y="40" width="71" height="22"></rect>
+            <text x="692.5" y="55">invoke</text>
         </g>
-        <path d="M796 51h10"></path>
-        <path d="M 806 51 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
+        <path d="M728 51h10"></path>
+        <path d="M 738 51 h 20 m -10 -10 v 20 m 10 -20 v 20"></path>
     </g>
     <style>
         svg {

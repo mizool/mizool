@@ -218,8 +218,7 @@ public final class BufferedStreamAdapter<F, V>
         @Override
         public boolean tryAdvance(Consumer<? super V> action)
         {
-            ValueHolder<V> valueHolder = synchronizer.buildSequenceOf()
-                .sleepUntil(resultOrCompletion())
+            ValueHolder<V> valueHolder = synchronizer.sleepUntil(resultOrCompletion())
                 .get(() -> {
                     if (resultsAvailable())
                     {
@@ -228,7 +227,7 @@ public final class BufferedStreamAdapter<F, V>
                     return null;
                 })
                 .andWakeOthersIf(Objects::nonNull)
-                .invokeSequence();
+                .invoke();
 
             boolean valueEmitted = false;
             if (valueHolder != null)
@@ -303,40 +302,38 @@ public final class BufferedStreamAdapter<F, V>
              * Unlike convertFutureResultToValueHolder(), we are dealing with "synchronous" exceptions here that we
              * don't need to unwrap.
              */
-            synchronizer.buildSequenceOf()
-                .run(() -> results.add(new ValueHolder<>(throwable)))
+            synchronizer.run(() -> results.add(new ValueHolder<>(throwable)))
                 .andWakeOthers()
-                .invokeSequence();
+                .invoke();
         }
 
-        synchronizer.buildSequenceOf()
-            .run(() -> streamDepleted.set(true))
+        synchronizer.run(() -> streamDepleted.set(true))
             .andWakeOthers()
-            .invokeSequence();
+            .invoke();
     }
 
     private void consumeFuture(F future)
     {
-        synchronizer.buildSequenceOf()
-            .run(() -> {
-                runningFutures.incrementAndGet();
-                listenerAdder.accept(future, this::handleFutureResult);
-            })
+        Runnable consumption = () -> {
+            runningFutures.incrementAndGet();
+            listenerAdder.accept(future, this::handleFutureResult);
+        };
+        synchronizer.run(consumption)
             .thenSleepUntil(capacityAvailable())
-            .invokeSequence();
+            .invoke();
     }
 
     private void handleFutureResult(V value, Throwable throwable)
     {
-        synchronizer.buildSequenceOf()
-            .run(() -> {
-                runningFutures.decrementAndGet();
+        Runnable handling = () -> {
+            runningFutures.decrementAndGet();
 
-                ValueHolder<V> valueHolder = convertFutureResultToValueHolder(value, throwable);
-                results.add(valueHolder);
-            })
+            ValueHolder<V> valueHolder = convertFutureResultToValueHolder(value, throwable);
+            results.add(valueHolder);
+        };
+        synchronizer.run(handling)
             .andWakeOthers()
-            .invokeSequence();
+            .invoke();
     }
 
     private ValueHolder<V> convertFutureResultToValueHolder(V value, Throwable throwable)
