@@ -20,10 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import com.github.mizool.core.MetaInfServices;
-import com.github.mizool.core.Streams;
-import com.github.mizool.core.exception.CodeInconsistencyException;
-import com.google.common.collect.ImmutableList;
 
 @RequiredArgsConstructor
 public class PasswordHashTool
@@ -43,7 +39,8 @@ public class PasswordHashTool
             }
             else
             {
-                PasswordHashTool passwordHashTool = new PasswordHashTool(getDefaultHasher(), parameters.getPassword());
+                PasswordHashTool passwordHashTool = new PasswordHashTool(PasswordHasherRegistry.getDefaultHasher(),
+                    parameters.getPassword());
 
                 String digest = passwordHashTool.getDigest();
                 if (digest != null)
@@ -60,24 +57,6 @@ public class PasswordHashTool
 
     private final PasswordHasher passwordHasher;
     private final char[] plainTextPassword;
-
-    private static PasswordHasher getDefaultHasher()
-    {
-        Iterable<PasswordHasher> hasherInstances = MetaInfServices.instances(PasswordHasher.class);
-        ImmutableList<PasswordHasher> defaultPasswordHashers = Streams.sequential(hasherInstances)
-            .collect(ImmutableList.toImmutableList());
-        if (defaultPasswordHashers.isEmpty())
-        {
-            throw new CodeInconsistencyException(
-                "No hasher instances for PasswordHasher, one should be registered as default");
-        }
-        if (defaultPasswordHashers.size() > 1)
-        {
-            throw new CodeInconsistencyException(
-                "There are several hasher instances for PasswordHasher, only one should be registered as default");
-        }
-        return defaultPasswordHashers.stream().findFirst().get();
-    }
 
     private String getDigest()
     {

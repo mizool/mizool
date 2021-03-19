@@ -22,6 +22,10 @@ import javax.inject.Inject;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.MetaInfServices;
+import com.github.mizool.core.Streams;
+import com.github.mizool.core.exception.CodeInconsistencyException;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
@@ -33,5 +37,23 @@ public class PasswordHasherRegistry
     {
         return Iterables.getOnlyElement(Iterables.filter(passwordHashers,
             passwordHasher -> passwordHasher.isResponsibleFor(algorithm)));
+    }
+
+    public static PasswordHasher getDefaultHasher()
+    {
+        Iterable<PasswordHasher> hasherInstances = MetaInfServices.instances(PasswordHasher.class);
+        ImmutableList<PasswordHasher> defaultPasswordHashers = Streams.sequential(hasherInstances)
+            .collect(ImmutableList.toImmutableList());
+        if (defaultPasswordHashers.isEmpty())
+        {
+            throw new CodeInconsistencyException(
+                "No hasher instances for PasswordHasher, one should be registered as default");
+        }
+        if (defaultPasswordHashers.size() > 1)
+        {
+            throw new CodeInconsistencyException(
+                "There are several hasher instances for PasswordHasher, only one should be registered as default");
+        }
+        return defaultPasswordHashers.stream().findFirst().get();
     }
 }
