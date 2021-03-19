@@ -30,14 +30,16 @@ import javax.crypto.spec.PBEKeySpec;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import org.kohsuke.MetaInfServices;
+
 import com.github.mizool.core.configuration.Config;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 @Slf4j
-@Deprecated
-public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
+@MetaInfServices
+public class Pbkdf2WithHmacSha512Hasher implements PasswordHasher
 {
     @Data
     private static class Digest
@@ -66,10 +68,10 @@ public class Pbkdf2WithHmacSha1Hasher implements PasswordHasher
         }
     }
 
-    public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
+    public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA512";
 
     private static final int ITERATIONS_FOR_NEW_PASSWORDS = Config.systemProperties()
-        .child(Pbkdf2WithHmacSha1Hasher.class.getName())
+        .child(Pbkdf2WithHmacSha512Hasher.class.getName())
         .child("iterations")
         .intValue()
         .read()
