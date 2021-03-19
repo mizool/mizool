@@ -16,6 +16,8 @@
  */
 package com.github.mizool.core.password;
 
+import java.util.Optional;
+
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
@@ -44,16 +46,18 @@ public class PasswordHasherRegistry
         Iterable<PasswordHasher> hasherInstances = MetaInfServices.instances(PasswordHasher.class);
         ImmutableList<PasswordHasher> defaultPasswordHashers = Streams.sequential(hasherInstances)
             .collect(ImmutableList.toImmutableList());
-        if (defaultPasswordHashers.isEmpty())
+
+        Optional<PasswordHasher> defaultHasher = defaultPasswordHashers.stream().findFirst();
+        if (!defaultHasher.isPresent())
         {
             throw new CodeInconsistencyException(
-                "No hasher instances for PasswordHasher, one should be registered as default");
+                "No hasher instances for PasswordHasher found, one should be registered with META-INF services");
         }
         if (defaultPasswordHashers.size() > 1)
         {
             throw new CodeInconsistencyException(
-                "There are several hasher instances for PasswordHasher, only one should be registered as default");
+                "Found several hasher instances for PasswordHasher, only one should be registered with META-INF services");
         }
-        return defaultPasswordHashers.stream().findFirst().get();
+        return defaultHasher.get();
     }
 }
