@@ -48,7 +48,8 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
 
         public static Pbkdf2WithHmacShaHasher.Digest valueOf(String digest)
         {
-            List<String> parts = Splitter.on(SEPARATOR).splitToList(digest);
+            List<String> parts = Splitter.on(SEPARATOR)
+                .splitToList(digest);
             int iterations = Integer.parseInt(parts.get(0));
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] salt = decoder.decode(parts.get(1));
@@ -60,7 +61,8 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
         public String toString()
         {
             Base64.Encoder encoder = Base64.getEncoder();
-            return Joiner.on(SEPARATOR).join(iterations, encoder.encodeToString(salt), encoder.encodeToString(hash));
+            return Joiner.on(SEPARATOR)
+                .join(iterations, encoder.encodeToString(salt), encoder.encodeToString(hash));
         }
     }
 
@@ -97,7 +99,8 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
         {
             SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algorithmName);
             long startTime = System.currentTimeMillis();
-            result = secretKeyFactory.generateSecret(keySpec).getEncoded();
+            result = secretKeyFactory.generateSecret(keySpec)
+                .getEncoded();
             long elapsedTime = System.currentTimeMillis() - startTime;
             log.debug("Hashing with {} iterations took {}ms", iterations, elapsedTime);
         }

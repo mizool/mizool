@@ -47,7 +47,8 @@ public class PasswordHasherRegistry
         ImmutableList<PasswordHasher> defaultPasswordHashers = Streams.sequential(hasherInstances)
             .collect(ImmutableList.toImmutableList());
 
-        Optional<PasswordHasher> defaultHasher = defaultPasswordHashers.stream().findFirst();
+        Optional<PasswordHasher> defaultHasher = defaultPasswordHashers.stream()
+            .findFirst();
         if (!defaultHasher.isPresent())
         {
             throw new CodeInconsistencyException(

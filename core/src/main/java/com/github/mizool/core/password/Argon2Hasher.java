@@ -25,10 +25,20 @@ public class Argon2Hasher implements PasswordHasher
 {
     public static final String ALGORITHM_NAME = "Argon2";
 
-    private static final PropertyNode CONFIG = Config.systemProperties().child(Argon2Hasher.class.getName());
-    private static final int ITERATIONS_FOR_NEW_PASSWORDS = CONFIG.child("iterations").intValue().read().orElse(10);
-    private static final int MEMORY = CONFIG.child("memory").intValue().read().orElse(65536);
-    private static final int PARALLELISM = CONFIG.child("parallelism").intValue().read().orElse(1);
+    private static final PropertyNode CONFIG = Config.systemProperties()
+        .child(Argon2Hasher.class.getName());
+    private static final int ITERATIONS_FOR_NEW_PASSWORDS = CONFIG.child("iterations")
+        .intValue()
+        .read()
+        .orElse(10);
+    private static final int MEMORY = CONFIG.child("memory")
+        .intValue()
+        .read()
+        .orElse(65536);
+    private static final int PARALLELISM = CONFIG.child("parallelism")
+        .intValue()
+        .read()
+        .orElse(1);
 
     private final Argon2 argon2 = Argon2Factory.create();
 
