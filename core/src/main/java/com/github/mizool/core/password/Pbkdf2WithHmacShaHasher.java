@@ -84,7 +84,6 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
             result = secretKeyFactory.generateSecret(keySpec).getEncoded();
             long elapsedTime = System.currentTimeMillis() - startTime;
             log.debug("Hashing with {} iterations took {}ms", iterations, elapsedTime);
-            System.out.println("time: " + elapsedTime);
         }
         catch (NoSuchAlgorithmException | InvalidKeySpecException e)
         {
