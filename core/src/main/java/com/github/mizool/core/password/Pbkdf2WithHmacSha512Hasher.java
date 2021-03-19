@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2020 incub8 Software Labs GmbH
- * Copyright 2017-2020 protel Hotelsoftware GmbH
+ * Copyright 2021 incub8 Software Labs GmbH
+ * Copyright 2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
