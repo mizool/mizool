@@ -14,13 +14,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.core.password;
+package com.github.mizool.tool.password;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.github.mizool.core.password.PasswordHasher;
+import com.github.mizool.core.password.ServiceLoaderInstanceImpl;
 
+@Slf4j
 @RequiredArgsConstructor
 public class PasswordHashTool
 {
@@ -39,14 +43,18 @@ public class PasswordHashTool
             }
             else
             {
-                PasswordHashTool passwordHashTool = new PasswordHashTool(PasswordHasherRegistry.getDefaultHasher(),
-                    parameters.getPassword());
+                ServiceLoaderInstanceImpl<PasswordHasher>
+                    instances
+                    = new ServiceLoaderInstanceImpl<>(PasswordHasher.class);
+                instances.forEach(hasher -> {
+                    PasswordHashTool passwordHashTool = new PasswordHashTool(hasher, parameters.getPassword());
 
-                String digest = passwordHashTool.getDigest();
-                if (digest != null)
-                {
-                    System.out.println("Algorithm: " + passwordHashTool.getAlgorithmName() + " Digest: " + digest);
-                }
+                    String digest = passwordHashTool.getDigest();
+                    if (digest != null)
+                    {
+                        log.info("Algorithm: {}  Digest: {}", passwordHashTool.getAlgorithmName(), digest);
+                    }
+                });
             }
         }
         catch (ParameterException ignored)

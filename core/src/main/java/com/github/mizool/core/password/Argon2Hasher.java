@@ -16,11 +16,14 @@
  */
 package com.github.mizool.core.password;
 
+import org.kohsuke.MetaInfServices;
+
 import com.github.mizool.core.configuration.Config;
 import com.github.mizool.core.configuration.PropertyNode;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
+@MetaInfServices
 public class Argon2Hasher implements PasswordHasher
 {
     public static final String ALGORITHM_NAME = "Argon2";

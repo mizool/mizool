@@ -16,23 +16,25 @@
  */
 package com.github.mizool.core.password;
 
-import java.util.Optional;
-
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import com.github.mizool.core.MetaInfServices;
-import com.github.mizool.core.Streams;
-import com.github.mizool.core.exception.CodeInconsistencyException;
-import com.google.common.collect.ImmutableList;
+import com.github.mizool.core.configuration.Config;
 import com.google.common.collect.Iterables;
 
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
 public class PasswordHasherRegistry
 {
+    private static final String DEFAULT_HASHING_ALGORITHM = Config.systemProperties()
+        .child(PasswordHasherRegistry.class.getName())
+        .child("defaultAlgorithm")
+        .stringValue()
+        .read()
+        .orElse(Pbkdf2WithHmacSha512Hasher.ALGORITHM_NAME);
+
     private final Instance<PasswordHasher> passwordHashers;
 
     public PasswordHasher getHasher(String algorithm)
@@ -41,24 +43,9 @@ public class PasswordHasherRegistry
             passwordHasher -> passwordHasher.isResponsibleFor(algorithm)));
     }
 
-    public static PasswordHasher getDefaultHasher()
+    public PasswordHasher getDefaultHasher()
     {
-        Iterable<PasswordHasher> hasherInstances = MetaInfServices.instances(PasswordHasher.class);
-        ImmutableList<PasswordHasher> defaultPasswordHashers = Streams.sequential(hasherInstances)
-            .collect(ImmutableList.toImmutableList());
-
-        Optional<PasswordHasher> defaultHasher = defaultPasswordHashers.stream()
-            .findFirst();
-        if (!defaultHasher.isPresent())
-        {
-            throw new CodeInconsistencyException(
-                "No hasher instances for PasswordHasher found, one should be registered with META-INF services");
-        }
-        if (defaultPasswordHashers.size() > 1)
-        {
-            throw new CodeInconsistencyException(
-                "Found several hasher instances for PasswordHasher, only one should be registered with META-INF services");
-        }
-        return defaultHasher.get();
+        return Iterables.getOnlyElement(Iterables.filter(passwordHashers,
+            passwordHasher -> passwordHasher.getAlgorithmName().equals(DEFAULT_HASHING_ALGORITHM)));
     }
 }

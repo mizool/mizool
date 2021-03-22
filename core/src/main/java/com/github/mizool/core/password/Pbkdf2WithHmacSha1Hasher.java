@@ -18,10 +18,13 @@ package com.github.mizool.core.password;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.kohsuke.MetaInfServices;
+
 import com.github.mizool.core.configuration.Config;
 
 @Slf4j
 @Deprecated
+@MetaInfServices(PasswordHasher.class)
 public class Pbkdf2WithHmacSha1Hasher extends Pbkdf2WithHmacShaHasher
 {
     public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
