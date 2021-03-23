@@ -73,21 +73,34 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
  */
 public final class Synchronizer implements SynchronizerApi.SleepRunGet
 {
-    @With
-    @Builder
     private static final class RunAction implements SynchronizerApi.Run.WakeSleepInvoke
     {
-        @NonNull
         private final Lock lock;
 
         private final BooleanSupplier preState;
 
-        @NonNull
         private final Runnable runnable;
 
+        @With
         private final BooleanSupplier postState;
 
+        @With
         private final boolean wakeOthers;
+
+        @Builder
+        public RunAction(
+            @NonNull Lock lock,
+            BooleanSupplier preState,
+            @NonNull Runnable runnable,
+            BooleanSupplier postState,
+            boolean wakeOthers)
+        {
+            this.lock = lock;
+            this.preState = useValueOrDefault(preState, () -> true);
+            this.runnable = runnable;
+            this.postState = useValueOrDefault(postState, () -> true);
+            this.wakeOthers = wakeOthers;
+        }
 
         @Override
         public void invoke()
@@ -120,21 +133,34 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
     }
 
-    @With
     @Builder
     private static final class GetAction<T> implements SynchronizerApi.Get.WakeSleepInvoke<T>
     {
-        @NonNull
         private final Lock lock;
 
         private final BooleanSupplier preState;
 
-        @NonNull
         private final Supplier<T> getter;
 
+        @With
         private final Predicate<T> wakeOthersPredicate;
 
+        @With
         private final BooleanSupplier postState;
+
+        public GetAction(
+            @NonNull Lock lock,
+            BooleanSupplier preState,
+            @NonNull Supplier<T> getter,
+            Predicate<T> wakeOthersPredicate,
+            BooleanSupplier postState)
+        {
+            this.lock = lock;
+            this.preState = useValueOrDefault(preState, () -> true);
+            this.getter = getter;
+            this.wakeOthersPredicate = useValueOrDefault(wakeOthersPredicate, t -> false);
+            this.postState = useValueOrDefault(postState, () -> true);
+        }
 
         @Override
         public T invoke()
@@ -145,7 +171,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
 
                 T result = getter.get();
 
-                if (wakeOthersPredicate != null && wakeOthersPredicate.test(result))
+                if (wakeOthersPredicate.test(result))
                 {
                     lock.notifyAll();
                 }
@@ -206,14 +232,8 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     @RequiredArgsConstructor
     private static class Lock
     {
-        protected void sleepUntil(BooleanSupplier state)
+        protected void sleepUntil(@NonNull BooleanSupplier state)
         {
-            // TODO get rid of this: add @NonNull to state param and fields, use ()->true instead
-            if (state == null)
-            {
-                return;
-            }
-
             // The caller should already hold this lock, so this is a no-op. We keep it to make code analyzers happy.
             synchronized (this)
             {
@@ -232,6 +252,15 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
                 }
             }
         }
+    }
+
+    private static <T> T useValueOrDefault(T value, @NonNull T defaultValue)
+    {
+        if (value != null)
+        {
+            return value;
+        }
+        return defaultValue;
     }
 
     private final Lock lock;
