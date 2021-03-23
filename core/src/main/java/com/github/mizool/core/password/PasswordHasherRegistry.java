@@ -46,6 +46,7 @@ public class PasswordHasherRegistry
     public PasswordHasher getDefaultHasher()
     {
         return Iterables.getOnlyElement(Iterables.filter(passwordHashers,
-            passwordHasher -> passwordHasher.getAlgorithmName().equals(DEFAULT_HASHING_ALGORITHM)));
+            passwordHasher -> passwordHasher.getAlgorithmName()
+                .equals(DEFAULT_HASHING_ALGORITHM)));
     }
 }
