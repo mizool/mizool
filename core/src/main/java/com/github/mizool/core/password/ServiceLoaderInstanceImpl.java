@@ -29,12 +29,12 @@ import com.github.mizool.core.MetaInfServices;
  * <br>
  * <h3>Usage</h3>
  * For Guice, add a provider method to your module like this:<br>
- * <pre>{@code
- *     @Provides
- *     @Singleton
- *     private Instance<QuuxInterfaceOrClass> provideQuux()
+ * <pre>{
+ *     &#64;Provides
+ *     &#64;Singleton
+ *     private Instance&#60;QuuxInterfaceOrClass&#62; provideQuux()
  *     {
- *         return new ServiceLoaderInstanceImpl<>(QuuxInterfaceOrClass.class);
+ *         return new ServiceLoaderInstanceImpl&#60;&#62;(QuuxInterfaceOrClass.class);
  *     }
  * }</pre>
  *
