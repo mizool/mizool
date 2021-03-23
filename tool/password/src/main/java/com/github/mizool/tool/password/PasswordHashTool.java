@@ -21,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.github.mizool.core.MetaInfServices;
 import com.github.mizool.core.password.PasswordHasher;
-import com.github.mizool.core.password.ServiceLoaderInstanceImpl;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,9 +43,7 @@ public class PasswordHashTool
             }
             else
             {
-                ServiceLoaderInstanceImpl<PasswordHasher>
-                    instances
-                    = new ServiceLoaderInstanceImpl<>(PasswordHasher.class);
+                Iterable<PasswordHasher> instances = MetaInfServices.instances(PasswordHasher.class);
                 instances.forEach(hasher -> {
                     PasswordHashTool passwordHashTool = new PasswordHashTool(hasher, parameters.getPassword());
 
