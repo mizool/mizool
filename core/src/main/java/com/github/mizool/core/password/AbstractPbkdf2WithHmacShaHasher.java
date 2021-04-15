@@ -35,7 +35,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
 @Slf4j
-public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
+public abstract class AbstractPbkdf2WithHmacShaHasher implements PasswordHasher
 {
     @Data
     static class Digest
@@ -46,7 +46,7 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
         private final byte[] salt;
         private final byte[] hash;
 
-        public static Pbkdf2WithHmacShaHasher.Digest valueOf(String digest)
+        public static AbstractPbkdf2WithHmacShaHasher.Digest valueOf(String digest)
         {
             List<String> parts = Splitter.on(SEPARATOR)
                 .splitToList(digest);
@@ -54,7 +54,7 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
             Base64.Decoder decoder = Base64.getDecoder();
             byte[] salt = decoder.decode(parts.get(1));
             byte[] hash = decoder.decode(parts.get(2));
-            return new Pbkdf2WithHmacShaHasher.Digest(iterations, salt, hash);
+            return new AbstractPbkdf2WithHmacShaHasher.Digest(iterations, salt, hash);
         }
 
         @Override
@@ -84,11 +84,11 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
         return result;
     }
 
-    Pbkdf2WithHmacShaHasher.Digest calculateDigest(
+    AbstractPbkdf2WithHmacShaHasher.Digest calculateDigest(
         char[] plaintextPassword, byte[] salt, int iterations, String algorithmName)
     {
         byte[] hash = calculateHash(plaintextPassword, salt, iterations, algorithmName);
-        return new Pbkdf2WithHmacShaHasher.Digest(iterations, salt, hash);
+        return new AbstractPbkdf2WithHmacShaHasher.Digest(iterations, salt, hash);
     }
 
     private byte[] calculateHash(char[] plaintextPassword, byte[] salt, int iterations, String algorithmName)
@@ -127,8 +127,8 @@ public abstract class Pbkdf2WithHmacShaHasher implements PasswordHasher
 
     public boolean passwordsMatch(char[] submittedPlaintext, String digest)
     {
-        Pbkdf2WithHmacShaHasher.Digest knownDigest = Pbkdf2WithHmacShaHasher.Digest.valueOf(digest);
-        Pbkdf2WithHmacShaHasher.Digest submittedDigest = calculateDigest(submittedPlaintext,
+        AbstractPbkdf2WithHmacShaHasher.Digest knownDigest = AbstractPbkdf2WithHmacShaHasher.Digest.valueOf(digest);
+        AbstractPbkdf2WithHmacShaHasher.Digest submittedDigest = calculateDigest(submittedPlaintext,
             knownDigest.getSalt(),
             knownDigest.getIterations(),
             getAlgorithmName());

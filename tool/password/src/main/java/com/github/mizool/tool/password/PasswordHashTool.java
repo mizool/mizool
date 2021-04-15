@@ -44,33 +44,19 @@ public class PasswordHashTool
             else
             {
                 Iterable<PasswordHasher> instances = MetaInfServices.instances(PasswordHasher.class);
-                instances.forEach(hasher -> {
-                    PasswordHashTool passwordHashTool = new PasswordHashTool(hasher, parameters.getPassword());
-
-                    String digest = passwordHashTool.getDigest();
-                    if (digest != null)
-                    {
-                        log.info("Algorithm: {}  Digest: {}", passwordHashTool.getAlgorithmName(), digest);
-                    }
-                });
+                instances.forEach(hasher -> printDigest(hasher, parameters.getPassword()));
             }
         }
-        catch (ParameterException ignored)
+        catch (ParameterException e)
         {
+            log.debug("Invalid parameter", e);
             jCommander.usage();
         }
     }
 
-    private final PasswordHasher passwordHasher;
-    private final char[] plainTextPassword;
-
-    private String getDigest()
+    static void printDigest(PasswordHasher hasher, char[] cleartextPassword)
     {
-        return passwordHasher.hashPassword(plainTextPassword);
-    }
-
-    private String getAlgorithmName()
-    {
-        return passwordHasher.getAlgorithmName();
+        String digest = hasher.hashPassword(cleartextPassword);
+        log.info("Algorithm: {}  Digest: {}", hasher.getAlgorithmName(), digest);
     }
 }

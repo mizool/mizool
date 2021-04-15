@@ -24,7 +24,7 @@ import com.github.mizool.core.configuration.Config;
 
 @Slf4j
 @MetaInfServices(PasswordHasher.class)
-public class Pbkdf2WithHmacSha512Hasher extends Pbkdf2WithHmacShaHasher
+public class Pbkdf2WithHmacSha512Hasher extends AbstractPbkdf2WithHmacShaHasher
 {
     public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA512";
 
@@ -33,7 +33,7 @@ public class Pbkdf2WithHmacSha512Hasher extends Pbkdf2WithHmacShaHasher
         .child("iterations")
         .intValue()
         .read()
-        .orElse(121212);
+        .orElse(122_000);
 
     @Override
     int getIterationsForNewPasswords()
