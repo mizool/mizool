@@ -1,6 +1,6 @@
-/**
- * Copyright 2017 incub8 Software Labs GmbH
- * Copyright 2017 protel Hotelsoftware GmbH
+/*
+ * Copyright 2017-2021 incub8 Software Labs GmbH
+ * Copyright 2017-2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class PasswordHashToolParameters
 {
     @Parameter(names = "-help", description = "Displays this help screen", help = true)
     @Getter
-    private boolean help = false;
+    private boolean help;
 
     @Parameter(description = "password", required = true)
     private List<String> password;
