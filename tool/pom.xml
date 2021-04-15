@@ -8,17 +8,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <groupId>com.github.mizool.technology</groupId>
-    <artifactId>technology</artifactId>
+    <groupId>com.github.mizool.tool</groupId>
+    <artifactId>tool</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>aws</module>
-        <module>cache</module>
-        <module>cassandra</module>
-        <module>gson</module>
-        <module>jackson</module>
-        <module>sql</module>
-        <module>web</module>
+        <module>password</module>
     </modules>
 </project>

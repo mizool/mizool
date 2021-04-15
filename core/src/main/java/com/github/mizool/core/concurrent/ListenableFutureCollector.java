@@ -1,6 +1,6 @@
 /*
- * Copyright 2018-2020 incub8 Software Labs GmbH
- * Copyright 2018-2020 protel Hotelsoftware GmbH
+ * Copyright 2018-2021 incub8 Software Labs GmbH
+ * Copyright 2018-2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
-import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -60,7 +59,7 @@ import com.google.common.util.concurrent.SettableFuture;
  * stream.map(ResultVoidingFuture::new).collect(ListenableFutureCollector.concurrent(maximumConcurrentFutures)).get();}</pre>
  *
  * @deprecated This class does not propagate exceptions consistently and will be removed. Use {@link FutureStreamJoiner}
- *     instead.
+ * instead.
  */
 @Deprecated
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -132,11 +131,23 @@ public final class ListenableFutureCollector implements Collector<ListenableFutu
 
     private void accumulateAndWait(Void a, ListenableFuture<Void> future)
     {
-        Runnable accumulate = () -> {
+        synchronized (semaphore)
+        {
             verifyNoPreviousException();
             consumeFuture(future);
-        };
-        Threads.doAndWaitUntil(accumulate, capacityAvailable(), semaphore);
+
+            try
+            {
+                while (runningFutures.get() >= maximumConcurrentFutures)
+                {
+                    semaphore.wait();
+                }
+            }
+            catch (@SuppressWarnings("java:S2142") InterruptedException e)
+            {
+                Threads.rethrowInterrupt(e);
+            }
+        }
     }
 
     private void verifyNoPreviousException()
@@ -151,11 +162,6 @@ public final class ListenableFutureCollector implements Collector<ListenableFutu
     {
         runningFutures.incrementAndGet();
         Futures.addCallback(future, new Callback(), MoreExecutors.directExecutor());
-    }
-
-    private BooleanSupplier capacityAvailable()
-    {
-        return () -> runningFutures.get() < maximumConcurrentFutures;
     }
 
     @Override

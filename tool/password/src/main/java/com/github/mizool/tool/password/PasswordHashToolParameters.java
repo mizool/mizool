@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2017-2021 incub8 Software Labs GmbH
  * Copyright 2017-2021 protel Hotelsoftware GmbH
  *
@@ -14,15 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.core.password;
+package com.github.mizool.tool.password;
 
-public interface PasswordHasher
+import java.util.List;
+
+import lombok.Getter;
+
+import com.beust.jcommander.Parameter;
+
+class PasswordHashToolParameters
 {
-    boolean isResponsibleFor(String algorithm);
+    @Parameter(names = "-help", description = "Displays this help screen", help = true)
+    @Getter
+    private boolean help;
 
-    String hashPassword(char[] plaintextPassword);
+    @Parameter(description = "password", required = true)
+    private List<String> password;
 
-    String getAlgorithmName();
-
-    boolean passwordsMatch(char[] submittedPlaintext, String digest);
+    public char[] getPassword()
+    {
+        return password.get(0)
+            .toCharArray();
+    }
 }

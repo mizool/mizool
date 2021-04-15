@@ -1,6 +1,6 @@
 /*
- * Copyright 2018-2020 incub8 Software Labs GmbH
- * Copyright 2018-2020 protel Hotelsoftware GmbH
+ * Copyright 2018-2021 incub8 Software Labs GmbH
+ * Copyright 2018-2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,7 +121,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
     @Test(expectedExceptions = IllegalArgumentException.class)
     public void testLowerTaskLimitBoundary()
     {
-        runTest(null, 0);
+        runTest(Stream.of(), 0);
     }
 
     @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)

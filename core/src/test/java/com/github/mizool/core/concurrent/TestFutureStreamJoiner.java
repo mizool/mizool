@@ -23,14 +23,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import org.assertj.core.api.ThrowableAssert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -110,21 +106,6 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         }
     }
 
-    @RequiredArgsConstructor
-    private static class FailingSupplier<T> implements Supplier<T>
-    {
-        public static final String MESSAGE = "Failing by design.";
-
-        private final Class<? extends Throwable> throwableClass;
-
-        @Override
-        @SneakyThrows
-        public T get()
-        {
-            throw ExceptionTests.instantiateThrowable(throwableClass, MESSAGE);
-        }
-    }
-
     private static final int IMMEDIATE = 0;
     private static final int FAST = 100;
 
@@ -172,8 +153,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     {
         Stream<V> input = suite.stream()
             .map(this::toVoidResult);
-        Future<?> future = join(input, maximumConcurrentFutures);
-        return future;
+        return join(input, maximumConcurrentFutures);
     }
 
     protected abstract V join(Stream<V> input, int maximumConcurrentFutures);

@@ -6,17 +6,13 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>0.43</version>
+        <version>0.44</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>mizool-core</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
