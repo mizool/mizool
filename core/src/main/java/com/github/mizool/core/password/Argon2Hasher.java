@@ -1,6 +1,6 @@
 /*
- * Copyright 2020 incub8 Software Labs GmbH
- * Copyright 2020 protel Hotelsoftware GmbH
+ * Copyright 2020-2021 incub8 Software Labs GmbH
+ * Copyright 2020-2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
  */
 package com.github.mizool.core.password;
 
+import org.kohsuke.MetaInfServices;
+
 import com.github.mizool.core.configuration.Config;
 import com.github.mizool.core.configuration.PropertyNode;
 import de.mkammerer.argon2.Argon2;
 import de.mkammerer.argon2.Argon2Factory;
 
+@MetaInfServices
 public class Argon2Hasher implements PasswordHasher
 {
     public static final String ALGORITHM_NAME = "Argon2";
@@ -64,5 +67,11 @@ public class Argon2Hasher implements PasswordHasher
     public boolean passwordsMatch(char[] submittedPlaintext, String digest)
     {
         return argon2.verify(digest, submittedPlaintext);
+    }
+
+    @Override
+    public String getAlgorithmName()
+    {
+        return ALGORITHM_NAME;
     }
 }

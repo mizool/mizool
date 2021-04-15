@@ -78,6 +78,7 @@
         <module>bom</module>
         <module>core</module>
         <module>technology</module>
+        <module>tool</module>
     </modules>
 
     <scm>

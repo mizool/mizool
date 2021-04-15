@@ -1,6 +1,6 @@
 /*
- *  Copyright 2017-2018 incub8 Software Labs GmbH
- *  Copyright 2017-2018 protel Hotelsoftware GmbH
+ *  Copyright 2017-2021 incub8 Software Labs GmbH
+ *  Copyright 2017-2021 protel Hotelsoftware GmbH
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.github.mizool.core.password;
+package com.github.mizool.tool.password;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import com.github.mizool.core.MetaInfServices;
+import com.github.mizool.core.password.PasswordHasher;
 
+@Slf4j
 @RequiredArgsConstructor
 public class PasswordHashTool
 {
@@ -39,25 +43,20 @@ public class PasswordHashTool
             }
             else
             {
-                PasswordHashTool passwordHashTool = new PasswordHashTool(parameters.getPassword());
-                String digest = passwordHashTool.getDigest();
-                if (digest != null)
-                {
-                    System.out.println("Digest: " + digest);
-                }
+                Iterable<PasswordHasher> instances = MetaInfServices.instances(PasswordHasher.class);
+                instances.forEach(hasher -> printDigest(hasher, parameters.getPassword()));
             }
         }
-        catch (ParameterException ignored)
+        catch (ParameterException e)
         {
+            log.debug("Invalid parameter", e);
             jCommander.usage();
         }
     }
 
-    private final char[] plainTextPassword;
-
-    public final String getDigest()
+    static void printDigest(PasswordHasher hasher, char[] cleartextPassword)
     {
-        PasswordHasher passwordHasher = new Pbkdf2WithHmacSha1Hasher();
-        return passwordHasher.hashPassword(plainTextPassword);
+        String digest = hasher.hashPassword(cleartextPassword);
+        log.info("Algorithm: {}  Digest: {}", hasher.getAlgorithmName(), digest);
     }
 }

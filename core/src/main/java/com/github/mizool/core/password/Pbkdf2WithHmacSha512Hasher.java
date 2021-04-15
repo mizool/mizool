@@ -1,6 +1,6 @@
 /*
- * Copyright 2017-2021 incub8 Software Labs GmbH
- * Copyright 2017-2021 protel Hotelsoftware GmbH
+ * Copyright 2021 incub8 Software Labs GmbH
+ * Copyright 2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,22 +22,18 @@ import org.kohsuke.MetaInfServices;
 
 import com.github.mizool.core.configuration.Config;
 
-/**
- * @deprecated For newly saved passwords, use {@link Pbkdf2WithHmacSha512Hasher} instead. This hasher is kept to allow continued verification of old passwords.
- */
 @Slf4j
-@Deprecated
 @MetaInfServices(PasswordHasher.class)
-public class Pbkdf2WithHmacSha1Hasher extends AbstractPbkdf2WithHmacShaHasher
+public class Pbkdf2WithHmacSha512Hasher extends AbstractPbkdf2WithHmacShaHasher
 {
-    public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA1";
+    public static final String ALGORITHM_NAME = "PBKDF2WithHmacSHA512";
 
     private static final int ITERATIONS_FOR_NEW_PASSWORDS = Config.systemProperties()
-        .child(Pbkdf2WithHmacSha1Hasher.class.getName())
+        .child(Pbkdf2WithHmacSha512Hasher.class.getName())
         .child("iterations")
         .intValue()
         .read()
-        .orElse(65536);
+        .orElse(122_000);
 
     @Override
     int getIterationsForNewPasswords()
