@@ -50,7 +50,7 @@ public class Streams
         return (t, u) -> {
             if (!Objects.equals(t, u))
             {
-                throw new ReductionException("\"" + u.toString() + "\" is not equal to \"" + t.toString() + "\"");
+                throw new ReductionException("\"" + u + "\" is not equal to \"" + t + "\"");
             }
             return t;
         };
