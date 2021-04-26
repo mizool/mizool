@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.mizool.core.converter;
+package com.github.mizool.technology.jackson;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

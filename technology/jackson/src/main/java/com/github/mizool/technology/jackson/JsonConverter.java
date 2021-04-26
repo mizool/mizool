@@ -1,4 +1,4 @@
-package com.github.mizool.core.converter;
+package com.github.mizool.technology.jackson;
 
 import java.io.IOException;
 
