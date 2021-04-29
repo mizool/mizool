@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jooq.CloseableDSLContext;
-import org.jooq.DSLContext;
 import org.jooq.exception.DataAccessException;
 
 @Slf4j

@@ -19,8 +19,6 @@ package com.github.mizool.technology.sql.jooq;
 import lombok.experimental.UtilityClass;
 
 import org.jooq.CloseableDSLContext;
-import org.jooq.DSLContext;
-import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultCloseableDSLContext;
 
 @UtilityClass
