@@ -18,12 +18,15 @@ package com.github.mizool.technology.sql.jooq;
 
 import lombok.experimental.UtilityClass;
 
+import org.jooq.CloseableDSLContext;
 import org.jooq.Condition;
 import org.jooq.Table;
 import org.jooq.TableRecord;
 import org.jooq.UpdatableRecord;
 import org.jooq.exception.DataAccessException;
 
+import com.github.mizool.core.exception.ConflictingEntityException;
+import com.github.mizool.core.exception.ObjectNotFoundException;
 import com.github.mizool.core.exception.StoreLayerException;
 
 @UtilityClass
@@ -32,12 +35,16 @@ public class Records
     public <R extends TableRecord<R>> void insert(
         R record, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
     {
-        try
+        try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int insertedRows = DslContexts.obtain(mizoolConnectionProvider).executeInsert(record);
+            int insertedRows = dslContext
+                .insertInto(table)
+                .set(record)
+                .onDuplicateKeyIgnore()
+                .execute();
             if (insertedRows != 1)
             {
-                throw new StoreLayerException("No row was inserted into " + table.getName());
+                throw new ConflictingEntityException("No row was inserted into " + table.getName());
             }
         }
         catch (DataAccessException e)
@@ -49,9 +56,9 @@ public class Records
     public <R extends TableRecord<R>> void upsert(
         R record, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
     {
-        try
+        try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int upsertedRows = DslContexts.obtain(mizoolConnectionProvider)
+            int upsertedRows = dslContext
                 .insertInto(table)
                 .set(record)
                 .onDuplicateKeyUpdate()
@@ -71,16 +78,16 @@ public class Records
     public <R extends TableRecord<R>> void update(
         R record, Table<R> table, Condition condition, MizoolConnectionProvider mizoolConnectionProvider)
     {
-        try
+        try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int updatedRows = DslContexts.obtain(mizoolConnectionProvider)
+            int updatedRows = dslContext
                 .update(table)
                 .set(record)
                 .where(condition)
                 .execute();
             if (updatedRows != 1)
             {
-                throw new StoreLayerException("No row was updated in " + table.getName());
+                throw new ObjectNotFoundException("No row was updated in " + table.getName());
             }
         }
         catch (DataAccessException e)
@@ -89,12 +96,16 @@ public class Records
         }
     }
 
-    public <R extends UpdatableRecord<R>> int delete(
+    public <R extends UpdatableRecord<R>> void delete(
         R record, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
     {
-        try
+        try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            return DslContexts.obtain(mizoolConnectionProvider).executeDelete(record);
+            int deletedRows = dslContext.executeDelete(record);
+            if (deletedRows != 1)
+            {
+                throw new ObjectNotFoundException("No row was deleted in " + table.getName());
+            }
         }
         catch (DataAccessException e)
         {
