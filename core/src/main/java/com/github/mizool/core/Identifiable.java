@@ -18,5 +18,13 @@ package com.github.mizool.core;
 
 public interface Identifiable<T extends Identifiable>
 {
-    Identifier<T> getIdentifier();
+    default Identifier<T> getIdentifier()
+    {
+        return getId();
+    }
+
+    default Identifier<T> getId()
+    {
+        return getIdentifier();
+    }
 }
