@@ -1,6 +1,6 @@
 /**
- * Copyright 2018 incub8 Software Labs GmbH
- * Copyright 2018 protel Hotelsoftware GmbH
+ * Copyright 2018-2021 incub8 Software Labs GmbH
+ * Copyright 2018-2021 protel Hotelsoftware GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,5 +18,17 @@ package com.github.mizool.core;
 
 public interface Identifiable<T extends Identifiable>
 {
-    Identifier<T> getIdentifier();
+    /**
+     * @deprecated use getId() instead
+     */
+    @Deprecated
+    default Identifier<T> getIdentifier()
+    {
+        return getId();
+    }
+
+    default Identifier<T> getId()
+    {
+        return getIdentifier();
+    }
 }
