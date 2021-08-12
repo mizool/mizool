@@ -17,11 +17,11 @@ public class ErrorDto
         return createGenericError(null);
     }
 
-    static ErrorDto createGenericError(Map<String, String> parameters)
+    static ErrorDto createGenericError(Map<String, Object> parameters)
     {
         return new ErrorDto(GENERIC_ERROR_ID, parameters);
     }
 
     private final String errorId;
-    private final Map<String, String> parameters;
+    private final Map<String, Object> parameters;
 }
