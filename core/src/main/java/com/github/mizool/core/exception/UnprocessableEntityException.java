@@ -7,6 +7,7 @@ package com.github.mizool.core.exception;
  * is generally a bad fit as no client ever really has a chance of handling such a response. Try to avoid using this
  * exception and use more specific one.
  */
+@Deprecated
 public class UnprocessableEntityException extends RuntimeException
 {
     public UnprocessableEntityException()
