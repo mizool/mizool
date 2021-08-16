@@ -89,9 +89,9 @@ public class GenericErrorMapper
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("Exception", throwable.getMessage());
         parameters.put("RootCause", Throwables.getRootCause(throwable).getMessage());
-        if (throwable instanceof ParameterizedThrowable)
+        if (throwable instanceof ParameterizedException)
         {
-            Map<String, Object> exceptionParameters = ((ParameterizedThrowable) throwable).getExceptionParameters();
+            Map<String, Object> exceptionParameters = ((ParameterizedException) throwable).getExceptionParameters();
             if (exceptionParameters != null)
             {
                 parameters.putAll(exceptionParameters);
