@@ -5,7 +5,7 @@ package com.github.mizool.core.exception;
  * but could not be processed for semantic reasons (e.g. invalid references to other database entities).
  * But the UnprocessableEntityException doesn't really say why the entity is unprocessable and
  * is generally a bad fit as no client ever really has a chance of handling such a response. Try to avoid using this
- * exception and use more specific one.
+ * exception and use a more specific one.
  */
 @Deprecated
 public class UnprocessableEntityException extends RuntimeException
