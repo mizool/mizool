@@ -16,17 +16,14 @@
  */
 package com.github.mizool.technology.jcache.timeouting;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
-import com.github.mizool.core.concurrent.Threads;
+import com.github.mizool.core.concurrent.Futures;
 import com.github.mizool.core.configuration.Config;
-import com.google.common.util.concurrent.UncheckedExecutionException;
 
 public class TimeoutingExecutor
 {
@@ -40,45 +37,12 @@ public class TimeoutingExecutor
 
     public <T> T execute(Callable<T> callable)
     {
-        T result = null;
-        try
-        {
-            Future<T> future = executorService.submit(callable);
-            result = future.get(TimeoutingExecutor.CACHE_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
-        catch (TimeoutException e)
-        {
-            throw new CacheTimeoutException(e);
-        }
-        catch (InterruptedException e)
-        {
-            Threads.rethrowInterrupt(e);
-        }
-        catch (ExecutionException e)
-        {
-            throw new UncheckedExecutionException(e);
-        }
-        return result;
+        return Futures.get(executorService.submit(callable),
+            Duration.of(TimeoutingExecutor.CACHE_TIMEOUT, ChronoUnit.MILLIS));
     }
 
     public void execute(Runnable runnable)
     {
-        try
-        {
-            executorService.submit(runnable)
-                .get(TimeoutingExecutor.CACHE_TIMEOUT, TimeUnit.MILLISECONDS);
-        }
-        catch (TimeoutException e)
-        {
-            throw new CacheTimeoutException(e);
-        }
-        catch (InterruptedException e)
-        {
-            Threads.rethrowInterrupt(e);
-        }
-        catch (ExecutionException e)
-        {
-            throw new UncheckedExecutionException(e);
-        }
+        Futures.get(executorService.submit(runnable), Duration.of(TimeoutingExecutor.CACHE_TIMEOUT, ChronoUnit.MILLIS));
     }
 }
