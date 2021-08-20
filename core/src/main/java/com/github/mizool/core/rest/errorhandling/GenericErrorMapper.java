@@ -34,7 +34,7 @@ public class GenericErrorMapper
     public ErrorResponse handleUndefinedError(Throwable throwable)
     {
         log.error("Unhandled error", throwable);
-        Map<String, String> parameters = createExceptionParameters(throwable);
+        Map<String, Object> parameters = createExceptionParameters(throwable);
 
         ErrorDto error = ErrorDto.createGenericError(parameters);
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
@@ -45,7 +45,7 @@ public class GenericErrorMapper
     {
         logError(t, behavior);
 
-        Map<String, String> parameters = null;
+        Map<String, Object> parameters = null;
         if (behavior.includeDetails())
         {
             parameters = createExceptionParameters(t);
@@ -84,11 +84,19 @@ public class GenericErrorMapper
         return rootCause;
     }
 
-    private Map<String, String> createExceptionParameters(Throwable throwable)
+    private Map<String, Object> createExceptionParameters(Throwable throwable)
     {
-        Map<String, String> parameters = Maps.newHashMap();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("Exception", throwable.getMessage());
         parameters.put("RootCause", Throwables.getRootCause(throwable).getMessage());
+        if (throwable instanceof ParameterizedException)
+        {
+            Map<String, Object> exceptionParameters = ((ParameterizedException) throwable).getExceptionParameters();
+            if (exceptionParameters != null)
+            {
+                parameters.putAll(exceptionParameters);
+            }
+        }
         return parameters;
     }
 
