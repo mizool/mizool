@@ -1,19 +1,3 @@
-/*
- * Copyright 2018-2020 incub8 Software Labs GmbH
- * Copyright 2018-2020 protel Hotelsoftware GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.github.mizool.core.rest.errorhandling;
 
 import java.util.Map;
@@ -50,7 +34,7 @@ public class GenericErrorMapper
     public ErrorResponse handleUndefinedError(Throwable throwable)
     {
         log.error("Unhandled error", throwable);
-        Map<String, String> parameters = createExceptionParameters(throwable);
+        Map<String, Object> parameters = createExceptionParameters(throwable);
 
         ErrorDto error = ErrorDto.createGenericError(parameters);
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
@@ -61,7 +45,7 @@ public class GenericErrorMapper
     {
         logError(t, behavior);
 
-        Map<String, String> parameters = null;
+        Map<String, Object> parameters = null;
         if (behavior.includeDetails())
         {
             parameters = createExceptionParameters(t);
@@ -100,11 +84,19 @@ public class GenericErrorMapper
         return rootCause;
     }
 
-    private Map<String, String> createExceptionParameters(Throwable throwable)
+    private Map<String, Object> createExceptionParameters(Throwable throwable)
     {
-        Map<String, String> parameters = Maps.newHashMap();
+        Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("Exception", throwable.getMessage());
         parameters.put("RootCause", Throwables.getRootCause(throwable).getMessage());
+        if (throwable instanceof ParameterizedException)
+        {
+            Map<String, Object> exceptionParameters = ((ParameterizedException) throwable).getExceptionParameters();
+            if (exceptionParameters != null)
+            {
+                parameters.putAll(exceptionParameters);
+            }
+        }
         return parameters;
     }
 
