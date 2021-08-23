@@ -7,22 +7,22 @@ package com.github.mizool.core.exception;
  */
 public abstract class AbstractUnprocessableEntityException extends RuntimeException
 {
-    public AbstractUnprocessableEntityException()
+    protected AbstractUnprocessableEntityException()
     {
         super();
     }
 
-    public AbstractUnprocessableEntityException(String message, Throwable cause)
+    protected AbstractUnprocessableEntityException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
-    public AbstractUnprocessableEntityException(String message)
+    protected AbstractUnprocessableEntityException(String message)
     {
         super(message);
     }
 
-    public AbstractUnprocessableEntityException(Throwable cause)
+    protected AbstractUnprocessableEntityException(Throwable cause)
     {
         super(cause);
     }
