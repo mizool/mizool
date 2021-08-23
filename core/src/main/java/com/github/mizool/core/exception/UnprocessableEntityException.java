@@ -1,14 +1,16 @@
 package com.github.mizool.core.exception;
 
 /**
- * @deprecated It is designed to be thrown when the entity is syntactically correct (e.g. all non-null properties are set),
- * but could not be processed for semantic reasons (e.g. invalid references to other database entities).
- * But the UnprocessableEntityException doesn't really say why the entity is unprocessable and
- * is generally a bad fit as no client ever really has a chance of handling such a response. Try to avoid using this
- * exception and use a more specific one.
+ * Thrown when the entity is syntactically correct (e.g. all non-null properties are set), but could not be processed
+ * for semantic reasons (e.g. invalid references to other database entities).
+ *
+ * @deprecated Throwing UnprocessableEntityException doesn't say <i>why</i> the entity is unprocessable and is
+ * generally a bad fit as no client ever really has a chance of handling such a response.
+ * Instead, consider creating an exception class specific to the respective problem that extends
+ * {@link AbstractUnprocessableEntityException}.
  */
 @Deprecated
-public class UnprocessableEntityException extends RuntimeException
+public class UnprocessableEntityException extends AbstractUnprocessableEntityException
 {
     public UnprocessableEntityException()
     {
