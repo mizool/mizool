@@ -28,7 +28,8 @@ public class GenericErrorMapper
     public ErrorResponse handleErrorAccordingToBehavior(Throwable t)
     {
         Optional<ErrorHandlingBehavior> behaviorOptional = errorHandlingBehaviorCatalog.lookup(t);
-        return behaviorOptional.map(behavior -> buildErrorResponse(t, behavior)).orElse(null);
+        return behaviorOptional.map(behavior -> buildErrorResponse(t, behavior))
+            .orElse(null);
     }
 
     public ErrorResponse handleUndefinedError(Throwable throwable)
@@ -54,7 +55,8 @@ public class GenericErrorMapper
         ErrorDto error = ErrorDto.createGenericError(parameters);
         if (behavior.includeErrorId())
         {
-            error = new ErrorDto(t.getClass().getName(), parameters);
+            error = new ErrorDto(t.getClass()
+                .getName(), parameters);
         }
         ErrorMessageDto errorMessage = createErrorMessageDto(error);
         return new ErrorResponse(behavior.getStatusCode(), errorMessage);
@@ -65,13 +67,16 @@ public class GenericErrorMapper
         Throwable rootCause = determineRootCause(t);
         if (rootCause != t)
         {
-            behavior.getMessageLogLevel().log(log, "{} - {}", t.getMessage(), rootCause.getMessage());
+            behavior.getMessageLogLevel()
+                .log(log, "{} - {}", t.getMessage(), rootCause.getMessage());
         }
         else
         {
-            behavior.getMessageLogLevel().log(log, t.getMessage());
+            behavior.getMessageLogLevel()
+                .log(log, t.getMessage());
         }
-        behavior.getStackTraceLogLevel().log(log, t.getMessage(), t);
+        behavior.getStackTraceLogLevel()
+            .log(log, t.getMessage(), t);
     }
 
     private Throwable determineRootCause(Throwable t)
@@ -88,7 +93,9 @@ public class GenericErrorMapper
     {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("Exception", throwable.getMessage());
-        parameters.put("RootCause", Throwables.getRootCause(throwable).getMessage());
+        parameters.put("RootCause",
+            Throwables.getRootCause(throwable)
+                .getMessage());
         if (throwable instanceof ParameterizedException)
         {
             Map<String, Object> exceptionParameters = ((ParameterizedException) throwable).getExceptionParameters();
@@ -104,6 +111,8 @@ public class GenericErrorMapper
     {
         SetMultimap<String, ErrorDto> errors = HashMultimap.create();
         errors.put(GLOBAL_PROPERTY_KEY, error);
-        return ErrorMessageDto.builder().errors(errors.asMap()).build();
+        return ErrorMessageDto.builder()
+            .errors(errors.asMap())
+            .build();
     }
 }

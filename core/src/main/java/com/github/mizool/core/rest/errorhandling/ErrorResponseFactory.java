@@ -17,7 +17,8 @@ public class ErrorResponseFactory
 
     public ErrorMessageDto fromPojo(Throwable throwable)
     {
-        return this.handle(throwable).getBody();
+        return this.handle(throwable)
+            .getBody();
     }
 
     public ErrorResponse handle(Throwable throwable)
@@ -29,7 +30,8 @@ public class ErrorResponseFactory
         {
             if (isAssignable(ConstraintViolationException.class, cursor))
             {
-                result = constraintViolationMapper.handleConstraintViolationError((ConstraintViolationException) cursor);
+                result
+                    = constraintViolationMapper.handleConstraintViolationError((ConstraintViolationException) cursor);
             }
             else if (isAssignable(RuleViolationException.class, cursor))
             {

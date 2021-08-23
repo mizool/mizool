@@ -22,15 +22,21 @@ public class ConstraintViolationMapper
         {
             recordConstraintViolation(violation, errors);
         }
-        ErrorMessageDto errorMessage = ErrorMessageDto.builder().errors(errors.asMap()).build();
+        ErrorMessageDto errorMessage = ErrorMessageDto.builder()
+            .errors(errors.asMap())
+            .build();
         return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
     }
 
     private void recordConstraintViolation(ConstraintViolation<?> violation, SetMultimap<String, ErrorDto> target)
     {
-        String errorId = violation.getConstraintDescriptor().getAnnotation().annotationType().getName();
+        String errorId = violation.getConstraintDescriptor()
+            .getAnnotation()
+            .annotationType()
+            .getName();
 
-        Path.Node lastProperty = Iterators.getLast(violation.getPropertyPath().iterator());
+        Path.Node lastProperty = Iterators.getLast(violation.getPropertyPath()
+            .iterator());
         String propertyName = lastProperty.getName();
 
         ErrorDto errorDto = new ErrorDto(errorId, null);

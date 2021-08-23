@@ -20,8 +20,10 @@ public class ErrorMessageDto
         SetMultimap<String, ErrorDto> combined = HashMultimap.create();
 
         errors.forEach(combined::putAll);
-        other.getErrors().forEach(combined::putAll);
+        other.getErrors()
+            .forEach(combined::putAll);
 
-        return toBuilder().errors(combined.asMap()).build();
+        return toBuilder().errors(combined.asMap())
+            .build();
     }
 }

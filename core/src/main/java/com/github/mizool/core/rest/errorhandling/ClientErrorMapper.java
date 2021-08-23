@@ -16,7 +16,8 @@ public class ClientErrorMapper
     public ErrorResponse handleClientError(ClientErrorException e)
     {
         log.debug("Client error", e);
-        int statusCode = e.getResponse().getStatus();
+        int statusCode = e.getResponse()
+            .getStatus();
         Class<? extends Exception> errorClass = determineErrorClass(statusCode, e.getClass());
 
         ErrorDto error = new ErrorDto(errorClass.getName(), null);
@@ -38,6 +39,8 @@ public class ClientErrorMapper
     {
         SetMultimap<String, ErrorDto> errors = HashMultimap.create();
         errors.put(GLOBAL_PROPERTY_KEY, error);
-        return ErrorMessageDto.builder().errors(errors.asMap()).build();
+        return ErrorMessageDto.builder()
+            .errors(errors.asMap())
+            .build();
     }
 }

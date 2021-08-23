@@ -19,7 +19,9 @@ public class RuleViolationMapper
         {
             recordRuleViolation(violation, errors);
         }
-        ErrorMessageDto errorMessage = ErrorMessageDto.builder().errors(errors.asMap()).build();
+        ErrorMessageDto errorMessage = ErrorMessageDto.builder()
+            .errors(errors.asMap())
+            .build();
         return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
     }
 
