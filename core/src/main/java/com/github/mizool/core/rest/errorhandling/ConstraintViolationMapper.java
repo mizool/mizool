@@ -4,6 +4,7 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Path;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.google.common.collect.HashMultimap;
@@ -11,8 +12,11 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.SetMultimap;
 
 @Slf4j
+@RequiredArgsConstructor
 public class ConstraintViolationMapper
 {
+    private final GlobalParametersSupplier globalParametersSupplier;
+
     public ErrorResponse handleConstraintViolationError(ConstraintViolationException e)
     {
         log.debug("Validation error", e);
@@ -24,6 +28,7 @@ public class ConstraintViolationMapper
         }
         ErrorMessageDto errorMessage = ErrorMessageDto.builder()
             .errors(errors.asMap())
+            .globalParameters(globalParametersSupplier.get())
             .build();
         return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
     }

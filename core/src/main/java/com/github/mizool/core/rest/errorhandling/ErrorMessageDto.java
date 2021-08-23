@@ -7,23 +7,37 @@ import lombok.Builder;
 import lombok.Value;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 @Value
 @Builder(toBuilder = true)
 public class ErrorMessageDto
 {
-    private final Map<String, Collection<ErrorDto>> errors;
+    Map<String, Collection<ErrorDto>> errors;
+    Map<String, Object> globalParameters;
 
     public ErrorMessageDto combineWith(ErrorMessageDto other)
     {
-        SetMultimap<String, ErrorDto> combined = HashMultimap.create();
+        return toBuilder().errors(combineErrors(other).asMap())
+            .globalParameters(combineGlobalParameters(other))
+            .build();
+    }
 
+    private SetMultimap<String, ErrorDto> combineErrors(ErrorMessageDto other)
+    {
+        SetMultimap<String, ErrorDto> combined = HashMultimap.create();
         errors.forEach(combined::putAll);
         other.getErrors()
             .forEach(combined::putAll);
+        return combined;
+    }
 
-        return toBuilder().errors(combined.asMap())
-            .build();
+    private Map<String, Object> combineGlobalParameters(ErrorMessageDto other)
+    {
+        Map<String, Object> combined = Maps.newHashMap();
+        combined.putAll(globalParameters);
+        combined.putAll(other.getGlobalParameters());
+        return combined;
     }
 }

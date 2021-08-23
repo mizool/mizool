@@ -19,9 +19,12 @@ public class GenericErrorMapper
     public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
 
     private final ErrorHandlingBehaviorCatalog errorHandlingBehaviorCatalog;
+    private final GlobalParametersSupplier globalParametersSupplier;
 
-    public GenericErrorMapper()
+    public GenericErrorMapper(GlobalParametersSupplier globalParametersSupplier)
     {
+        this.globalParametersSupplier = globalParametersSupplier;
+
         errorHandlingBehaviorCatalog = new ErrorHandlingBehaviorCatalog();
     }
 
@@ -113,6 +116,7 @@ public class GenericErrorMapper
         errors.put(GLOBAL_PROPERTY_KEY, error);
         return ErrorMessageDto.builder()
             .errors(errors.asMap())
+            .globalParameters(globalParametersSupplier.get())
             .build();
     }
 }

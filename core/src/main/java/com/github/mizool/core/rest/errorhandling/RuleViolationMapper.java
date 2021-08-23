@@ -1,5 +1,6 @@
 package com.github.mizool.core.rest.errorhandling;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.exception.RuleViolation;
@@ -8,8 +9,11 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
 @Slf4j
+@RequiredArgsConstructor
 public class RuleViolationMapper
 {
+    private final GlobalParametersSupplier globalParametersSupplier;
+
     public ErrorResponse handleRuleViolationError(RuleViolationException e)
     {
         log.debug("Rule violation error", e);
@@ -21,6 +25,7 @@ public class RuleViolationMapper
         }
         ErrorMessageDto errorMessage = ErrorMessageDto.builder()
             .errors(errors.asMap())
+            .globalParameters(globalParametersSupplier.get())
             .build();
         return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY, errorMessage);
     }
