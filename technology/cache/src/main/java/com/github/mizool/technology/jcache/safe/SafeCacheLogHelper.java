@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 
 import org.slf4j.Logger;
 
-import com.github.mizool.technology.jcache.timeouting.CacheTimeoutException;
+import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 @UtilityClass
 class SafeCacheLogHelper
@@ -56,7 +56,7 @@ class SafeCacheLogHelper
 
     private void log(String message, Throwable t, Logger log)
     {
-        if (t instanceof CacheTimeoutException)
+        if (t instanceof UncheckedTimeoutException)
         {
             t = rootCause(t);
             log.warn("{} - {}", message, t.getClass().getName());
