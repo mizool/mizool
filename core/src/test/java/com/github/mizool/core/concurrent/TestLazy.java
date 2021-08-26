@@ -15,6 +15,10 @@ import org.testng.annotations.Test;
 
 public class TestLazy
 {
+    private static class TestException extends RuntimeException
+    {
+    }
+
     @Test
     public void testRequiresSupplier()
     {
@@ -31,6 +35,17 @@ public class TestLazy
         new Lazy<>(supplier);
 
         verifyZeroInteractions(supplier);
+    }
+
+    @Test
+    public void testExceptionsArePassedOn()
+    {
+        Supplier<Integer> supplier = mockSupplier();
+        when(supplier.get()).thenThrow(TestException.class);
+
+        Lazy<Integer> lazy = new Lazy<>(supplier);
+
+        assertThatThrownBy(lazy::get).isInstanceOf(TestException.class);
     }
 
     @DataProvider
@@ -63,7 +78,7 @@ public class TestLazy
         lazy.get();
         Integer actualOfSecondGetCall = lazy.get();
 
-        assertThat(actualOfSecondGetCall).isEqualTo(value);
+        assertThat(actualOfSecondGetCall).isSameAs(value);
     }
 
     @Test(dataProvider = "values")
@@ -79,11 +94,16 @@ public class TestLazy
         verify(supplier, times(1)).get();
     }
 
-    @SuppressWarnings("unchecked")
     private Supplier<Integer> mockSupplier(Integer value)
     {
-        Supplier<Integer> supplier = mock(Supplier.class);
+        Supplier<Integer> supplier = mockSupplier();
         when(supplier.get()).thenReturn(value);
         return supplier;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Supplier<Integer> mockSupplier()
+    {
+        return mock(Supplier.class);
     }
 }
