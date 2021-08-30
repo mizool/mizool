@@ -17,7 +17,7 @@ import lombok.Synchronized;
  * state of {@link Lazy} does not change.
  */
 @RequiredArgsConstructor
-public final class Lazy<T>
+public final class Lazy<T> implements Supplier<T>
 {
     @NonNull
     private final Supplier<T> supplier;
