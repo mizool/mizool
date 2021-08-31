@@ -1,5 +1,7 @@
 package com.github.mizool.core.rest.errorhandling;
 
+import java.util.Collections;
+
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.ClientErrorException;
 
@@ -17,7 +19,7 @@ public class ErrorResponseFactory
 
     public ErrorResponseFactory()
     {
-        this(() -> null);
+        this(Collections::emptyMap);
     }
 
     public ErrorResponseFactory(GlobalParametersSupplier globalParametersSupplier)

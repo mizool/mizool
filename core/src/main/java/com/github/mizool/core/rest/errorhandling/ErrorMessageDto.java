@@ -1,6 +1,7 @@
 package com.github.mizool.core.rest.errorhandling;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Value;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 
 @Value
@@ -30,7 +32,7 @@ public class ErrorMessageDto
         errors.forEach(combined::putAll);
         other.getErrors()
             .forEach(combined::putAll);
-        return combined;
+        return Multimaps.unmodifiableSetMultimap(combined);
     }
 
     private Map<String, Object> combineGlobalParameters(ErrorMessageDto other)
@@ -38,6 +40,6 @@ public class ErrorMessageDto
         Map<String, Object> combined = Maps.newHashMap();
         combined.putAll(globalParameters);
         combined.putAll(other.getGlobalParameters());
-        return combined;
+        return Collections.unmodifiableMap(combined);
     }
 }
