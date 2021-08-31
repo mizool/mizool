@@ -1,16 +1,17 @@
 package com.github.mizool.core.rest.errorhandling;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 
 import lombok.Builder;
 import lombok.Value;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 @Value
 @Builder(toBuilder = true)
@@ -37,9 +38,17 @@ public class ErrorMessageDto
 
     private Map<String, Object> combineGlobalParameters(ErrorMessageDto other)
     {
-        Map<String, Object> combined = Maps.newHashMap();
-        combined.putAll(globalParameters);
-        combined.putAll(other.getGlobalParameters());
-        return Collections.unmodifiableMap(combined);
+        Map<String, Object> otherGlobalParameters = other.getGlobalParameters();
+
+        Set<String> combinedKeys = Sets.union(globalParameters.keySet(), otherGlobalParameters.keySet());
+
+        return combinedKeys.stream()
+            .collect(ImmutableMap.toImmutableMap(key -> key,
+                key -> resolveValueInOrder(key, otherGlobalParameters, globalParameters)));
+    }
+
+    private Object resolveValueInOrder(String key, Map<String, Object> first, Map<String, Object> second)
+    {
+        return first.getOrDefault(key, second.get(key));
     }
 }
