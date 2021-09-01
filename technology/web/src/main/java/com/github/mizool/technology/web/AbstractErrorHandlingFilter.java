@@ -2,6 +2,7 @@ package com.github.mizool.technology.web;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -16,11 +17,11 @@ import com.github.mizool.core.rest.errorhandling.ErrorResponseFactory;
 @Slf4j
 public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
 {
-    protected final ErrorResponseFactory errorResponseFactory = new ErrorResponseFactory();
+    @Inject
+    protected ErrorResponseFactory errorResponseFactory;
 
     @Override
-    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-        throws IOException
+    public void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException
     {
         try
         {
@@ -50,7 +51,8 @@ public abstract class AbstractErrorHandlingFilter extends HttpFilterAdapter
             ErrorResponse errorResponse = errorResponseFactory.handle(throwable);
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(errorResponse.getStatusCode());
-            response.getOutputStream().write(getErrorMessageJsonBytes(errorResponse.getBody()));
+            response.getOutputStream()
+                .write(getErrorMessageJsonBytes(errorResponse.getBody()));
         }
     }
 

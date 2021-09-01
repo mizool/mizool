@@ -1,7 +1,6 @@
 package com.github.mizool.core.rest.errorhandling;
 
-import java.util.Collections;
-
+import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.ClientErrorException;
 
@@ -17,11 +16,7 @@ public class ErrorResponseFactory
     private final ClientErrorMapper clientErrorMapper;
     private final GenericErrorMapper genericErrorMapper;
 
-    public ErrorResponseFactory()
-    {
-        this(Collections::emptyMap);
-    }
-
+    @Inject
     public ErrorResponseFactory(GlobalParametersSupplier globalParametersSupplier)
     {
         ruleViolationMapper = new RuleViolationMapper(globalParametersSupplier);

@@ -2,6 +2,8 @@ package com.github.mizool.core.rest.errorhandling;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Collections;
+
 import org.testng.annotations.Test;
 
 import com.google.common.collect.ImmutableMap;
@@ -11,7 +13,7 @@ public class TestErrorResponseFactory
     @Test
     public void producesResponseForFirstMatchInChain()
     {
-        ErrorResponse errorResponse = new ErrorResponseFactory().handle(new WrappedException());
+        ErrorResponse errorResponse = new ErrorResponseFactory(Collections::emptyMap).handle(new WrappedException());
 
         assertThat(errorResponse.getStatusCode()).isEqualTo(new WrappedExceptionBehavior().getStatusCode());
         assertThat(errorResponse.getStatusCode()).isNotEqualTo(new OriginalExceptionBehavior().getStatusCode());
