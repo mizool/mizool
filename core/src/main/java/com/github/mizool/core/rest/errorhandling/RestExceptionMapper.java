@@ -1,6 +1,7 @@
 package com.github.mizool.core.rest.errorhandling;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -10,7 +11,8 @@ import javax.ws.rs.ext.Provider;
 @ApplicationScoped
 public class RestExceptionMapper implements ExceptionMapper<Exception>
 {
-    private final ErrorResponseFactory errorResponseFactory = new ErrorResponseFactory();
+    @Inject
+    private ErrorResponseFactory errorResponseFactory;
 
     @Override
     public Response toResponse(Exception e)
