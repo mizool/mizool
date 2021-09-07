@@ -2,7 +2,7 @@ package com.github.mizool.core.rest.errorhandling.behavior;
 
 import org.kohsuke.MetaInfServices;
 
-import com.github.mizool.core.exception.UnprocessableEntityException;
+import com.github.mizool.core.exception.AbstractUnprocessableEntityException;
 import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
 import com.github.mizool.core.rest.errorhandling.HttpStatus;
 import com.github.mizool.core.rest.errorhandling.LogLevel;
@@ -13,7 +13,7 @@ public class UnprocessableEntityExceptionBehavior implements ErrorHandlingBehavi
     @Override
     public Class<? extends Throwable> getThrowableClass()
     {
-        return UnprocessableEntityException.class;
+        return AbstractUnprocessableEntityException.class;
     }
 
     @Override

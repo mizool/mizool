@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.46</version>
+    <version>0.47</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -13,8 +13,8 @@
 
     <licenses>
         <license>
-            <name>Apache-2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <name>MIT</name>
+            <url>https://spdx.org/licenses/MIT.html</url>
             <distribution>repo</distribution>
         </license>
     </licenses>

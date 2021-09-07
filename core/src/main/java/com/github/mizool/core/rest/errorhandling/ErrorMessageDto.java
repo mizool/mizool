@@ -1,43 +1,54 @@
-/**
- * Copyright 2017-2018 incub8 Software Labs GmbH
- * Copyright 2017-2018 protel Hotelsoftware GmbH
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.github.mizool.core.rest.errorhandling;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import lombok.Builder;
 import lombok.Value;
 
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 @Value
 @Builder(toBuilder = true)
 public class ErrorMessageDto
 {
-    private final Map<String, Collection<ErrorDto>> errors;
+    Map<String, Collection<ErrorDto>> errors;
+    Map<String, Object> globalParameters;
 
     public ErrorMessageDto combineWith(ErrorMessageDto other)
     {
+        return toBuilder().errors(combineErrors(other).asMap())
+            .globalParameters(combineGlobalParameters(other))
+            .build();
+    }
+
+    private SetMultimap<String, ErrorDto> combineErrors(ErrorMessageDto other)
+    {
         SetMultimap<String, ErrorDto> combined = HashMultimap.create();
-
         errors.forEach(combined::putAll);
-        other.getErrors().forEach(combined::putAll);
+        other.getErrors()
+            .forEach(combined::putAll);
+        return Multimaps.unmodifiableSetMultimap(combined);
+    }
 
-        return toBuilder().errors(combined.asMap()).build();
+    private Map<String, Object> combineGlobalParameters(ErrorMessageDto other)
+    {
+        Map<String, Object> otherGlobalParameters = other.getGlobalParameters();
+
+        Set<String> combinedKeys = Sets.union(globalParameters.keySet(), otherGlobalParameters.keySet());
+
+        return combinedKeys.stream()
+            .collect(ImmutableMap.toImmutableMap(key -> key,
+                key -> resolveValueInOrder(key, otherGlobalParameters, globalParameters)));
+    }
+
+    private Object resolveValueInOrder(String key, Map<String, Object> first, Map<String, Object> second)
+    {
+        return first.getOrDefault(key, second.get(key));
     }
 }
