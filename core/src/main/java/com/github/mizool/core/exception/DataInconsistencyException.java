@@ -1,7 +1,10 @@
 package com.github.mizool.core.exception;
 
 /**
- * Thrown when the persistent data is in an invalid state and cannot be processed by the application.
+ * Thrown when the persistent application data is in an invalid and/or inconsistent state and cannot be processed.<br>
+ * <br>
+ * If the error lies within the <i>configuration</i> instead of the application data, use {@link ConfigurationException}
+ * instead.
  */
 public class DataInconsistencyException extends RuntimeException
 {
