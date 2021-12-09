@@ -29,7 +29,7 @@ jobs:
           key: talos-maven-repo
 
       - name: Build
-        uses: docker://incub8softwarelabs/talos:preview
+        uses: docker://incub8softwarelabs/talos:feature_CCCP-37-add-github-support
         env:
           # Talos-specific variables
           TALOS_MAVEN_DEBUG: ${{ secrets.TALOS_MAVEN_DEBUG }}
