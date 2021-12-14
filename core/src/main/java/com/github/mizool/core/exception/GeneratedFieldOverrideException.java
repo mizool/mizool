@@ -1,28 +1,20 @@
 package com.github.mizool.core.exception;
 
+import lombok.Getter;
+import lombok.NonNull;
+
 /**
  * Thrown when an attempt is made to set a value for a field which is automatically generated or maintained, such as the
  * identifier or timestamps.
  */
 public class GeneratedFieldOverrideException extends AbstractUnprocessableEntityException
 {
-    public GeneratedFieldOverrideException()
-    {
-        super();
-    }
+    @Getter
+    private final String fieldName;
 
-    public GeneratedFieldOverrideException(String message, Throwable cause)
+    public GeneratedFieldOverrideException(@NonNull String fieldName)
     {
-        super(message, cause);
-    }
-
-    public GeneratedFieldOverrideException(String message)
-    {
-        super(message);
-    }
-
-    public GeneratedFieldOverrideException(Throwable cause)
-    {
-        super(cause);
+        super(String.format("Generated field %s must not be specified", fieldName));
+        this.fieldName = fieldName;
     }
 }
