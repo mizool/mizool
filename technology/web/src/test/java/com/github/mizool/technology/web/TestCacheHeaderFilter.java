@@ -1,6 +1,6 @@
 package com.github.mizool.technology.web;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -91,6 +91,6 @@ public class TestCacheHeaderFilter
         verify(servletResponse, never()).setHeader(eq("Pragma"), anyString());
         ArgumentCaptor<Long> argumentCaptor = ArgumentCaptor.forClass(Long.class);
         verify(servletResponse).setDateHeader(eq("Expires"), argumentCaptor.capture());
-        assertThat(argumentCaptor.getValue()).isGreaterThan(0);
+        assertThat(argumentCaptor.getValue()).isPositive();
     }
 }
