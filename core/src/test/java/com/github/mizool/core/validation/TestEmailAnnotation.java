@@ -56,7 +56,8 @@ public class TestEmailAnnotation
             { "f@tc@t@spl@t.com.tw" },
             { "whitespace @example.org" },
             { " whitespace@example.org" },
-            { "whitespace@example.org " }
+            { "whitespace@example.org " },
+            { "waytoolongemailaddresswaytoolongemailaddresswaytoolongemailaddresswaytoolongemailaddresswaytoolongemailaddress@example.org" }
         };
     }
 
