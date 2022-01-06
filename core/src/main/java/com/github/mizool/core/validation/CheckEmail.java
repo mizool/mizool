@@ -1,10 +1,14 @@
 package com.github.mizool.core.validation;
 
+import java.util.regex.Pattern;
+
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 public class CheckEmail implements ConstraintValidator<Email, Object>
 {
+    private static final Pattern PATTERN = Pattern.compile(".+[@].+\\..+");
+
     private boolean mandatory;
 
     @Override
@@ -25,7 +29,8 @@ public class CheckEmail implements ConstraintValidator<Email, Object>
         if (validationObject instanceof String)
         {
             String validationString = (String) validationObject;
-            valid = validationString.matches(".+[@].+\\..+");
+            valid = PATTERN.matcher(validationString)
+                .matches();
         }
         return valid;
     }
