@@ -7,7 +7,7 @@ import javax.validation.ConstraintValidatorContext;
 
 public class CheckEmail implements ConstraintValidator<Email, Object>
 {
-    private static final Pattern PATTERN = Pattern.compile(".+[@].+\\..+");
+    private static final Pattern PATTERN = Pattern.compile("[^@\\s]+@([^\\s.@]+\\.)+[^\\s.@]+");
 
     private boolean mandatory;
 
