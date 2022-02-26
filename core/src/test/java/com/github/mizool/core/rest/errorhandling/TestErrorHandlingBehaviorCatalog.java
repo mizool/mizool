@@ -22,8 +22,9 @@ public class TestErrorHandlingBehaviorCatalog
     {
         FooException test = new FooException();
         Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
-        assertThat(lookup.isPresent()).isTrue();
-        assertThat(lookup.get().getThrowableClass()).isEqualTo(FooException.class);
+        assertThat(lookup).isPresent();
+        assertThat(lookup.get()
+            .getThrowableClass()).isEqualTo(FooException.class);
     }
 
     @Test
@@ -31,8 +32,9 @@ public class TestErrorHandlingBehaviorCatalog
     {
         BarException test = new BarException();
         Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
-        assertThat(lookup.isPresent()).isTrue();
-        assertThat(lookup.get().getThrowableClass()).isEqualTo(FooException.class);
+        assertThat(lookup).isPresent();
+        assertThat(lookup.get()
+            .getThrowableClass()).isEqualTo(FooException.class);
     }
 
     @Test
@@ -40,7 +42,7 @@ public class TestErrorHandlingBehaviorCatalog
     {
         QuuxException test = new QuuxException();
         Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
-        assertThat(lookup.isPresent()).isFalse();
+        assertThat(lookup).isEmpty();
     }
 
     @Test
@@ -48,7 +50,8 @@ public class TestErrorHandlingBehaviorCatalog
     {
         MoepException test = new MoepException();
         Optional<ErrorHandlingBehavior> lookup = errorHandlingBehaviorCatalog.lookup(test);
-        assertThat(lookup.isPresent()).isTrue();
-        assertThat(lookup.get().getThrowableClass()).isEqualTo(MoepException.class);
+        assertThat(lookup).isPresent();
+        assertThat(lookup.get()
+            .getThrowableClass()).isEqualTo(MoepException.class);
     }
 }

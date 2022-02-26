@@ -37,7 +37,10 @@ public class TestEmailAnnotation
     public Object[][] createAcceptableValues()
     {
         return new Object[][]{
-            { "b@b.de" }, { "bob@example.com" }, { null }
+            { "b@b.de" },
+            { "bob@example.com" },
+            { null },
+            { "whatever-something_IDONTCARE'\"\"yesindeed@something.travel" }
         };
     }
 
@@ -45,7 +48,16 @@ public class TestEmailAnnotation
     public Object[][] createUnacceptableValues()
     {
         return new Object[][]{
-            { "b" }, { "b@" }, { "b@b" }, { "b@b." }, { ".b@b." }
+            { "b" },
+            { "b@" },
+            { "b@b" },
+            { "b@b." },
+            { ".b@b." },
+            { "f@tc@t@spl@t.com.tw" },
+            { "whitespace @example.org" },
+            { " whitespace@example.org" },
+            { "whitespace@example.org " },
+            { "waytoolongemailaddresswaytoolongemailaddresswaytoolongemailaddresswaytoolongemailaddresswaytoolongemailaddress@example.org" }
         };
     }
 
