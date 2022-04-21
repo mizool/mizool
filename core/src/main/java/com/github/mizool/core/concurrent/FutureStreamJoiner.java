@@ -10,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.experimental.UtilityClass;
 
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -58,20 +59,16 @@ import com.google.common.util.concurrent.UncheckedExecutionException;
  * Stream<ListenableFuture<Void>> voidFutures = resultFutures.map(Futures::toVoidResult);
  * CompletableFuture<Void> jointFuture = FutureStreamJoiner.listenable().join(voidFutures, concurrencyLimit, executorService);}</pre>
  */
-public final class FutureStreamJoiner
+@UtilityClass
+public class FutureStreamJoiner
 {
-    private FutureStreamJoiner()
-    {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
-
     /**
      * Provides fluent syntax for joining {@link ListenableFuture ListenableFutures}. <br>
      * <br>
      * See {@link FutureStreamJoiner} for details.
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class Listenable
+    public final class Listenable
     {
         /**
          * Returns a future that will complete normally once all futures in the given stream have completed normally.
@@ -102,7 +99,7 @@ public final class FutureStreamJoiner
      * See {@link FutureStreamJoiner} for details.
      */
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static final class Completable
+    public final class Completable
     {
         /**
          * Returns a future that will complete normally once all futures in the given stream have completed normally.
@@ -127,7 +124,7 @@ public final class FutureStreamJoiner
     }
 
     @RequiredArgsConstructor
-    private static final class StreamConsumingWorker implements Runnable
+    private final class StreamConsumingWorker implements Runnable
     {
         private final Stream<Void> stream;
 
@@ -165,7 +162,7 @@ public final class FutureStreamJoiner
      *
      * @return fluent syntax
      */
-    public static Listenable listenable()
+    public Listenable listenable()
     {
         return new Listenable();
     }
@@ -177,12 +174,12 @@ public final class FutureStreamJoiner
      *
      * @return fluent syntax
      */
-    public static Completable completable()
+    public Completable completable()
     {
         return new Completable();
     }
 
-    private static void verifyConcurrencyLimit(int concurrencyLimit)
+    private void verifyConcurrencyLimit(int concurrencyLimit)
     {
         if (concurrencyLimit <= 0)
         {
@@ -190,7 +187,7 @@ public final class FutureStreamJoiner
         }
     }
 
-    private static Runnable consumeStream(Stream<Void> stream)
+    private Runnable consumeStream(Stream<Void> stream)
     {
         return new StreamConsumingWorker(stream);
     }

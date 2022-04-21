@@ -17,30 +17,27 @@ import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import lombok.experimental.UtilityClass;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
-final class ConcurrentTests
+@UtilityClass
+class ConcurrentTests
 {
-    public static final int TEST_TIMEOUT = 5000;
-
-    private ConcurrentTests()
-    {
-        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-    }
+    public final int TEST_TIMEOUT = 5000;
 
     @Value
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private static final class StreamItem
+    private class StreamItem
     {
-        private final long duration;
-        private final Object value;
+        long duration;
+        Object value;
     }
 
-    public abstract static class Suite<F extends Future<?>>
+    public abstract class Suite<F extends Future<?>>
     {
         protected final List<StreamItem> streamItems = new ArrayList<>();
         protected final AtomicInteger started = new AtomicInteger();
@@ -102,7 +99,7 @@ final class ConcurrentTests
         }
     }
 
-    private static final class ListenableFutureSuite extends Suite<ListenableFuture<Object>>
+    private final class ListenableFutureSuite extends Suite<ListenableFuture<Object>>
     {
         protected final ScheduledExecutorService executorService;
 
@@ -136,7 +133,7 @@ final class ConcurrentTests
         }
     }
 
-    private static final class CompletableFutureSuite extends Suite<CompletableFuture<Object>>
+    private final class CompletableFutureSuite extends Suite<CompletableFuture<Object>>
     {
         protected final ScheduledExecutorService executorService;
 
@@ -170,12 +167,12 @@ final class ConcurrentTests
         }
     }
 
-    public static Suite<ListenableFuture<Object>> listenableFutureSuite(int corePoolSize)
+    public Suite<ListenableFuture<Object>> listenableFutureSuite(int corePoolSize)
     {
         return new ListenableFutureSuite(corePoolSize);
     }
 
-    public static Suite<CompletableFuture<Object>> completableFutureSuite(int corePoolSize)
+    public Suite<CompletableFuture<Object>> completableFutureSuite(int corePoolSize)
     {
         return new CompletableFutureSuite(corePoolSize);
     }

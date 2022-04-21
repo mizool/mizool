@@ -104,8 +104,8 @@
         <jcache.ri.version>0.6</jcache.ri.version>
         <jersey.version>2.34</jersey.version>
         <jooq.version>3.14.9</jooq.version>
-        <lombok.core.version>1.18.12</lombok.core.version>
-        <lombok.plugin.version>${lombok.core.version}.0</lombok.plugin.version>
+        <lombok.core.version>1.18.24</lombok.core.version>
+        <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <maven.version.minimum>3.2.2</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
         <ossrh.host>s01.oss.sonatype.org</ossrh.host>
