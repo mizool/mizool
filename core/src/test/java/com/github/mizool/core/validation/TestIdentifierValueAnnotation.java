@@ -62,31 +62,31 @@ public class TestIdentifierValueAnnotation
     @Test(dataProvider = "acceptableValues")
     public void testValidationOfAcceptableValues(String value)
     {
-        ValidatorAnnotationTests.assertAcceptableValue(new TestData(value));
+        BeanValidation.assertAcceptableValue(new TestData(value));
     }
 
     @Test(dataProvider = "unacceptableValues")
     public void testValidationOfUnacceptableValues(String value)
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new TestData(value), IdentifierValue.class);
+        BeanValidation.assertUnacceptableValue(new TestData(value), IdentifierValue.class);
     }
 
     @Test(dataProvider = "acceptableListValues")
     public void testValidationOfAcceptableValues(List<String> values)
     {
-        ValidatorAnnotationTests.assertAcceptableValue(new TestListData(values));
+        BeanValidation.assertAcceptableValue(new TestListData(values));
     }
 
     @Test(dataProvider = "unacceptableListValues")
     public void testValidationOfUnacceptableListValues(List<String> values)
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new TestListData(values), IdentifierValue.class);
+        BeanValidation.assertUnacceptableValue(new TestListData(values), IdentifierValue.class);
     }
 
     @Test
     public void testHandlesWrongDataType()
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
             IdentifierValue.class);
     }
 }
