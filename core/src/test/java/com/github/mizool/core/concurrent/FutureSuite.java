@@ -17,91 +17,25 @@ import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
-import lombok.experimental.UtilityClass;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
-@UtilityClass
-class ConcurrentTests
+public abstract class FutureSuite<F extends Future<?>>
 {
-    public final int TEST_TIMEOUT = 5000;
-
     @Value
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    private class StreamItem
+    private static class StreamItem
     {
         long duration;
         Object value;
     }
 
-    public abstract class Suite<F extends Future<?>>
+    private static final class ListenableFutureSuite extends FutureSuite<ListenableFuture<Object>>
     {
-        protected final List<StreamItem> streamItems = new ArrayList<>();
-        protected final AtomicInteger started = new AtomicInteger();
-        protected final AtomicInteger running = new AtomicInteger();
-        protected final AtomicInteger maximumConcurrent = new AtomicInteger();
-        protected final AtomicInteger finished = new AtomicInteger();
-
-        public void tearDown()
-        {
-        }
-
-        public void addItems(long... durations)
-        {
-            LongStream.of(durations)
-                .mapToObj(duration -> new StreamItem(duration, mock(Object.class)))
-                .forEach(streamItems::add);
-        }
-
-        public Stream<F> stream()
-        {
-            return streamItems.stream()
-                .map(this::toFuture);
-        }
-
-        private F toFuture(StreamItem streamItem)
-        {
-            started.incrementAndGet();
-            int nowRunning = running.incrementAndGet();
-            maximumConcurrent.accumulateAndGet(nowRunning, Math::max);
-            return createFuture(streamItem);
-        }
-
-        protected abstract F createFuture(StreamItem streamItem);
-
-        public void assertContainsExpectedResults(Stream<Object> actual)
-        {
-            List<Object> results = actual.collect(ImmutableList.toImmutableList());
-            assertThat(results).containsExactlyInAnyOrderElementsOf(getExpectedResults());
-        }
-
-        private List<Object> getExpectedResults()
-        {
-            return Lists.transform(streamItems, StreamItem::getValue);
-        }
-
-        public void assertStartedFutures(int expected)
-        {
-            assertThat(started.get()).isEqualTo(expected);
-        }
-
-        public void assertFinishedFutures(int expected)
-        {
-            assertThat(finished.get()).isEqualTo(expected);
-        }
-
-        public void assertMaximumConcurrentFutures(int expected)
-        {
-            assertThat(maximumConcurrent.get()).isEqualTo(expected);
-        }
-    }
-
-    private final class ListenableFutureSuite extends Suite<ListenableFuture<Object>>
-    {
-        protected final ScheduledExecutorService executorService;
+        private final ScheduledExecutorService executorService;
 
         private ListenableFutureSuite(int corePoolSize)
         {
@@ -133,9 +67,9 @@ class ConcurrentTests
         }
     }
 
-    private final class CompletableFutureSuite extends Suite<CompletableFuture<Object>>
+    private static final class CompletableFutureSuite extends FutureSuite<CompletableFuture<Object>>
     {
-        protected final ScheduledExecutorService executorService;
+        private final ScheduledExecutorService executorService;
 
         private CompletableFutureSuite(int corePoolSize)
         {
@@ -167,13 +101,74 @@ class ConcurrentTests
         }
     }
 
-    public Suite<ListenableFuture<Object>> listenableFutureSuite(int corePoolSize)
+    public static FutureSuite<ListenableFuture<Object>> listenable(int corePoolSize)
     {
         return new ListenableFutureSuite(corePoolSize);
     }
 
-    public Suite<CompletableFuture<Object>> completableFutureSuite(int corePoolSize)
+    public static FutureSuite<CompletableFuture<Object>> completable(int corePoolSize)
     {
         return new CompletableFutureSuite(corePoolSize);
+    }
+
+    public static final int TEST_TIMEOUT = 5000;
+
+    protected final List<StreamItem> streamItems = new ArrayList<>();
+    protected final AtomicInteger started = new AtomicInteger();
+    protected final AtomicInteger running = new AtomicInteger();
+    protected final AtomicInteger maximumConcurrent = new AtomicInteger();
+    protected final AtomicInteger finished = new AtomicInteger();
+
+    public void tearDown()
+    {
+    }
+
+    public void addItems(long... durations)
+    {
+        LongStream.of(durations)
+            .mapToObj(duration -> new StreamItem(duration, mock(Object.class)))
+            .forEach(streamItems::add);
+    }
+
+    public Stream<F> stream()
+    {
+        return streamItems.stream()
+            .map(this::toFuture);
+    }
+
+    private F toFuture(StreamItem streamItem)
+    {
+        started.incrementAndGet();
+        int nowRunning = running.incrementAndGet();
+        maximumConcurrent.accumulateAndGet(nowRunning, Math::max);
+        return createFuture(streamItem);
+    }
+
+    protected abstract F createFuture(StreamItem streamItem);
+
+    public void assertContainsExpectedResults(Stream<Object> actual)
+    {
+        List<Object> results = actual.collect(ImmutableList.toImmutableList());
+        assertThat(results).containsExactlyInAnyOrderElementsOf(getExpectedResults());
+    }
+
+    private List<Object> getExpectedResults()
+    {
+        return Lists.transform(streamItems, StreamItem::getValue);
+    }
+
+    public void assertStartedFutures(int expected)
+    {
+        assertThat(started.get()).isEqualTo(expected);
+    }
+
+    public void assertFinishedFutures(int expected)
+    {
+        assertThat(finished.get()).isEqualTo(expected);
+    }
+
+    public void assertMaximumConcurrentFutures(int expected)
+    {
+        assertThat(maximumConcurrent.get()).isEqualTo(expected);
     }
 }

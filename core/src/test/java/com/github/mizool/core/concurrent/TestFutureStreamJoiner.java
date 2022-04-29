@@ -27,9 +27,9 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         extends TestFutureStreamJoiner<CompletableFuture<Object>, CompletableFuture<Void>>
     {
         @Override
-        public ConcurrentTests.Suite<CompletableFuture<Object>> createSuite(int corePoolSize)
+        public FutureSuite<CompletableFuture<Object>> createSuite(int corePoolSize)
         {
-            return ConcurrentTests.completableFutureSuite(corePoolSize);
+            return FutureSuite.completable(corePoolSize);
         }
 
         @Override
@@ -55,7 +55,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     public static final class ListenableFutureMode
         extends TestFutureStreamJoiner<ListenableFuture<Object>, ListenableFuture<Void>>
     {
-        protected ListeningExecutorService listeningExecutorService;
+        private ListeningExecutorService listeningExecutorService;
 
         @BeforeMethod
         public void setUp()
@@ -65,9 +65,9 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         }
 
         @Override
-        public ConcurrentTests.Suite<ListenableFuture<Object>> createSuite(int corePoolSize)
+        public FutureSuite<ListenableFuture<Object>> createSuite(int corePoolSize)
         {
-            return ConcurrentTests.listenableFutureSuite(corePoolSize);
+            return FutureSuite.listenable(corePoolSize);
         }
 
         @Override
@@ -94,7 +94,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
     private static final int FAST = 100;
 
     private static final int SLOW = 1000;
-    private ConcurrentTests.Suite<O> suite;
+    private FutureSuite<O> suite;
 
     protected ExecutorService executorService;
 
@@ -105,7 +105,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         executorService = Executors.newCachedThreadPool();
     }
 
-    protected abstract ConcurrentTests.Suite<O> createSuite(int corePoolSize);
+    protected abstract FutureSuite<O> createSuite(int corePoolSize);
 
     @AfterMethod
     public void tearDown()
@@ -119,7 +119,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         join(Stream.empty(), 0);
     }
 
-    @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(dataProvider = "parallelizationVariants", timeOut = FutureSuite.TEST_TIMEOUT)
     public void testParallelization(String name, int maximumConcurrentFutures, long[] durations)
         throws InterruptedException, ExecutionException
     {
@@ -158,7 +158,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         };
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT)
     public void testResultIsReadyImmediately() throws ExecutionException, InterruptedException, TimeoutException
     {
         suite.addItems(IMMEDIATE);
@@ -173,7 +173,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         suite.assertMaximumConcurrentFutures(1);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT)
     public void testFastFuturesCompleteEarly() throws ExecutionException, InterruptedException
     {
         suite.addItems(SLOW, FAST, SLOW, FAST, SLOW);
@@ -193,7 +193,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         suite.assertMaximumConcurrentFutures(5);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT,
         dataProvider = "throwablePositions",
         dataProviderClass = ThrowingStreamHarness.class)
     public void testThrowablePosition(ThrowingStreamHarness harness)
@@ -205,7 +205,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         harness.assertThrowsWrappedException(future::get, ExecutionException.class);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT,
         dataProvider = "singletonStreamsForEachThrowableType",
         dataProviderClass = ThrowingStreamHarness.class)
     public void testThrowableType(ThrowingStreamHarness harness)
@@ -217,7 +217,7 @@ public abstract class TestFutureStreamJoiner<O extends Future<Object>, V extends
         harness.assertThrowsWrappedException(future::get, ExecutionException.class);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT,
         dataProvider = "consumptionFailingStreamsForEachThrowableType",
         dataProviderClass = ThrowingStreamHarness.class)
     public void testFailingStreamConsumption(ThrowingStreamHarness harness)

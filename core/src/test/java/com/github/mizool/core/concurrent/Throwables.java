@@ -8,9 +8,9 @@ import lombok.experimental.UtilityClass;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 
 @UtilityClass
-class ExceptionTests
+class Throwables
 {
-    public Throwable instantiateThrowable(Class<? extends Throwable> throwableClass, String message)
+    public Throwable instantiate(Class<? extends Throwable> throwableClass, String message)
     {
         try
         {

@@ -32,9 +32,9 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         }
 
         @Override
-        protected ConcurrentTests.Suite<CompletableFuture<Object>> createSuite(int corePoolSize)
+        protected FutureSuite<CompletableFuture<Object>> createSuite(int corePoolSize)
         {
-            return ConcurrentTests.completableFutureSuite(corePoolSize);
+            return FutureSuite.completable(corePoolSize);
         }
 
         @Override
@@ -63,9 +63,9 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         }
 
         @Override
-        protected ConcurrentTests.Suite<ListenableFuture<Object>> createSuite(int corePoolSize)
+        protected FutureSuite<ListenableFuture<Object>> createSuite(int corePoolSize)
         {
-            return ConcurrentTests.listenableFutureSuite(corePoolSize);
+            return FutureSuite.listenable(corePoolSize);
         }
 
         @Override
@@ -79,7 +79,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
     private static final int FAST = 100;
     private static final int SLOW = 1000;
 
-    private ConcurrentTests.Suite<F> suite;
+    private FutureSuite<F> suite;
     protected ExecutorService executorService;
 
     @BeforeMethod
@@ -89,7 +89,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         executorService = Executors.newCachedThreadPool();
     }
 
-    protected abstract ConcurrentTests.Suite<F> createSuite(int i);
+    protected abstract FutureSuite<F> createSuite(int i);
 
     protected abstract Stream<Object> runTest(Stream<F> stream, int bufferSize);
 
@@ -108,7 +108,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         runTest(Stream.of(), 0);
     }
 
-    @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(dataProvider = "parallelizationVariants", timeOut = FutureSuite.TEST_TIMEOUT)
     public void testParallelization(String name, int bufferSize, long[] durations)
     {
         suite.addItems(durations);
@@ -133,7 +133,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         };
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT)
     public void testWaitsForStreamDepletion()
     {
         suite.addItems(IMMEDIATE, IMMEDIATE, IMMEDIATE, IMMEDIATE, IMMEDIATE);
@@ -147,7 +147,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         suite.assertFinishedFutures(5);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT)
     public void testAvoidsExcessiveBuffer()
     {
         suite.addItems(FAST, FAST, FAST, FAST);
@@ -165,7 +165,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         suite.assertStartedFutures(bufferSize + 1);
     }
 
-    @Test(dataProvider = "timingVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(dataProvider = "timingVariants", timeOut = FutureSuite.TEST_TIMEOUT)
     public void testCompletionTiming(
         String name, int bufferSize, long[] durations, int cutoff, int expectedEarlyResults, int expectedLateResults)
     {
@@ -210,7 +210,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         };
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT,
         dataProvider = "throwablePositions",
         dataProviderClass = ThrowingStreamHarness.class)
     public void testThrowablePosition(ThrowingStreamHarness harness)
@@ -220,7 +220,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         harness.assertThrowsException(throwingCallable);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT,
         dataProvider = "singletonStreamsForEachThrowableType",
         dataProviderClass = ThrowingStreamHarness.class)
     public void testThrowableType(ThrowingStreamHarness harness)
@@ -230,7 +230,7 @@ public abstract class TestBufferedStreamAdapter<F extends Future<Object>>
         harness.assertThrowsException(throwingCallable);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT,
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT,
         dataProvider = "consumptionFailingStreamsForEachThrowableType",
         dataProviderClass = ThrowingStreamHarness.class)
     public void testFailingStreamConsumption(ThrowingStreamHarness harness)

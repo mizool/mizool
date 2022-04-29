@@ -66,31 +66,31 @@ public class TestCountryCodeAnnotation
     @Test(dataProvider = "acceptableValues")
     public void testValidationOfAcceptableValue(String value)
     {
-        ValidatorAnnotationTests.assertAcceptableValue(new TestData(value));
+        BeanValidation.assertAcceptableValue(new TestData(value));
     }
 
     @Test(dataProvider = "unacceptableValues")
     public void testValidationOfUnacceptableValue(String value)
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new TestData(value), CountryCode.class);
+        BeanValidation.assertUnacceptableValue(new TestData(value), CountryCode.class);
     }
 
     @Test(dataProvider = "acceptableListValues")
     public void testValidationOfAcceptableValues(List<String> values)
     {
-        ValidatorAnnotationTests.assertAcceptableValue(new TestListData(values));
+        BeanValidation.assertAcceptableValue(new TestListData(values));
     }
 
     @Test(dataProvider = "unacceptableListValues")
     public void testValidationOfUnacceptableListValues(List<String> values)
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new TestListData(values), CountryCode.class);
+        BeanValidation.assertUnacceptableValue(new TestListData(values), CountryCode.class);
     }
 
     @Test
     public void testHandlesWrongDataType()
     {
-        ValidatorAnnotationTests.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
             CountryCode.class);
     }
 }
