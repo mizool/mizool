@@ -14,15 +14,15 @@ import lombok.experimental.UtilityClass;
 import com.google.common.collect.Iterables;
 
 @UtilityClass
-class ValidatorAnnotationTests
+class BeanValidation
 {
-    public static <T> void assertAcceptableValue(T value)
+    public <T> void assertAcceptableValue(T value)
     {
         Set<ConstraintViolation<T>> violations = runValidator(value);
         assertThat(violations).isEmpty();
     }
 
-    public static <T> void assertUnacceptableValue(T value, Class<? extends Annotation> annotationClass)
+    public <T> void assertUnacceptableValue(T value, Class<? extends Annotation> annotationClass)
     {
         Set<ConstraintViolation<T>> violations = runValidator(value);
         assertThat(violations).hasSize(1);
@@ -31,7 +31,7 @@ class ValidatorAnnotationTests
         assertThat(violatedAnnotation).isEqualTo(annotationClass.getName());
     }
 
-    private static <T> Set<ConstraintViolation<T>> runValidator(T testData)
+    private <T> Set<ConstraintViolation<T>> runValidator(T testData)
     {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
         return validator.validate(testData);

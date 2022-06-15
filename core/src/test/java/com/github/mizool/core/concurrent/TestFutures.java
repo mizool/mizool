@@ -28,7 +28,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
-import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -58,7 +57,7 @@ public class TestFutures
         @SneakyThrows
         public T fail()
         {
-            throw ExceptionTests.instantiateThrowable(throwableClass, "Simulated failure");
+            throw Throwables.instantiate(throwableClass, "Simulated failure");
         }
 
         @Override
@@ -196,7 +195,7 @@ public class TestFutures
 
     private List<? extends Class<?>> getCausalChainClasses(Throwable throwable)
     {
-        return Throwables.getCausalChain(throwable)
+        return com.google.common.base.Throwables.getCausalChain(throwable)
             .stream()
             .map(Object::getClass)
             .collect(Collectors.toList());

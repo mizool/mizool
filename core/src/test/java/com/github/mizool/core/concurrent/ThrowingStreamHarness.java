@@ -50,7 +50,7 @@ public final class ThrowingStreamHarness
             {
                 log.info("{} throws {}.", me, throwableClass.getSimpleName());
 
-                throw ExceptionTests.instantiateThrowable(throwableClass, me + " failed");
+                throw Throwables.instantiate(throwableClass, me + " failed");
             }
             log.info("{} completed.", me);
         }

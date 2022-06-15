@@ -19,12 +19,12 @@ public class TestListenableFutureCollector
     private static final int FAST = 100;
     private static final int SLOW = 1000;
 
-    private ConcurrentTests.Suite<ListenableFuture<Object>> suite;
+    private FutureSuite<ListenableFuture<Object>> suite;
 
     @BeforeMethod
     public void setUp()
     {
-        suite = ConcurrentTests.listenableFutureSuite(100);
+        suite = FutureSuite.listenable(100);
     }
 
     @AfterMethod
@@ -39,7 +39,7 @@ public class TestListenableFutureCollector
         concurrent(0);
     }
 
-    @Test(dataProvider = "parallelizationVariants", timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(dataProvider = "parallelizationVariants", timeOut = FutureSuite.TEST_TIMEOUT)
     public void testParallelization(String name, int maximumConcurrentFutures, long[] durations)
         throws InterruptedException, ExecutionException
     {
@@ -67,7 +67,7 @@ public class TestListenableFutureCollector
         };
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT)
     public void testResultIsReadyImmediately() throws ExecutionException, InterruptedException, TimeoutException
     {
         suite.addItems(IMMEDIATE);
@@ -84,7 +84,7 @@ public class TestListenableFutureCollector
         suite.assertMaximumConcurrentFutures(1);
     }
 
-    @Test(timeOut = ConcurrentTests.TEST_TIMEOUT)
+    @Test(timeOut = FutureSuite.TEST_TIMEOUT)
     public void testFastFuturesCompleteEarly() throws ExecutionException, InterruptedException
     {
         suite.addItems(SLOW, FAST, SLOW, FAST, SLOW);
