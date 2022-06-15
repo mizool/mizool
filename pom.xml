@@ -98,7 +98,7 @@
         <aws.sdk.version>1.11.75</aws.sdk.version>
         <cassandra.driver.version>3.6.0</cassandra.driver.version>
         <encoding>UTF-8</encoding>
-        <jackson.version>2.10.0</jackson.version>
+        <jackson.version>2.12.6.1</jackson.version>
         <java.version>11</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
