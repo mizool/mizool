@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 public class CacheHeaderFilter extends HttpFilterAdapter
 {
     private static final Pattern STATIC_ELEMENTS_PATH_PATTERN = Pattern.compile(
-        "^/(webjars|\\d+(\\.\\d+)*(-[\\dA-Za-z]+)?)/.+$");
+        "^\\/(webjars|\\d+(\\.\\d+)*+(-[\\dA-Za-z]+)?)\\/.+$");
 
     @Override
     protected void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
