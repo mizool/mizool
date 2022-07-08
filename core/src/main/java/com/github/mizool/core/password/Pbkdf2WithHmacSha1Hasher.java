@@ -10,7 +10,7 @@ import com.github.mizool.core.configuration.Config;
  * @deprecated For newly saved passwords, use {@link Pbkdf2WithHmacSha512Hasher} instead. This hasher is kept to allow continued verification of old passwords.
  */
 @Slf4j
-@Deprecated
+@Deprecated(since = "0.44")
 @MetaInfServices(PasswordHasher.class)
 public class Pbkdf2WithHmacSha1Hasher extends AbstractPbkdf2WithHmacShaHasher
 {

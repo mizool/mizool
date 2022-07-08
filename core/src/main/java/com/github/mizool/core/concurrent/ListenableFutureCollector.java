@@ -45,7 +45,7 @@ import com.google.common.util.concurrent.SettableFuture;
  * @deprecated This class does not propagate exceptions consistently and will be removed. Use {@link FutureStreamJoiner}
  * instead.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ListenableFutureCollector implements Collector<ListenableFuture<Void>, Void, ListenableFuture<Void>>
 {

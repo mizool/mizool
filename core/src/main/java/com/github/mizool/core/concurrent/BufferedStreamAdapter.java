@@ -181,7 +181,7 @@ public final class BufferedStreamAdapter<F, V>
     /**
      * @deprecated Use {@link #listenable()} and {@link Listenable#adapt(Stream, int, ExecutorService)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <E> Stream<E> adapt(
         Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
     {

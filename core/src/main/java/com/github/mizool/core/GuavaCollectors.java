@@ -31,7 +31,7 @@ public final class GuavaCollectors
         private CollectorImpl(
             Supplier<A> supplier, BiConsumer<A, T> accumulator, BinaryOperator<A> combiner, Function<A, R> finisher)
         {
-            this(supplier, accumulator, combiner, finisher, ImmutableSet.of());
+            this(supplier, accumulator, combiner, finisher, Set.of());
         }
 
         private CollectorImpl(
@@ -82,7 +82,7 @@ public final class GuavaCollectors
     /**
      * @deprecated Use {@link ImmutableList#toImmutableList()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <T> Collector<T, ?, ImmutableList<T>> toImmutableList()
     {
         return ImmutableList.toImmutableList();
@@ -91,7 +91,7 @@ public final class GuavaCollectors
     /**
      * @deprecated Use {@link ImmutableSet#toImmutableSet()} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <T> Collector<T, ?, ImmutableSet<T>> toImmutableSet()
     {
         return ImmutableSet.toImmutableSet();
@@ -100,7 +100,7 @@ public final class GuavaCollectors
     /**
      * @deprecated Use {@link ImmutableMap#toImmutableMap(Function, Function)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <T, K, U> Collector<T, ?, ImmutableMap<K, U>> toImmutableMap(
         Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends U> valueMapper)
     {
@@ -111,7 +111,7 @@ public final class GuavaCollectors
      * @deprecated Use {@link ImmutableListMultimap#toImmutableListMultimap(Function, Function)} instead. This will
      * require some refactoring as it expects the value mapper to map one value instead of a list.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <T, K, U> Collector<T, ImmutableListMultimap.Builder<K, U>, ImmutableListMultimap<K, U>> toImmutableListMultimap(
         Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends List<U>> valueMapper)
     {
@@ -125,7 +125,7 @@ public final class GuavaCollectors
      * @deprecated Use {@link ImmutableSetMultimap#toImmutableSetMultimap(Function, Function)} instead. This will
      * require some refactoring as it expects the value mapper to map one value instead of a list.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <T, K, U> Collector<T, ImmutableSetMultimap.Builder<K, U>, ImmutableSetMultimap<K, U>> toImmutableSetMultimap(
         Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends Set<U>> valueMapper)
     {
