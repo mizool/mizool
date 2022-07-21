@@ -9,7 +9,7 @@ package com.github.mizool.core.exception;
  * Instead, consider creating an exception class specific to the respective problem that extends
  * {@link AbstractUnprocessableEntityException}.
  */
-@Deprecated
+@Deprecated(forRemoval = true)
 public class UnprocessableEntityException extends AbstractUnprocessableEntityException
 {
     public UnprocessableEntityException()

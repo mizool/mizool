@@ -2,9 +2,12 @@ package com.github.mizool.core;
 
 import java.util.ServiceLoader;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class MetaInfServices
 {
-    public static <S> Iterable<S> instances(Class<S> service)
+    public <S> Iterable<S> instances(Class<S> service)
     {
         return ServiceLoader.load(service, service.getClassLoader());
     }

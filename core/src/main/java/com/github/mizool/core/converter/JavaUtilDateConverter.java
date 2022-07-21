@@ -6,7 +6,10 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
-@Deprecated()
+/**
+ * @deprecated Don't use java.util.Date.
+ */
+@Deprecated(forRemoval = true)
 public class JavaUtilDateConverter
 {
     public Date fromZonedDateTime(ZonedDateTime pojo)
@@ -42,13 +45,14 @@ public class JavaUtilDateConverter
         return result;
     }
 
-    public LocalDate toLocalDate(Date record)
+    public LocalDate toLocalDate(Date date)
     {
         LocalDate pojo = null;
 
-        if (record != null)
+        if (date != null)
         {
-            pojo = LocalDate.from(record.toInstant().atZone(ZoneOffset.UTC));
+            pojo = LocalDate.from(date.toInstant()
+                .atZone(ZoneOffset.UTC));
         }
         return pojo;
     }

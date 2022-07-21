@@ -5,7 +5,7 @@ public interface Identifiable<T extends Identifiable>
     /**
      * @deprecated use getId() instead
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     default Identifier<T> getIdentifier()
     {
         return getId();
