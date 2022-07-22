@@ -57,11 +57,12 @@ class ErrorHandlingBehaviorCatalog
         ErrorHandlingBehavior behavior = catalog.get(t.getClass());
         if (behavior == null)
         {
-            for (Class<? extends Throwable> throwableClass : catalog.keySet())
+            for (Map.Entry<Class<? extends Throwable>, ErrorHandlingBehavior> catalogEntry : catalog.entrySet())
             {
-                if (throwableClass.isAssignableFrom(t.getClass()))
+                if (catalogEntry.getKey()
+                    .isAssignableFrom(t.getClass()))
                 {
-                    behavior = catalog.get(throwableClass);
+                    behavior = catalogEntry.getValue();
                 }
             }
         }
