@@ -15,28 +15,41 @@ import com.google.common.collect.ImmutableMap;
 @Slf4j
 class ErrorHandlingBehaviorCatalog
 {
-    private static final String CORE_PACKAGE = ErrorHandlingBehaviorCatalog.class.getPackage().getName();
+    private static final String CORE_PACKAGE = ErrorHandlingBehaviorCatalog.class.getPackage()
+        .getName();
 
     private final Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog;
 
     public ErrorHandlingBehaviorCatalog()
     {
         Iterable<ErrorHandlingBehavior> behaviors = MetaInfServices.instances(ErrorHandlingBehavior.class);
-        final Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog = new HashMap<>();
-        behaviors.forEach(behavior -> {
-            String behaviorPackage = behavior.getClass().getPackage().getName();
+        catalog = buildCatalog(behaviors);
+    }
+
+    private Map<Class<? extends Throwable>, ErrorHandlingBehavior> buildCatalog(
+        Iterable<ErrorHandlingBehavior> behaviors)
+    {
+        Map<Class<? extends Throwable>, ErrorHandlingBehavior> result = new HashMap<>();
+
+        for (ErrorHandlingBehavior behavior : behaviors)
+        {
             Class<? extends Throwable> throwableClass = behavior.getThrowableClass();
-            if (notInCatalog(catalog, throwableClass) || isApplicationLevel(behaviorPackage))
+            String behaviorPackage = behavior.getClass()
+                .getPackage()
+                .getName();
+            if (notInCatalog(result, throwableClass) || isApplicationLevel(behaviorPackage))
             {
-                catalog.put(throwableClass, behavior);
+                result.put(throwableClass, behavior);
             }
             else
             {
-                log.debug("Ignoring behavior {}", behavior.getClass().getName());
+                log.debug("Ignoring behavior {}",
+                    behavior.getClass()
+                        .getName());
             }
-        });
+        }
 
-        this.catalog = ImmutableMap.copyOf(catalog);
+        return ImmutableMap.copyOf(result);
     }
 
     public Optional<ErrorHandlingBehavior> lookup(Throwable t)
@@ -52,13 +65,11 @@ class ErrorHandlingBehaviorCatalog
                 }
             }
         }
-        Optional<ErrorHandlingBehavior> result = Optional.ofNullable(behavior);
-        return result;
+        return Optional.ofNullable(behavior);
     }
 
     private boolean notInCatalog(
-        Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog,
-        Class<? extends Throwable> throwableClass)
+        Map<Class<? extends Throwable>, ErrorHandlingBehavior> catalog, Class<? extends Throwable> throwableClass)
     {
         return !catalog.containsKey(throwableClass);
     }
