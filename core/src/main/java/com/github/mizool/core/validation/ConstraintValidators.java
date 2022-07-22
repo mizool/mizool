@@ -11,15 +11,16 @@ public class ConstraintValidators
 {
     public static <T> boolean isValid(T validationObject, boolean mandatory, Predicate<T> isValidValue)
     {
-        boolean result = isNullButOptional(validationObject, mandatory);
+        boolean result;
         if (validationObject instanceof Iterable)
         {
             Iterable<T> validationObjects = (Iterable<T>) validationObject;
-            result = result || isNotNullAndValid(validationObjects, isValidValue);
+            result = isNotNullAndValid(validationObjects, isValidValue);
         }
         else
         {
-            result = result || isNotNullAndValid(validationObject, isValidValue);
+            result = isNullButOptional(validationObject, mandatory) ||
+                isNotNullAndValid(validationObject, isValidValue);
         }
 
         return result;
@@ -37,6 +38,7 @@ public class ConstraintValidators
 
     private static <T> boolean isNotNullAndValid(Iterable<T> validationObjects, Predicate<T> isValidValue)
     {
-        return Streams.sequential(validationObjects).allMatch(isValidValue);
+        return Streams.sequential(validationObjects)
+            .allMatch(isValidValue);
     }
 }
