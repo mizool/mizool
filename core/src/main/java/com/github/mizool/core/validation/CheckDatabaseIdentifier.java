@@ -29,10 +29,8 @@ public class CheckDatabaseIdentifier implements ConstraintValidator<DatabaseIden
         if (validationObject instanceof String)
         {
             String validationString = (String) validationObject;
-            valid = !validationString.isEmpty() &&
-                PATTERN.matcher(validationString)
-                    .matches() &&
-                validationString.length() <= 48;
+            valid = PATTERN.matcher(validationString)
+                .matches() && validationString.length() <= 48;
         }
         return valid;
     }
