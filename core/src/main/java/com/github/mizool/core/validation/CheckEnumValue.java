@@ -7,7 +7,8 @@ import com.google.common.base.Enums;
 
 public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
 {
-    private Class enumeration;
+    @SuppressWarnings("rawtypes")
+    private Class<? extends Enum> enumeration;
     private boolean mandatory;
 
     @Override
@@ -23,6 +24,7 @@ public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
         return ConstraintValidators.isValid(validationObject, mandatory, this::isValidValue);
     }
 
+    @SuppressWarnings("unchecked")
     private boolean isValidValue(Object validationObject)
     {
         boolean valid = false;
