@@ -19,29 +19,29 @@ public class JsonConverter
 
     public <P> String toRecord(P pojo)
     {
-        String record = null;
+        String result = null;
         if (pojo != null)
         {
             try
             {
-                record = objectMapper.writeValueAsString(pojo);
+                result = objectMapper.writeValueAsString(pojo);
             }
             catch (JsonProcessingException e)
             {
                 throw new StoreLayerException("Error serializing field", e);
             }
         }
-        return record;
+        return result;
     }
 
-    public <P> P toPojo(String record, TypeReference<P> type)
+    public <P> P toPojo(String sourceRecord, TypeReference<P> type)
     {
         P pojo = null;
-        if (record != null)
+        if (sourceRecord != null)
         {
             try
             {
-                pojo = objectMapper.readValue(record, type);
+                pojo = objectMapper.readValue(sourceRecord, type);
             }
             catch (IOException e)
             {
