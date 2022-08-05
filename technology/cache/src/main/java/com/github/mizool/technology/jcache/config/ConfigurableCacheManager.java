@@ -16,10 +16,10 @@ import com.github.mizool.technology.jcache.common.AbstractDelegatingCacheManager
 @NonDefault
 public class ConfigurableCacheManager extends AbstractDelegatingCacheManager
 {
-    private final Event<CacheCreation> cacheCreationEvent;
+    private final Event<CacheCreation<?, ?>> cacheCreationEvent;
 
     @Inject
-    public ConfigurableCacheManager(@NonNull Event<CacheCreation> cacheCreationEvent)
+    public ConfigurableCacheManager(@NonNull Event<CacheCreation<?, ?>> cacheCreationEvent)
     {
         this.cacheCreationEvent = cacheCreationEvent;
     }
@@ -34,7 +34,7 @@ public class ConfigurableCacheManager extends AbstractDelegatingCacheManager
          */
         MutableConfiguration<K, V> mutableConfiguration = new MutableConfiguration<>();
 
-        CacheCreation cacheCreation = new CacheCreation(cacheName, mutableConfiguration);
+        CacheCreation<K, V> cacheCreation = new CacheCreation<>(cacheName, mutableConfiguration);
         cacheCreationEvent.fire(cacheCreation);
 
         return super.createCache(cacheCreation.getCacheName(), cacheCreation.getConfiguration());
