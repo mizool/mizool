@@ -50,6 +50,7 @@ public class TestDatabaseIdentifierAnnotation
     public Object[][] createUnacceptableValues()
     {
         return new Object[][]{
+            { "" },
             { "_login" },
             { "log(in" },
             { "login!" },
