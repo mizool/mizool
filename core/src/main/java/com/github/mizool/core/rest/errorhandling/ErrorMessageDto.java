@@ -30,21 +30,45 @@ public class ErrorMessageDto
     private SetMultimap<String, ErrorDto> combineErrors(ErrorMessageDto other)
     {
         SetMultimap<String, ErrorDto> combined = HashMultimap.create();
-        errors.forEach(combined::putAll);
-        other.getErrors()
-            .forEach(combined::putAll);
+        if (errors != null)
+        {
+            errors.forEach(combined::putAll);
+        }
+        if (other.getErrors() != null)
+        {
+            other.getErrors()
+                .forEach(combined::putAll);
+        }
         return Multimaps.unmodifiableSetMultimap(combined);
     }
 
     private Map<String, Object> combineGlobalParameters(ErrorMessageDto other)
     {
+        Map<String, Object> result;
+
         Map<String, Object> otherGlobalParameters = other.getGlobalParameters();
+        if (globalParameters == null && otherGlobalParameters == null)
+        {
+            result = null;
+        }
+        else if (globalParameters != null && otherGlobalParameters == null)
+        {
+            result = globalParameters;
+        }
+        else if (globalParameters == null && otherGlobalParameters != null)
+        {
+            result = otherGlobalParameters;
+        }
+        else
+        {
+            Set<String> combinedKeys = Sets.union(globalParameters.keySet(), otherGlobalParameters.keySet());
 
-        Set<String> combinedKeys = Sets.union(globalParameters.keySet(), otherGlobalParameters.keySet());
+            result = combinedKeys.stream()
+                .collect(ImmutableMap.toImmutableMap(key -> key,
+                    key -> resolveValueInOrder(key, otherGlobalParameters, globalParameters)));
+        }
 
-        return combinedKeys.stream()
-            .collect(ImmutableMap.toImmutableMap(key -> key,
-                key -> resolveValueInOrder(key, otherGlobalParameters, globalParameters)));
+        return result;
     }
 
     private Object resolveValueInOrder(String key, Map<String, Object> first, Map<String, Object> second)
