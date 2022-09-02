@@ -12,20 +12,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class Identifier<T> implements Serializable
 {
-    private static final String
-        CHARACTERS_FOR_RANDOM_STRING
-        = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private static final SecureRandom RANDOM = new SecureRandom();
-
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class IdentifierBuilder<T>
     {
+        private static final String
+            CHARACTERS_FOR_RANDOM_IDENTIFIER_VALUE
+            = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        private static final SecureRandom RANDOM = new SecureRandom();
+        private static final int RANDOM_IDENTIFIER_VALUE_LENGTH = 20;
+
         @NonNull
         private final Class<T> pojoClass;
 
         public Identifier<T> random()
         {
-            return new Identifier<T>(pojoClass, randomString(20));
+            return new Identifier<>(pojoClass, randomIdentifierValue());
         }
 
         public Identifier<T> of(@NonNull String value)
@@ -34,24 +35,24 @@ public class Identifier<T> implements Serializable
             {
                 throw new IllegalArgumentException("Identifier value is empty");
             }
-            return new Identifier<T>(pojoClass, value);
+            return new Identifier<>(pojoClass, value);
         }
-    }
 
-    private static String randomString(int length)
-    {
-        StringBuilder result = new StringBuilder(length);
-        for (int i = 0; i < length; i++)
+        private static String randomIdentifierValue()
         {
-            int characterIndex = RANDOM.nextInt(CHARACTERS_FOR_RANDOM_STRING.length());
-            result.append(CHARACTERS_FOR_RANDOM_STRING.charAt(characterIndex));
+            StringBuilder result = new StringBuilder(RANDOM_IDENTIFIER_VALUE_LENGTH);
+            for (int i = 0; i < RANDOM_IDENTIFIER_VALUE_LENGTH; i++)
+            {
+                int characterIndex = RANDOM.nextInt(CHARACTERS_FOR_RANDOM_IDENTIFIER_VALUE.length());
+                result.append(CHARACTERS_FOR_RANDOM_IDENTIFIER_VALUE.charAt(characterIndex));
+            }
+            return result.toString();
         }
-        return result.toString();
     }
 
     public static <T> IdentifierBuilder<T> forPojo(Class<T> pojoClass)
     {
-        return new IdentifierBuilder<T>(pojoClass);
+        return new IdentifierBuilder<>(pojoClass);
     }
 
     @NonNull
