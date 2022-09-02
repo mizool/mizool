@@ -44,22 +44,19 @@ public class ErrorMessageDto
 
     private Map<String, Object> combineGlobalParameters(ErrorMessageDto other)
     {
-        Map<String, Object> result;
+        Map<String, Object> result = null;
 
         Map<String, Object> otherGlobalParameters = other.getGlobalParameters();
-        if (globalParameters == null && otherGlobalParameters == null)
-        {
-            result = null;
-        }
-        else if (globalParameters != null && otherGlobalParameters == null)
+
+        if (globalParameters != null && otherGlobalParameters == null)
         {
             result = globalParameters;
         }
-        else if (globalParameters == null && otherGlobalParameters != null)
+        if (globalParameters == null && otherGlobalParameters != null)
         {
             result = otherGlobalParameters;
         }
-        else
+        if (globalParameters != null && otherGlobalParameters != null)
         {
             Set<String> combinedKeys = Sets.union(globalParameters.keySet(), otherGlobalParameters.keySet());
 
