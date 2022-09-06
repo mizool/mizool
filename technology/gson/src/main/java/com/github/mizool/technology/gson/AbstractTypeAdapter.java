@@ -21,7 +21,7 @@ public abstract class AbstractTypeAdapter<T> implements JsonSerializer<T>, JsonD
 {
     private final Iterable<ExclusionStrategy> exclusionStrategies;
 
-    public AbstractTypeAdapter(ExclusionStrategy... strategies)
+    protected AbstractTypeAdapter(ExclusionStrategy... strategies)
     {
         exclusionStrategies = ImmutableSet.copyOf(strategies);
     }
@@ -42,7 +42,7 @@ public abstract class AbstractTypeAdapter<T> implements JsonSerializer<T>, JsonD
     {
         Set<Field> result = new HashSet<>();
 
-        Class<? extends Object> objectClass = object.getClass();
+        Class<?> objectClass = object.getClass();
         Field[] declaredFields = objectClass.getDeclaredFields();
         for (Field field : declaredFields)
         {
@@ -85,7 +85,7 @@ public abstract class AbstractTypeAdapter<T> implements JsonSerializer<T>, JsonD
 
     protected JsonElement serializeField(T object, Field field, JsonSerializationContext context)
     {
-        JsonElement result = null;
+        JsonElement result;
         Object fieldValue = getFieldValue(object, field);
         try
         {
@@ -96,7 +96,8 @@ public abstract class AbstractTypeAdapter<T> implements JsonSerializer<T>, JsonD
             throw new IllegalArgumentException("Could not serialize field " +
                 field.getName() +
                 " of class " +
-                object.getClass().getCanonicalName(), e);
+                object.getClass()
+                    .getCanonicalName(), e);
         }
         return result;
     }
@@ -135,7 +136,8 @@ public abstract class AbstractTypeAdapter<T> implements JsonSerializer<T>, JsonD
         T result;
         try
         {
-            result = resultClass.newInstance();
+            result = resultClass.getDeclaredConstructor()
+                .newInstance();
         }
         catch (ReflectiveOperationException e)
         {
@@ -165,7 +167,8 @@ public abstract class AbstractTypeAdapter<T> implements JsonSerializer<T>, JsonD
         }
         catch (RuntimeException e)
         {
-            throw new IllegalStateException("could not deserialize field " + field.getName() + " value " + jsonValue);
+            throw new IllegalStateException("could not deserialize field " + field.getName() + " value " + jsonValue,
+                e);
         }
         setFieldValue(targetObject, field, fieldValue);
     }

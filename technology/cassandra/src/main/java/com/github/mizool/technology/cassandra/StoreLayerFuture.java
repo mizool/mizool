@@ -8,7 +8,7 @@ import java.util.concurrent.TimeoutException;
 import com.datastax.driver.core.exceptions.NoHostAvailableException;
 import com.datastax.driver.core.exceptions.QueryExecutionException;
 import com.datastax.driver.core.exceptions.QueryValidationException;
-import com.github.mizool.core.concurrent.ResultVoidingFuture;
+import com.github.mizool.core.concurrent.Futures;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.exception.StoreLayerException;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -19,7 +19,7 @@ public class StoreLayerFuture implements ListenableFuture<Void>
 
     public StoreLayerFuture(ListenableFuture<?> target)
     {
-        this.target = new ResultVoidingFuture(target);
+        this.target = Futures.toVoidResult(target);
     }
 
     @Override

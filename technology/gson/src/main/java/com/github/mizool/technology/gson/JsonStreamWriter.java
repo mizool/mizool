@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -19,7 +20,6 @@ import javax.ws.rs.ext.Provider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import com.google.common.base.Charsets;
 import com.google.gson.stream.JsonWriter;
 
 @Provider
@@ -52,11 +52,10 @@ public class JsonStreamWriter implements MessageBodyWriter<Stream<?>>
         MultivaluedMap<String, Object> httpHeaders,
         OutputStream entityStream) throws IOException, WebApplicationException
     {
-        try (
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(entityStream, Charsets.UTF_8);
-            BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
-            JsonWriter jsonWriter = gsonWrapper.newJsonWriter(bufferedWriter);
-            Stream<?> streamToClose = stream)
+        try (OutputStreamWriter outputStreamWriter = new OutputStreamWriter(entityStream, StandardCharsets.UTF_8);
+             BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
+             JsonWriter jsonWriter = gsonWrapper.newJsonWriter(bufferedWriter);
+             Stream<?> streamToClose = stream)
         {
             jsonWriter.beginArray();
             streamToClose.forEach(element -> gsonWrapper.toJson(element, element.getClass(), jsonWriter));
