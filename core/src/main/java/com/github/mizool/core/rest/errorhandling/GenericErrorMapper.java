@@ -13,7 +13,7 @@ import com.google.common.collect.SetMultimap;
 @Slf4j
 public class GenericErrorMapper
 {
-    static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
+    public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
 
     private final ErrorHandlingBehaviorCatalog errorHandlingBehaviorCatalog;
     private final GlobalParametersSupplier globalParametersSupplier;
