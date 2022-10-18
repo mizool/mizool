@@ -17,13 +17,12 @@ import com.github.mizool.core.exception.StoreLayerException;
 public class Records
 {
     public <R extends TableRecord<R>> void insert(
-        R record, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
+        R entity, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
     {
         try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int insertedRows = dslContext
-                .insertInto(table)
-                .set(record)
+            int insertedRows = dslContext.insertInto(table)
+                .set(entity)
                 .onDuplicateKeyIgnore()
                 .execute();
             if (insertedRows != 1)
@@ -38,15 +37,14 @@ public class Records
     }
 
     public <R extends TableRecord<R>> void upsert(
-        R record, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
+        R entity, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
     {
         try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int upsertedRows = dslContext
-                .insertInto(table)
-                .set(record)
+            int upsertedRows = dslContext.insertInto(table)
+                .set(entity)
                 .onDuplicateKeyUpdate()
-                .set(record)
+                .set(entity)
                 .execute();
             if (upsertedRows != 1)
             {
@@ -60,13 +58,12 @@ public class Records
     }
 
     public <R extends TableRecord<R>> void update(
-        R record, Table<R> table, Condition condition, MizoolConnectionProvider mizoolConnectionProvider)
+        R entity, Table<R> table, Condition condition, MizoolConnectionProvider mizoolConnectionProvider)
     {
         try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int updatedRows = dslContext
-                .update(table)
-                .set(record)
+            int updatedRows = dslContext.update(table)
+                .set(entity)
                 .where(condition)
                 .execute();
             if (updatedRows != 1)
@@ -81,11 +78,11 @@ public class Records
     }
 
     public <R extends UpdatableRecord<R>> void delete(
-        R record, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
+        R entity, Table<R> table, MizoolConnectionProvider mizoolConnectionProvider)
     {
         try (CloseableDSLContext dslContext = DslContexts.obtain(mizoolConnectionProvider))
         {
-            int deletedRows = dslContext.executeDelete(record);
+            int deletedRows = dslContext.executeDelete(entity);
             if (deletedRows != 1)
             {
                 throw new ObjectNotFoundException("No row was deleted in " + table.getName());

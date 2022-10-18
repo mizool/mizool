@@ -26,7 +26,7 @@ public @interface EnumValue
 
     Class<? extends Payload>[] payload() default {};
 
-    Class<? extends Enum> value();
+    @SuppressWarnings("rawtypes") Class<? extends Enum> value();
 
     boolean mandatory();
 }
