@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          lfs: true
 
       - name: Prepare directories
         run: mkdir -p /home/runner/work/_temp/_github_home/talos-m2-repository
