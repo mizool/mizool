@@ -10,7 +10,7 @@ public class NotYetImplementedException extends CodeInconsistencyException
     /**
      * @deprecated Deprecated to remind you to implement the corresponding code before releasing the software.
      */
-    @Deprecated
+    @Deprecated(since = "0.1")
     public NotYetImplementedException()
     {
     }
@@ -18,7 +18,7 @@ public class NotYetImplementedException extends CodeInconsistencyException
     /**
      * @deprecated Deprecated to remind you to implement the corresponding code before releasing the software.
      */
-    @Deprecated
+    @Deprecated(since = "0.1")
     public NotYetImplementedException(String message)
     {
         super(message);

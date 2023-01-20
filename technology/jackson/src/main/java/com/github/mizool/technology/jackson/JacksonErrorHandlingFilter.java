@@ -1,5 +1,7 @@
 package com.github.mizool.technology.jackson;
 
+import java.nio.charset.StandardCharsets;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -8,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mizool.core.exception.CodeInconsistencyException;
 import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
 import com.github.mizool.technology.web.AbstractErrorHandlingFilter;
-import com.google.common.base.Charsets;
 
 @Singleton
 public class JacksonErrorHandlingFilter extends AbstractErrorHandlingFilter
@@ -23,7 +24,7 @@ public class JacksonErrorHandlingFilter extends AbstractErrorHandlingFilter
         try
         {
             String errorMessage = objectMapper.writeValueAsString(errorMessageDto);
-            result = errorMessage.getBytes(Charsets.UTF_8);
+            result = errorMessage.getBytes(StandardCharsets.UTF_8);
         }
         catch (JsonProcessingException e)
         {

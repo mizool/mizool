@@ -32,7 +32,7 @@ public class CheckCountryCode implements ConstraintValidator<CountryCode, Object
         if (validationObject instanceof String)
         {
             String validationString = (String) validationObject;
-            return !validationString.isEmpty() && COUNTRY_CODES.contains(validationString);
+            valid = !validationString.isEmpty() && COUNTRY_CODES.contains(validationString);
         }
         return valid;
     }

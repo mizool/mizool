@@ -20,9 +20,9 @@ import com.google.common.util.concurrent.SettableFuture;
  * memory footprint when working with multiple futures at once without caring for the results.
  *
  * @deprecated Use the factory method {@link com.github.mizool.core.concurrent.Futures#toVoidResult(ListenableFuture)}
- *     instead. This class will cease to be public at some point.
+ * instead. This class will cease to be public at some point.
  */
-@Deprecated
+@Deprecated(since = "0.41")
 public class ResultVoidingFuture implements ListenableFuture<Void>
 {
     private class Callback<V> implements FutureCallback<V>
@@ -45,9 +45,9 @@ public class ResultVoidingFuture implements ListenableFuture<Void>
     /**
      * @deprecated Use the factory method
      * {@link com.github.mizool.core.concurrent.Futures#toVoidResult(ListenableFuture)}
-     *     instead. This class will cease to be public at some point.
+     * instead. This class will cease to be public at some point.
      */
-    @Deprecated
+    @Deprecated(since = "0.41")
     public <T> ResultVoidingFuture(ListenableFuture<T> target)
     {
         Futures.addCallback(target, new Callback<>(), MoreExecutors.directExecutor());

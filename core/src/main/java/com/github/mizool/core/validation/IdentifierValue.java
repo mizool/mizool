@@ -26,7 +26,7 @@ public @interface IdentifierValue
 
     Class<? extends Payload>[] payload() default {};
 
-    Class of();
+    Class<?> of();
 
     boolean mandatory();
 }

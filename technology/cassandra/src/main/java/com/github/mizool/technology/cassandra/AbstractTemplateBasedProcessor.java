@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import org.stringtemplate.v4.ST;
 
 import com.github.mizool.core.st4.TemplateLoader;
-import com.google.common.collect.ImmutableSet;
 
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 abstract class AbstractTemplateBasedProcessor extends AbstractProcessor
@@ -37,7 +36,7 @@ abstract class AbstractTemplateBasedProcessor extends AbstractProcessor
     @Override
     public final Set<String> getSupportedAnnotationTypes()
     {
-        return ImmutableSet.of(annotationClass.getCanonicalName());
+        return Set.of(annotationClass.getCanonicalName());
     }
 
     @Override
@@ -74,11 +73,13 @@ abstract class AbstractTemplateBasedProcessor extends AbstractProcessor
             throw new IllegalArgumentException("Only classes can be annotated with " + annotationName);
         }
         TypeElement classElement = (TypeElement) annotatedElement;
-        if (!classElement.getModifiers().contains(Modifier.PUBLIC))
+        if (!classElement.getModifiers()
+            .contains(Modifier.PUBLIC))
         {
             throw new IllegalArgumentException("Only public classes can be annotated with " + annotationName);
         }
-        if (classElement.getModifiers().contains(Modifier.ABSTRACT))
+        if (classElement.getModifiers()
+            .contains(Modifier.ABSTRACT))
         {
             throw new IllegalArgumentException("Abstract classes can't be annotated with " + annotationName);
         }
@@ -98,8 +99,11 @@ abstract class AbstractTemplateBasedProcessor extends AbstractProcessor
     {
         TemplateLoader templateLoader = new TemplateLoader();
         ST template = templateLoader.getGroupTemplate(templateName, getClass());
-        String packageName = elementUtils.getPackageOf(classElement).getQualifiedName().toString();
-        String className = classElement.getSimpleName().toString();
+        String packageName = elementUtils.getPackageOf(classElement)
+            .getQualifiedName()
+            .toString();
+        String className = classElement.getSimpleName()
+            .toString();
         template.add("packageName", packageName);
         template.add("className", className);
         return template.render();

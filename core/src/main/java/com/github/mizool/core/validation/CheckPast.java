@@ -9,9 +9,6 @@ import javax.validation.ConstraintValidatorContext;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
-import com.google.common.annotations.VisibleForTesting;
-
-@VisibleForTesting
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class CheckPast implements ConstraintValidator<Past, Object>
 {

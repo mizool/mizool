@@ -35,7 +35,7 @@ public class Optionals
      *
      * @deprecated Use {@link Optionals#unwrapUserRequestedObject(Optional, Class)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public <T> T unwrapUserRequestedObject(
         @NonNull com.google.common.base.Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
@@ -70,7 +70,7 @@ public class Optionals
      *
      * @deprecated Use {@link Optionals#unwrapRequiredObject(Optional, Class)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public <T> T unwrapRequiredObject(@NonNull com.google.common.base.Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
         if (!wrapped.isPresent())
@@ -104,7 +104,7 @@ public class Optionals
      *
      * @deprecated Use {@link Optionals#unwrapUserMentionedObject(Optional, Class)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public <T> T unwrapUserMentionedObject(
         @NonNull com.google.common.base.Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
@@ -131,6 +131,7 @@ public class Optionals
      */
     public <T> Stream<T> streamPresentValue(@NonNull Optional<T> optional)
     {
-        return optional.map(Stream::of).orElseGet(Stream::empty);
+        return optional.map(Stream::of)
+            .orElseGet(Stream::empty);
     }
 }

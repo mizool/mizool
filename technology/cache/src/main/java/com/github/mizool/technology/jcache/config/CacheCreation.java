@@ -5,8 +5,8 @@ import javax.cache.configuration.MutableConfiguration;
 import lombok.Data;
 
 @Data
-public class CacheCreation
+public class CacheCreation<K, V>
 {
     private final String cacheName;
-    private final MutableConfiguration configuration;
+    private final MutableConfiguration<K, V> configuration;
 }

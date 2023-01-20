@@ -100,7 +100,11 @@ public final class BufferedStreamAdapter<F, V>
 
         private Throwable unwrapException(@NonNull Throwable throwable)
         {
-            return throwable instanceof UncheckedExecutionException ? throwable.getCause() : throwable;
+            if (throwable instanceof UncheckedExecutionException)
+            {
+                throwable = throwable.getCause();
+            }
+            return throwable;
         }
     }
 
@@ -126,7 +130,11 @@ public final class BufferedStreamAdapter<F, V>
 
         private Throwable unwrapException(@NonNull Throwable throwable)
         {
-            return throwable instanceof CompletionException ? throwable.getCause() : throwable;
+            if (throwable instanceof CompletionException)
+            {
+                throwable = throwable.getCause();
+            }
+            return throwable;
         }
     }
 
@@ -181,7 +189,7 @@ public final class BufferedStreamAdapter<F, V>
     /**
      * @deprecated Use {@link #listenable()} and {@link Listenable#adapt(Stream, int, ExecutorService)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public static <E> Stream<E> adapt(
         Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
     {

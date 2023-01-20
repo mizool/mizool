@@ -5,17 +5,14 @@ import java.util.Optional;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 @Slf4j
-@VisibleForTesting
 public class GenericErrorMapper
 {
-    @VisibleForTesting
     public static final String GLOBAL_PROPERTY_KEY = "GLOBAL";
 
     private final ErrorHandlingBehaviorCatalog errorHandlingBehaviorCatalog;

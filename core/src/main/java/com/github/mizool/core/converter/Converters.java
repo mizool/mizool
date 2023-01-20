@@ -18,7 +18,9 @@ public class Converters
         List<D> results = null;
         if (pojos != null)
         {
-            results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
+            results = pojos.stream()
+                .map(converter)
+                .collect(ImmutableList.toImmutableList());
         }
         return results;
     }
@@ -28,7 +30,9 @@ public class Converters
         List<R> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
+            results = pojos.stream()
+                .map(converter)
+                .collect(ImmutableList.toImmutableList());
         }
         return results;
     }
@@ -36,13 +40,15 @@ public class Converters
     /**
      * @deprecated Use {@link Converters#toRecords(List, Function)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public <R, P> List<R> fromPojos(List<P> pojos, Function<P, R> converter)
     {
         List<R> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            results = pojos.stream().map(converter).collect(ImmutableList.toImmutableList());
+            results = pojos.stream()
+                .map(converter)
+                .collect(ImmutableList.toImmutableList());
         }
         return results;
     }
@@ -52,7 +58,9 @@ public class Converters
         List<P> pojos;
         if (values != null)
         {
-            pojos = values.stream().map(converter).collect(ImmutableList.toImmutableList());
+            pojos = values.stream()
+                .map(converter)
+                .collect(ImmutableList.toImmutableList());
         }
         else
         {
@@ -66,7 +74,9 @@ public class Converters
         Set<D> results = null;
         if (pojos != null)
         {
-            results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
+            results = pojos.stream()
+                .map(converter)
+                .collect(ImmutableSet.toImmutableSet());
         }
         return results;
     }
@@ -76,7 +86,9 @@ public class Converters
         Set<R> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
+            results = pojos.stream()
+                .map(converter)
+                .collect(ImmutableSet.toImmutableSet());
         }
 
         return results;
@@ -85,13 +97,15 @@ public class Converters
     /**
      * @deprecated Use {@link Converters#toRecords(Set, Function)} instead.
      */
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public <R, P> Set<R> fromPojos(Set<P> pojos, Function<P, R> converter)
     {
         Set<R> results = null;
         if (pojos != null && !pojos.isEmpty())
         {
-            results = pojos.stream().map(converter).collect(ImmutableSet.toImmutableSet());
+            results = pojos.stream()
+                .map(converter)
+                .collect(ImmutableSet.toImmutableSet());
         }
 
         return results;
@@ -102,7 +116,9 @@ public class Converters
         Set<P> pojos;
         if (values != null)
         {
-            pojos = values.stream().map(converter).collect(ImmutableSet.toImmutableSet());
+            pojos = values.stream()
+                .map(converter)
+                .collect(ImmutableSet.toImmutableSet());
         }
         else
         {

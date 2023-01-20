@@ -19,7 +19,7 @@ public class HealthCheck
         Set<Check> result;
         if (checks.length == 0)
         {
-            result = ImmutableSet.of(new DefaultCheck());
+            result = Set.of(new DefaultCheck());
         }
         else
         {
@@ -36,18 +36,22 @@ public class HealthCheck
 
     private Set<CheckResult> performChecks(Set<Check> checks)
     {
-        return checks.stream().map(Check::perform).collect(ImmutableSet.toImmutableSet());
+        return checks.stream()
+            .map(Check::perform)
+            .collect(ImmutableSet.toImmutableSet());
     }
 
     private Response createResponse(Set<CheckResult> checkResults)
     {
-        return getResponseBuilderWithStatus(checkResults).entity(getResponseBody(checkResults)).build();
+        return getResponseBuilderWithStatus(checkResults).entity(getResponseBody(checkResults))
+            .build();
     }
 
     Response.ResponseBuilder getResponseBuilderWithStatus(Set<CheckResult> checkResults)
     {
         Response.ResponseBuilder responseBuilder;
-        if (checkResults.stream().allMatch(CheckResult::isSuccess))
+        if (checkResults.stream()
+            .allMatch(CheckResult::isSuccess))
         {
             responseBuilder = Response.ok();
         }
