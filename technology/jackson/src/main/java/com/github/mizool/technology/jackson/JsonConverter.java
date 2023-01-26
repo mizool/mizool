@@ -2,7 +2,7 @@ package com.github.mizool.technology.jackson;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

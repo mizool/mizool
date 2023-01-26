@@ -1,7 +1,7 @@
 package com.github.mizool.technology.jcache.safe;
 
 import javax.cache.CacheManager;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

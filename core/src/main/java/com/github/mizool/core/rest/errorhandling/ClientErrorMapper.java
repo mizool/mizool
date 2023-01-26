@@ -2,7 +2,7 @@ package com.github.mizool.core.rest.errorhandling;
 
 import static com.github.mizool.core.rest.errorhandling.GenericErrorMapper.GLOBAL_PROPERTY_KEY;
 
-import javax.ws.rs.ClientErrorException;
+import jakarta.ws.rs.ClientErrorException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,8 +1,8 @@
 package com.github.mizool.technology.cassandra;
 
-import javax.enterprise.inject.Disposes;
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
 
 import com.datastax.driver.core.Cluster;
 

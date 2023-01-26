@@ -3,7 +3,7 @@ package com.github.mizool.technology.jackson;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 import com.google.common.base.Strings;
 
