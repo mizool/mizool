@@ -1,15 +1,18 @@
 package com.github.mizool.core.concurrent;
 
+import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
+import com.github.mizool.core.validation.Nullable;
 
 /**
  * Encapsulates synchronization and wait/notify functionality. <br>
@@ -73,16 +76,39 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
  */
 public final class Synchronizer implements SynchronizerApi.SleepRunGet
 {
+    @Getter
+    private static final class SleepSpec
+    {
+        /**
+         * Why "() -> true"? As mentioned in the API, if the condition returns true, we never even start sleeping.
+         */
+        private static final SleepSpec NO_SLEEP = new SleepSpec(() -> true, null);
+
+        private final BooleanSupplier condition;
+        private final long timeoutMillis;
+
+        @Builder
+        private SleepSpec(@NonNull BooleanSupplier condition, @Nullable Duration timeout)
+        {
+            this.condition = condition;
+
+            // If the user doesn't specify a timeout, we default to zero, which wait() interprets as "indefinite".
+            this.timeoutMillis = timeout == null
+                ? 0
+                : timeout.toMillis();
+        }
+    }
+
     private static final class RunAction implements SynchronizerApi.Run.WakeSleepInvoke
     {
         private final Lock lock;
 
-        private final BooleanSupplier preState;
+        private final SleepSpec sleepBefore;
 
         private final Runnable runnable;
 
         @With
-        private final BooleanSupplier postState;
+        private final SleepSpec sleepAfter;
 
         @With
         private final boolean wakeOthers;
@@ -90,15 +116,15 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         @Builder
         public RunAction(
             @NonNull Lock lock,
-            BooleanSupplier preState,
+            SleepSpec sleepBefore,
             @NonNull Runnable runnable,
-            BooleanSupplier postState,
+            SleepSpec sleepAfter,
             boolean wakeOthers)
         {
             this.lock = lock;
-            this.preState = useValueOrDefault(preState, () -> true);
+            this.sleepBefore = useValueOrDefault(sleepBefore, SleepSpec.NO_SLEEP);
             this.runnable = runnable;
-            this.postState = useValueOrDefault(postState, () -> true);
+            this.sleepAfter = useValueOrDefault(sleepAfter, SleepSpec.NO_SLEEP);
             this.wakeOthers = wakeOthers;
         }
 
@@ -107,7 +133,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         {
             synchronized (lock)
             {
-                lock.sleepUntil(preState);
+                lock.sleep(sleepBefore);
 
                 runnable.run();
 
@@ -116,7 +142,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
                     lock.notifyAll();
                 }
 
-                lock.sleepUntil(postState);
+                lock.sleep(sleepAfter);
             }
         }
 
@@ -127,9 +153,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
 
         @Override
-        public SynchronizerApi.Run.Invoke thenSleepUntil(@NonNull BooleanSupplier state)
+        public SynchronizerApi.Run.Invoke thenSleepUntil(@NonNull BooleanSupplier state, Duration timeout)
         {
-            return withPostState(state);
+            return withSleepAfter(new SleepSpec(state, timeout));
         }
     }
 
@@ -138,7 +164,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     {
         private final Lock lock;
 
-        private final BooleanSupplier preState;
+        private final SleepSpec sleepBefore;
 
         private final Supplier<T> getter;
 
@@ -146,20 +172,20 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         private final Predicate<T> wakeOthersPredicate;
 
         @With
-        private final BooleanSupplier postState;
+        private final SleepSpec sleepAfter;
 
         public GetAction(
             @NonNull Lock lock,
-            BooleanSupplier preState,
+            SleepSpec sleepBefore,
             @NonNull Supplier<T> getter,
             Predicate<T> wakeOthersPredicate,
-            BooleanSupplier postState)
+            SleepSpec sleepAfter)
         {
             this.lock = lock;
-            this.preState = useValueOrDefault(preState, () -> true);
+            this.sleepBefore = useValueOrDefault(sleepBefore, SleepSpec.NO_SLEEP);
             this.getter = getter;
             this.wakeOthersPredicate = useValueOrDefault(wakeOthersPredicate, t -> false);
-            this.postState = useValueOrDefault(postState, () -> true);
+            this.sleepAfter = useValueOrDefault(sleepAfter, SleepSpec.NO_SLEEP);
         }
 
         @Override
@@ -167,7 +193,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         {
             synchronized (lock)
             {
-                lock.sleepUntil(preState);
+                lock.sleep(sleepBefore);
 
                 T result = getter.get();
 
@@ -176,7 +202,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
                     lock.notifyAll();
                 }
 
-                lock.sleepUntil(postState);
+                lock.sleep(sleepAfter);
 
                 return result;
             }
@@ -195,9 +221,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
 
         @Override
-        public SynchronizerApi.Get.Invoke<T> thenSleepUntil(@NonNull BooleanSupplier state)
+        public SynchronizerApi.Get.Invoke<T> thenSleepUntil(@NonNull BooleanSupplier state, Duration timeout)
         {
-            return withPostState(state);
+            return withSleepAfter(new SleepSpec(state, timeout));
         }
     }
 
@@ -207,14 +233,14 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         @NonNull
         protected final Lock lock;
 
-        private final BooleanSupplier preState;
+        private final SleepSpec sleepBefore;
 
         @Override
         public SynchronizerApi.Run.WakeSleepInvoke run(@NonNull Runnable runnable)
         {
             return RunAction.builder()
                 .lock(lock)
-                .preState(preState)
+                .sleepBefore(sleepBefore)
                 .runnable(runnable)
                 .build();
         }
@@ -222,8 +248,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         @Override
         public <T> SynchronizerApi.Get.WakeSleepInvoke<T> get(@NonNull Supplier<T> getter)
         {
-            return GetAction.<T>builder().lock(lock)
-                .preState(preState)
+            return GetAction.<T>builder()
+                .lock(lock)
+                .sleepBefore(sleepBefore)
                 .getter(getter)
                 .build();
         }
@@ -232,16 +259,17 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     @RequiredArgsConstructor
     private static class Lock
     {
-        protected void sleepUntil(@NonNull BooleanSupplier state)
+        protected void sleep(@NonNull SleepSpec sleepSpec)
         {
             // The caller should already hold this lock, so this is a no-op. We keep it to make code analyzers happy.
             synchronized (this)
             {
                 try
                 {
-                    while (!state.getAsBoolean())
+                    while (!sleepSpec.condition.getAsBoolean())
                     {
-                        wait();
+                        // If timeout == null, maxSleepMillis will be 0, which wait() interprets as "indefinite".
+                        wait(sleepSpec.timeoutMillis);
                     }
                 }
                 catch (InterruptedException e)
@@ -288,9 +316,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     }
 
     @Override
-    public SynchronizerApi.RunGet sleepUntil(@NonNull BooleanSupplier state)
+    public SynchronizerApi.RunGet sleepUntil(@NonNull BooleanSupplier state, Duration timeout)
     {
-        return runGetChoiceBuilder().preState(state)
+        return runGetChoiceBuilder().sleepBefore(new SleepSpec(state, timeout))
             .build();
     }
 
