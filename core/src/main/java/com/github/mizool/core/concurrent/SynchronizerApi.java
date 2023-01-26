@@ -54,7 +54,7 @@ public interface SynchronizerApi
         RunGet sleepUntil(BooleanSupplier state, Duration timeout);
     }
 
-    interface RunGet
+    interface RunGet extends Run.Invoke
     {
         /**
          * Sets the given {@link Runnable} as the main action of the chain.
@@ -73,6 +73,15 @@ public interface SynchronizerApi
          * @throws NullPointerException if {@code getter} is null
          */
         <T> Get.WakeSleepInvoke<T> get(Supplier<T> getter);
+
+        @Override
+        default void invoke()
+        {
+            Runnable noOp = () -> {
+            };
+
+            run(noOp).invoke();
+        }
     }
 
     interface Run
