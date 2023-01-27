@@ -6,32 +6,26 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Provides fluent syntax for for {@link Synchronizer}.
+ * Provides fluent syntax for {@link Synchronizer}.
  */
 public interface SynchronizerApi
 {
-    /*
-     * Note on terminology: this API intentionally uses the verbs "sleep" and "wake". If it used "wait" and "notify"
-     * instead, its methods would all too easily be confused with methods in java.lang.Object which, if invoked on the
-     * objects returned by chained methods, could cause deadlocks.
-     */
-
     interface SleepRunGet extends RunGet
     {
         /**
          * Adds sleeping to the action chain. <br>
          * <br>
-         * When performing this action, the chain will ensure the given condition is met before performing the main
+         * When performing this action, the chain will ensure the given condition is met before performing the next
          * action. If the supplier returns {@code false}, this action chain sleeps until another chain wakes it up.
          * Then, the supplier is called again and if it still returns {@code false}, the chain resumes sleeping.
-         * Otherwise, the chain continues by performing the main action.
+         * Otherwise, the chain proceeds to perform the next action.
          *
          * @param state the supplier that returns {@code true} if the action chain should continue, {@code false}
          * otherwise.
          *
          * @throws NullPointerException if {@code state} is null
          */
-        default RunGet sleepUntil(BooleanSupplier state)
+        default RunGetInvoke sleepUntil(BooleanSupplier state)
         {
             return sleepUntil(state, null);
         }
@@ -39,10 +33,10 @@ public interface SynchronizerApi
         /**
          * Adds sleeping to the action chain. <br>
          * <br>
-         * When performing this action, the chain will ensure the given condition is met before performing the main
+         * When performing this action, the chain will ensure the given condition is met before performing the next
          * action. If the supplier returns {@code false}, this action chain sleeps until either another chain wakes it
          * up or the timeout has passed. Then, the supplier is called again and if it still returns {@code false}, the
-         * chain resumes sleeping. Otherwise, the chain continues by performing the main action.
+         * chain resumes sleeping. Otherwise, the chain proceeds to perform the next action.
          *
          * @param state the supplier that returns {@code true} if the action chain should continue, {@code false}
          * otherwise.
@@ -51,7 +45,7 @@ public interface SynchronizerApi
          *
          * @throws NullPointerException if {@code state} is null
          */
-        RunGet sleepUntil(BooleanSupplier state, Duration timeout);
+        RunGetInvoke sleepUntil(BooleanSupplier state, Duration timeout);
 
         /**
          * Adds an action which wakes other chains.
@@ -63,7 +57,7 @@ public interface SynchronizerApi
         }
     }
 
-    interface RunGet extends Run.Invoke
+    interface RunGet
     {
         /**
          * Sets the given {@link Runnable} as the main action of the chain.
@@ -82,7 +76,10 @@ public interface SynchronizerApi
          * @throws NullPointerException if {@code getter} is null
          */
         <T> Get.WakeSleepInvoke<T> get(Supplier<T> getter);
+    }
 
+    interface RunGetInvoke extends RunGet, Run.Invoke
+    {
         @Override
         default void invoke()
         {
