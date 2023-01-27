@@ -52,6 +52,15 @@ public interface SynchronizerApi
          * @throws NullPointerException if {@code state} is null
          */
         RunGet sleepUntil(BooleanSupplier state, Duration timeout);
+
+        /**
+         * Adds an action which wakes other chains.
+         */
+        default Run.Invoke wakeOthers()
+        {
+            return run(() -> {
+            }).andWakeOthers();
+        }
     }
 
     interface RunGet extends Run.Invoke
