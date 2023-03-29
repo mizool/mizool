@@ -5,12 +5,20 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+
 /**
  * Provides fluent syntax for {@link Synchronizer}.
  */
 public interface SynchronizerApi
 {
-    interface SleepRunGet extends RunGet
+    @CheckReturnValue
+    interface Fluent
+    {
+    }
+
+    interface SleepRunGet extends Fluent, RunGet
     {
         /**
          * Adds sleeping to the action chain. <br>
@@ -57,7 +65,7 @@ public interface SynchronizerApi
         }
     }
 
-    interface RunGet
+    interface RunGet extends Fluent
     {
         /**
          * Sets the given {@link Runnable} as the main action of the chain.
@@ -78,7 +86,7 @@ public interface SynchronizerApi
         <T> Get.WakeSleepInvoke<T> get(Supplier<T> getter);
     }
 
-    interface RunGetInvoke extends RunGet, Run.Invoke
+    interface RunGetInvoke extends Fluent, RunGet, Run.Invoke
     {
         @Override
         default void invoke()
@@ -92,13 +100,13 @@ public interface SynchronizerApi
 
     interface Run
     {
-        interface WakeSleepInvoke extends SleepInvoke, Base.WakeSleepInvoke
+        interface WakeSleepInvoke extends Fluent, SleepInvoke, Base.WakeSleepInvoke
         {
             @Override
             SleepInvoke andWakeOthers();
         }
 
-        interface SleepInvoke extends Invoke, Base.SleepInvoke
+        interface SleepInvoke extends Fluent, Invoke, Base.SleepInvoke
         {
             @Override
             default Invoke thenSleepUntil(BooleanSupplier state)
@@ -110,7 +118,7 @@ public interface SynchronizerApi
             Invoke thenSleepUntil(BooleanSupplier state, Duration timeout);
         }
 
-        interface Invoke
+        interface Invoke extends Fluent
         {
             /**
              * Invokes the action chain in a synchronized block. <br>
@@ -132,7 +140,7 @@ public interface SynchronizerApi
 
     interface Get
     {
-        interface WakeSleepInvoke<T> extends SleepInvoke<T>, Base.WakeSleepInvoke
+        interface WakeSleepInvoke<T> extends Fluent, SleepInvoke<T>, Base.WakeSleepInvoke
         {
             @Override
             SleepInvoke<T> andWakeOthers();
@@ -148,7 +156,7 @@ public interface SynchronizerApi
             SleepInvoke<T> andWakeOthersIf(Predicate<T> predicate);
         }
 
-        interface SleepInvoke<T> extends Invoke<T>, Base.SleepInvoke
+        interface SleepInvoke<T> extends Fluent, Invoke<T>, Base.SleepInvoke
         {
             @Override
             default Invoke<T> thenSleepUntil(BooleanSupplier state)
@@ -160,7 +168,7 @@ public interface SynchronizerApi
             Invoke<T> thenSleepUntil(BooleanSupplier state, Duration timeout);
         }
 
-        interface Invoke<T>
+        interface Invoke<T> extends Fluent
         {
             /**
              * Invokes the action chain in a synchronized block. <br>
@@ -178,13 +186,14 @@ public interface SynchronizerApi
              * @throws com.github.mizool.core.exception.UncheckedInterruptedException if the thread was interrupted
              * while waiting (i.e. performing a sleep action).
              */
+            @CanIgnoreReturnValue
             T invoke();
         }
     }
 
     interface Base
     {
-        interface WakeSleepInvoke extends SleepInvoke
+        interface WakeSleepInvoke extends Fluent, SleepInvoke
         {
             /**
              * Adds an action which wakes other chains.
@@ -192,7 +201,7 @@ public interface SynchronizerApi
             Object andWakeOthers();
         }
 
-        interface SleepInvoke
+        interface SleepInvoke extends Fluent
         {
             /**
              * Adds sleeping to the action chain. <br>
