@@ -137,11 +137,19 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         private SleepSpec(@NonNull BooleanSupplier condition, @Nullable Duration interval)
         {
             this.condition = condition;
+            waitTimeoutMillis = toWaitTimeoutMillis(interval);
+        }
 
-            // If the user doesn't specify an interval, we default to zero, which wait() interprets as "indefinite".
-            this.waitTimeoutMillis = interval == null
-                ? 0
-                : interval.toMillis();
+        /**
+         * If the user doesn't specify an interval, we default to zero, which wait() interprets as "indefinite".
+         */
+        private long toWaitTimeoutMillis(Duration interval)
+        {
+            if (interval == null)
+            {
+                return 0;
+            }
+            return interval.toMillis();
         }
     }
 

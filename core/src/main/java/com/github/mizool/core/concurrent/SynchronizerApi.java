@@ -18,7 +18,7 @@ public interface SynchronizerApi
     {
     }
 
-    interface SleepRunGet extends Fluent, RunGet
+    interface SleepRunGet extends RunGet
     {
         /**
          * Adds sleeping to the action chain. <br>
@@ -86,7 +86,7 @@ public interface SynchronizerApi
         <T> Get.WakeSleepInvoke<T> get(Supplier<T> getter);
     }
 
-    interface RunGetInvoke extends Fluent, RunGet, Run.Invoke
+    interface RunGetInvoke extends RunGet, Run.Invoke
     {
         @Override
         default void invoke()
@@ -100,13 +100,13 @@ public interface SynchronizerApi
 
     interface Run
     {
-        interface WakeSleepInvoke extends Fluent, SleepInvoke, Base.WakeSleepInvoke
+        interface WakeSleepInvoke extends SleepInvoke, Base.WakeSleepInvoke
         {
             @Override
             SleepInvoke andWakeOthers();
         }
 
-        interface SleepInvoke extends Fluent, Invoke, Base.SleepInvoke
+        interface SleepInvoke extends Invoke, Base.SleepInvoke
         {
             @Override
             default Invoke thenSleepUntil(BooleanSupplier state)
@@ -140,7 +140,7 @@ public interface SynchronizerApi
 
     interface Get
     {
-        interface WakeSleepInvoke<T> extends Fluent, SleepInvoke<T>, Base.WakeSleepInvoke
+        interface WakeSleepInvoke<T> extends SleepInvoke<T>, Base.WakeSleepInvoke
         {
             @Override
             SleepInvoke<T> andWakeOthers();
@@ -156,7 +156,7 @@ public interface SynchronizerApi
             SleepInvoke<T> andWakeOthersIf(Predicate<T> predicate);
         }
 
-        interface SleepInvoke<T> extends Fluent, Invoke<T>, Base.SleepInvoke
+        interface SleepInvoke<T> extends Invoke<T>, Base.SleepInvoke
         {
             @Override
             default Invoke<T> thenSleepUntil(BooleanSupplier state)
@@ -193,7 +193,7 @@ public interface SynchronizerApi
 
     interface Base
     {
-        interface WakeSleepInvoke extends Fluent, SleepInvoke
+        interface WakeSleepInvoke extends SleepInvoke
         {
             /**
              * Adds an action which wakes other chains.
