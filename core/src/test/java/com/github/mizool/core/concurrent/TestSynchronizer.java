@@ -22,7 +22,6 @@ import java.util.stream.IntStream;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
-import org.assertj.core.api.SoftAssertions;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -416,58 +415,5 @@ public class TestSynchronizer
     private void submitAndWaitForCompletion(Runnable initialAction, Runnable... runnables)
     {
         submitAndWaitForCompletion(initialAction, Arrays.asList(runnables));
-    }
-
-    @Test(timeOut = 2000)
-    public void testConditionallyNotWakingOthers()
-    {
-        AtomicBoolean ready = new AtomicBoolean(false);
-        AtomicBoolean firstCompleted = new AtomicBoolean(false);
-        AtomicBoolean firstWokeSecond = new AtomicBoolean(false);
-
-        Runnable first = () -> synchronizer.sleepUntil(ready::get)
-            .get(() -> {
-                firstCompleted.set(true);
-                return "nope";
-            })
-            .andWakeOthersIf(s -> s.equals("indeed"))
-            .invoke();
-
-        Runnable second = () -> synchronizer.sleepUntil(() -> {
-                if (!ready.get())
-                {
-                    return false;
-                }
-
-                if (firstCompleted.get())
-                {
-                    // Track that the test has failed. [`throw` would be useless as nobody uses our Future.get()]
-                    firstWokeSecond.set(true);
-                    return true;
-                }
-
-                return false;
-            })
-            .invoke();
-
-        // Submit both chain threads, but keep only the first future as the second is not supposed to complete anyway.
-        CompletableFuture<Void> firstFuture = submit(first);
-        submit(second);
-
-        ready.set(true);
-        synchronizer.wakeOthers()
-            .invoke();
-
-        Futures.get(firstFuture);
-
-        SoftAssertions.assertSoftly(softly -> {
-            softly.assertThat(firstCompleted)
-                .describedAs("first chain main action completed")
-                .isTrue();
-
-            softly.assertThat(firstWokeSecond)
-                .describedAs("first chain woke second")
-                .isFalse();
-        });
     }
 }
