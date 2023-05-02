@@ -1,38 +1,71 @@
 package com.github.mizool.core.concurrent;
 
+import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.CheckReturnValue;
+
 /**
- * Provides fluent syntax for for {@link Synchronizer}.
+ * Provides fluent syntax for {@link Synchronizer}.
  */
 public interface SynchronizerApi
 {
-    /*
-     * Note on terminology: this API intentionally uses the verbs "sleep" and "wake". If it used "wait" and "notify"
-     * instead, its methods would all too easily be confused with methods in java.lang.Object which, if invoked on the
-     * objects returned by chained methods, could cause deadlocks.
-     */
+    @CheckReturnValue
+    interface Fluent
+    {
+    }
 
     interface SleepRunGet extends RunGet
     {
         /**
          * Adds sleeping to the action chain. <br>
          * <br>
-         * When performing this action, the chain will sleep until another chain wakes it up, then call the given
-         * supplier. If the supplier returns {@code false}, this action chain resumes sleeping. Otherwise, the chain
-         * continues by performing the main action.
+         * When performing this action, the chain will ensure the given condition is met before performing the next
+         * action. If the supplier returns {@code false}, this action chain sleeps until another chain wakes it up.
+         * Then, the supplier is called again and if it still returns {@code false}, the chain resumes sleeping.
+         * Otherwise, the chain proceeds to perform the next action.
          *
          * @param state the supplier that returns {@code true} if the action chain should continue, {@code false}
          * otherwise.
          *
          * @throws NullPointerException if {@code state} is null
          */
-        RunGet sleepUntil(BooleanSupplier state);
+        default RunGetInvoke sleepUntil(BooleanSupplier state)
+        {
+            return sleepUntil(state, null);
+        }
+
+        /**
+         * Adds sleeping to the action chain. <br>
+         * <br>
+         * When performing this action, the chain will ensure the given condition is met before performing the next
+         * action. If the supplier returns {@code false}, this action chain sleeps until either another chain wakes it
+         * up or the timeout has passed. Then, the supplier is called again and if it still returns {@code false}, the
+         * chain resumes sleeping. Otherwise, the chain proceeds to perform the next action.
+         *
+         * @param state the supplier that returns {@code true} if the action chain should continue, {@code false}
+         * otherwise.
+         * @param timeout the maximum amount of time to sleep before re-checking the condition, or {@code null} to
+         * sleep indefinitely.
+         *
+         * @throws NullPointerException if {@code state} is null
+         */
+        RunGetInvoke sleepUntil(BooleanSupplier state, Duration timeout);
+
+        /**
+         * Adds an action which wakes other chains.
+         */
+        default Run.Invoke wakeOthers()
+        {
+            return run(() -> {
+            }).andWakeOthers();
+        }
     }
 
-    interface RunGet
+    interface RunGet extends Fluent
     {
         /**
          * Sets the given {@link Runnable} as the main action of the chain.
@@ -53,6 +86,18 @@ public interface SynchronizerApi
         <T> Get.WakeSleepInvoke<T> get(Supplier<T> getter);
     }
 
+    interface RunGetInvoke extends RunGet, Run.Invoke
+    {
+        @Override
+        default void invoke()
+        {
+            Runnable noOp = () -> {
+            };
+
+            run(noOp).invoke();
+        }
+    }
+
     interface Run
     {
         interface WakeSleepInvoke extends SleepInvoke, Base.WakeSleepInvoke
@@ -64,10 +109,16 @@ public interface SynchronizerApi
         interface SleepInvoke extends Invoke, Base.SleepInvoke
         {
             @Override
-            Invoke thenSleepUntil(BooleanSupplier state);
+            default Invoke thenSleepUntil(BooleanSupplier state)
+            {
+                return thenSleepUntil(state, null);
+            }
+
+            @Override
+            Invoke thenSleepUntil(BooleanSupplier state, Duration timeout);
         }
 
-        interface Invoke
+        interface Invoke extends Fluent
         {
             /**
              * Invokes the action chain in a synchronized block. <br>
@@ -108,10 +159,16 @@ public interface SynchronizerApi
         interface SleepInvoke<T> extends Invoke<T>, Base.SleepInvoke
         {
             @Override
-            Invoke<T> thenSleepUntil(BooleanSupplier state);
+            default Invoke<T> thenSleepUntil(BooleanSupplier state)
+            {
+                return thenSleepUntil(state, null);
+            }
+
+            @Override
+            Invoke<T> thenSleepUntil(BooleanSupplier state, Duration timeout);
         }
 
-        interface Invoke<T>
+        interface Invoke<T> extends Fluent
         {
             /**
              * Invokes the action chain in a synchronized block. <br>
@@ -129,6 +186,7 @@ public interface SynchronizerApi
              * @throws com.github.mizool.core.exception.UncheckedInterruptedException if the thread was interrupted
              * while waiting (i.e. performing a sleep action).
              */
+            @CanIgnoreReturnValue
             T invoke();
         }
     }
@@ -143,21 +201,42 @@ public interface SynchronizerApi
             Object andWakeOthers();
         }
 
-        interface SleepInvoke
+        interface SleepInvoke extends Fluent
         {
             /**
-             * Adds sleeping to the end of the action chain. <br>
+             * Adds sleeping to the action chain. <br>
              * <br>
-             * When performing this action, the chain will sleep until another chain wakes it up, then call the given
-             * supplier. If the supplier returns {@code false}, this action chain resumes sleeping. Otherwise, the chain
-             * invocation finishes.
+             * When performing this action, the chain will ensure the given condition is met before returning. If the
+             * supplier returns {@code false}, this action chain sleeps until another chain wakes it up. Then, the
+             * supplier is called again and if it still returns {@code false}, the chain resumes sleeping. Otherwise,
+             * the chain invocation finishes.
              *
-             * @param state the supplier that returns {@code true} if the chain invocation should finish, {@code false}
+             * @param state the supplier that returns {@code true} if the action chain should finish, {@code false}
              * otherwise.
              *
              * @throws NullPointerException if {@code state} is null
              */
-            Object thenSleepUntil(BooleanSupplier state);
+            default Object thenSleepUntil(BooleanSupplier state)
+            {
+                return thenSleepUntil(state, null);
+            }
+
+            /**
+             * Adds sleeping to the action chain. <br>
+             * <br>
+             * When performing this action, the chain will ensure the given condition is met before returning. If the
+             * supplier returns {@code false}, this action chain sleeps until either another chain wakes it up or the
+             * timeout has passed. Then, the supplier is called again and if it still returns {@code false}, the chain
+             * resumes sleeping. Otherwise, the chain invocation finishes.
+             *
+             * @param state the supplier that returns {@code true} if the action chain should finish, {@code false}
+             * otherwise.
+             * @param timeout the maximum amount of time to sleep before re-checking the condition, or {@code null} to
+             * sleep indefinitely.
+             *
+             * @throws NullPointerException if {@code state} is null
+             */
+            Object thenSleepUntil(BooleanSupplier state, Duration timeout);
         }
     }
 }

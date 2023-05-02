@@ -1,15 +1,18 @@
 package com.github.mizool.core.concurrent;
 
+import java.time.Duration;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.With;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
+import com.github.mizool.core.validation.Nullable;
 
 /**
  * Encapsulates synchronization and wait/notify functionality. <br>
@@ -28,27 +31,50 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
  * <br>
  * <ul>
  *     <li>Main action
- *         <ul><li>
- *             a {@link Runnable} ({@code run}) or {@link Supplier} ({@code get})<br>
- *         </li></ul><br>
+ *         <ul>
+ *             <li>
+ *                 a {@link Runnable} ({@code run}) or {@link Supplier} ({@code get})
+ *             </li>
+ *         </ul><br>
  *     </li>
  *     <li>Sleep until <i>condition</i> is {@code true}
- *         <ul><li>
- *             Can be used before ({@code sleepUntil}) and/or after ({@code thenSleepUntil}) the main action.<br>
- *             Sleeping is implemented in line with secure coding practices, i.e. {@link Object#wait()} is called inside
- *             a loop to ensure liveness and safety (see
- *             <a href="https://wiki.sei.cmu.edu/confluence/display/java/THI03-J.+Always+invoke+wait%28%29+and+await%28%29+methods+inside+a+loop">SEI
- *             CERT rule THI03-J</a> for details).<br>
- *             If the thread is interrupted while waiting, {@link UncheckedInterruptedException} is thrown and the
- *             thread's interrupted flag is re-set.<br>
- *         </li></ul><br>
+ *         <ul>
+ *             <li>
+ *                 Whenever the thread receives a {@linkplain #wakeOthers() wake} call, it checks this condition. If
+ *                 {@code true}, the thread stops sleeping and continues its action chain. If {@code false}, it resumes
+ *                 sleeping.
+ *             </li>
+ *             <li>
+ *                 By default, the condition will only be checked when a wake call happens. However, you can also
+ *                 specify the duration of an interval after which the thread should check the condition on its own and
+ *                 then stop/resume sleep as explained above.
+ *             </li>
+ *             <li>
+ *                 Can be used before ({@code sleepUntil}) and/or after ({@code thenSleepUntil}) the main action.
+ *             </li>
+ *             <li>
+ *                 Sleeping is implemented in line with secure coding practices, i.e. {@link Object#wait()} is called
+ *                 inside a loop to ensure liveness and safety (see
+ *                 <a href="https://wiki.sei.cmu.edu/confluence/display/java/THI03-J.+Always+invoke+wait%28%29+and+await%28%29+methods+inside+a+loop">SEI
+ *                 CERT rule THI03-J</a> for details).
+ *             </li>
+ *             <li>
+ *                 If the thread is interrupted while waiting, {@link UncheckedInterruptedException} is thrown and the
+ *                 thread's interrupted flag is re-set.
+ *             </li>
+ *         </ul><br>
  *     </li>
- *     <li>Wake other threads</li>
- *         <ul><li>
- *             Using {@code wakeOthers()} is equivalent to calling {@link Object#notifyAll()}. If the main action is a
- *     {@code Supplier<T>}, the calling code can decide whether waking takes place by using
- *     {@code andWakeOthersIf(Predicate<T>)} instead.<br>
- *         </li></ul><br>
+ *     <li>Wake other threads
+ *         <ul>
+ *             <li>
+ *                 Wakes each sleeping thread (by calling {@link Object#notifyAll()}), causing it to check its condition
+ *                 (see above).
+ *             </li>
+ *             <li>
+ *                 If the main action of this chain is a {@code Supplier<T>}, the calling code can decide whether waking
+ *                 takes place by using {@code andWakeOthersIf(Predicate<T>)} instead.
+ *             </li>
+ *         </ul><br>
  *     </li>
  * </ul>
  * <h3>Fluent API overview</h3>
@@ -70,19 +96,73 @@ import com.github.mizool.core.exception.UncheckedInterruptedException;
  * Spline result = synchronizer.get(...)
  *     .andWakeOthersIf(Spline::isReticulated)
  *     .invoke();}</pre>
+ * <br>
+ * <h3>Note on terminology</h3>
+ * This class intentionally uses the verbs "sleep" and "wake". If it used "wait" and "notify" instead, its methods would
+ * all too easily be confused with methods in java.lang.Object which, if invoked on the objects returned by chained
+ * methods, could cause deadlocks.
  */
 public final class Synchronizer implements SynchronizerApi.SleepRunGet
 {
+    /**
+     * Specifies how to sleep. More precisely, it specifies when to stop sleeping (when, upon being {@linkplain
+     * #wakeOthers() woken}, the condition returns {@code true}). Optionally, also specifies an amount of time after
+     * which the condition should be checked even if no {@link #wakeOthers()} call happens.
+     */
+    @Getter
+    private static final class SleepSpec
+    {
+        /**
+         * A default value for action chains that do not use sleeping. This is implemented using a condition that simply
+         * returns {@code true}: as mentioned in the API, Synchronizer will skip sleeping in that case.
+         */
+        private static final SleepSpec NO_SLEEP = new SleepSpec(() -> true, null);
+
+        /**
+         * The condition that must be {@code true} in order to stop sleeping.
+         */
+        private final BooleanSupplier condition;
+
+        /**
+         * The timeout to pass when calling {@link Object#wait(long)}. 0 means "indefinite".
+         */
+        private final long waitTimeoutMillis;
+
+        /**
+         * @param condition the condition that must be {@code true} in order to stop sleeping
+         * @param interval how often the condition should be checked even if no wake call happens, or {@code null} to
+         * only check on wake calls
+         */
+        @Builder
+        private SleepSpec(@NonNull BooleanSupplier condition, @Nullable Duration interval)
+        {
+            this.condition = condition;
+            waitTimeoutMillis = toWaitTimeoutMillis(interval);
+        }
+
+        /**
+         * If the user doesn't specify an interval, we default to zero, which wait() interprets as "indefinite".
+         */
+        private long toWaitTimeoutMillis(Duration interval)
+        {
+            if (interval == null)
+            {
+                return 0;
+            }
+            return interval.toMillis();
+        }
+    }
+
     private static final class RunAction implements SynchronizerApi.Run.WakeSleepInvoke
     {
         private final Lock lock;
 
-        private final BooleanSupplier preState;
+        private final SleepSpec sleepBefore;
 
         private final Runnable runnable;
 
         @With
-        private final BooleanSupplier postState;
+        private final SleepSpec sleepAfter;
 
         @With
         private final boolean wakeOthers;
@@ -90,15 +170,15 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         @Builder
         public RunAction(
             @NonNull Lock lock,
-            BooleanSupplier preState,
+            SleepSpec sleepBefore,
             @NonNull Runnable runnable,
-            BooleanSupplier postState,
+            SleepSpec sleepAfter,
             boolean wakeOthers)
         {
             this.lock = lock;
-            this.preState = useValueOrDefault(preState, () -> true);
+            this.sleepBefore = useValueOrDefault(sleepBefore, SleepSpec.NO_SLEEP);
             this.runnable = runnable;
-            this.postState = useValueOrDefault(postState, () -> true);
+            this.sleepAfter = useValueOrDefault(sleepAfter, SleepSpec.NO_SLEEP);
             this.wakeOthers = wakeOthers;
         }
 
@@ -107,7 +187,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         {
             synchronized (lock)
             {
-                lock.sleepUntil(preState);
+                lock.sleep(sleepBefore);
 
                 runnable.run();
 
@@ -116,7 +196,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
                     lock.notifyAll();
                 }
 
-                lock.sleepUntil(postState);
+                lock.sleep(sleepAfter);
             }
         }
 
@@ -127,9 +207,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
 
         @Override
-        public SynchronizerApi.Run.Invoke thenSleepUntil(@NonNull BooleanSupplier state)
+        public SynchronizerApi.Run.Invoke thenSleepUntil(@NonNull BooleanSupplier state, Duration timeout)
         {
-            return withPostState(state);
+            return withSleepAfter(new SleepSpec(state, timeout));
         }
     }
 
@@ -138,7 +218,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     {
         private final Lock lock;
 
-        private final BooleanSupplier preState;
+        private final SleepSpec sleepBefore;
 
         private final Supplier<T> getter;
 
@@ -146,20 +226,20 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         private final Predicate<T> wakeOthersPredicate;
 
         @With
-        private final BooleanSupplier postState;
+        private final SleepSpec sleepAfter;
 
         public GetAction(
             @NonNull Lock lock,
-            BooleanSupplier preState,
+            SleepSpec sleepBefore,
             @NonNull Supplier<T> getter,
             Predicate<T> wakeOthersPredicate,
-            BooleanSupplier postState)
+            SleepSpec sleepAfter)
         {
             this.lock = lock;
-            this.preState = useValueOrDefault(preState, () -> true);
+            this.sleepBefore = useValueOrDefault(sleepBefore, SleepSpec.NO_SLEEP);
             this.getter = getter;
             this.wakeOthersPredicate = useValueOrDefault(wakeOthersPredicate, t -> false);
-            this.postState = useValueOrDefault(postState, () -> true);
+            this.sleepAfter = useValueOrDefault(sleepAfter, SleepSpec.NO_SLEEP);
         }
 
         @Override
@@ -167,7 +247,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         {
             synchronized (lock)
             {
-                lock.sleepUntil(preState);
+                lock.sleep(sleepBefore);
 
                 T result = getter.get();
 
@@ -176,7 +256,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
                     lock.notifyAll();
                 }
 
-                lock.sleepUntil(postState);
+                lock.sleep(sleepAfter);
 
                 return result;
             }
@@ -195,26 +275,26 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
 
         @Override
-        public SynchronizerApi.Get.Invoke<T> thenSleepUntil(@NonNull BooleanSupplier state)
+        public SynchronizerApi.Get.Invoke<T> thenSleepUntil(@NonNull BooleanSupplier state, Duration timeout)
         {
-            return withPostState(state);
+            return withSleepAfter(new SleepSpec(state, timeout));
         }
     }
 
     @Builder
-    private static class RunGetChoice implements SynchronizerApi.RunGet
+    private static class RunGetChoice implements SynchronizerApi.RunGetInvoke
     {
         @NonNull
         protected final Lock lock;
 
-        private final BooleanSupplier preState;
+        private final SleepSpec sleepBefore;
 
         @Override
         public SynchronizerApi.Run.WakeSleepInvoke run(@NonNull Runnable runnable)
         {
             return RunAction.builder()
                 .lock(lock)
-                .preState(preState)
+                .sleepBefore(sleepBefore)
                 .runnable(runnable)
                 .build();
         }
@@ -222,8 +302,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         @Override
         public <T> SynchronizerApi.Get.WakeSleepInvoke<T> get(@NonNull Supplier<T> getter)
         {
-            return GetAction.<T>builder().lock(lock)
-                .preState(preState)
+            return GetAction.<T>builder()
+                .lock(lock)
+                .sleepBefore(sleepBefore)
                 .getter(getter)
                 .build();
         }
@@ -232,16 +313,17 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     @RequiredArgsConstructor
     private static class Lock
     {
-        protected void sleepUntil(@NonNull BooleanSupplier state)
+        protected void sleep(@NonNull SleepSpec sleepSpec)
         {
             // The caller should already hold this lock, so this is a no-op. We keep it to make code analyzers happy.
             synchronized (this)
             {
                 try
                 {
-                    while (!state.getAsBoolean())
+                    while (!sleepSpec.condition.getAsBoolean())
                     {
-                        wait();
+                        // Wait according to the given sleep interval or indefinitely (see SleepSpec constructor)
+                        wait(sleepSpec.waitTimeoutMillis);
                     }
                 }
                 catch (InterruptedException e)
@@ -288,9 +370,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     }
 
     @Override
-    public SynchronizerApi.RunGet sleepUntil(@NonNull BooleanSupplier state)
+    public SynchronizerApi.RunGetInvoke sleepUntil(@NonNull BooleanSupplier state, Duration timeout)
     {
-        return runGetChoiceBuilder().preState(state)
+        return runGetChoiceBuilder().sleepBefore(new SleepSpec(state, timeout))
             .build();
     }
 
