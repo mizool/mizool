@@ -15,6 +15,7 @@ import java.util.stream.StreamSupport;
 
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.UrlRef;
 import com.google.common.base.Splitter;
 
 /**
@@ -138,6 +139,16 @@ public final class PropertyNode implements HasChildren
     public Value<URL> urlValue(URL context)
     {
         return convertedValue(string -> UrlValues.parse(context, string));
+    }
+
+    /**
+     * Parses the property value as a {@link UrlRef}.
+     *
+     * @return the UrlRef
+     */
+    public Value<UrlRef> urlRefValue()
+    {
+        return convertedValue(UrlRef::new);
     }
 
     /**
