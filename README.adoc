@@ -4,17 +4,4 @@ Maven Central]]
 https://sonarcloud.io/dashboard?id=com.github.mizool%3Amizool[image:https://sonarcloud.io/api/project_badges/measure?project=com.github.mizool%3Amizool&metric=alert_status[Quality
 Gate Status]]
 
-
 https://javadoc.io/doc/com.github.mizool/mizool-core[image:https://javadoc.io/badge2/com.github.mizool/mizool-core/javadoc.svg[[javadoc]]
-
-== About Mizool
-_TODO_
-
-
-== Continuous integration and deployment on Maven Central
-This project is built continuously by https://travis-ci.org/[Travis CI] using the scripts provided by https://github.com/mizool/travis-ci-maven-gitflow[Mizool's Travis CI Maven gitflow script repository].
-
-`-SNAPSHOT` versions on the `develop` branch are made available via the https://oss.sonatype.org/content/repositories/snapshots/[OSSRH snapshot repository].
-Releases are transferred to the https://search.maven.org[Maven Central Repository].
-
-Refer to https://github.com/mizool/travis-ci-maven-gitflow/blob/master/README.adoc#performing-a-release[this guide] on how to perform a release.

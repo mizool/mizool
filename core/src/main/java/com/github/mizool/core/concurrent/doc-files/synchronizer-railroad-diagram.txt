@@ -1,28 +1,37 @@
 Diagram(
-  Optional('sleepUntil', 'skip'),
-  Choice(0,
-    Sequence(
-      NonTerminal('run'),
-      Choice(
-        1,
-        NonTerminal('andWakeOthers'),
-        Skip(),
-      )
+    Choice(0,
+        OptionalSequence(
+            NonTerminal('sleepUntil'),
+            Choice(0,
+                Sequence(
+                    Choice(0,
+                        Sequence(
+                            NonTerminal('run'),
+                            Choice(
+                                1,
+                                NonTerminal('andWakeOthers'),
+                                Skip(),
+                            )
+                        ),
+                        Sequence(
+                            NonTerminal('get'),
+                            Choice(
+                                0,
+                                Skip(),
+                                NonTerminal('andWakeOthers', 'skip'),
+                                NonTerminal('andWakeOthersIf', 'skip')
+                            )
+                        ),
+                    ),
+                    Choice(
+                        1,
+                        NonTerminal('thenSleepUntil'),
+                        Skip(),
+                    ),
+                ),
+            ),
+        ),
+        NonTerminal('wakeOthers'),
     ),
-    Sequence(
-      NonTerminal('get'),
-      Choice(
-        0,
-        Skip(),
-        NonTerminal('andWakeOthers', 'skip'),
-        NonTerminal('andWakeOthersIf', 'skip')
-      )
-    ),
-  ),
-  Choice(
-    1,
-    NonTerminal('thenSleepUntil'),
-    Skip(),
-  ),
-  NonTerminal('invoke')
+    NonTerminal('invoke')
 )

@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import com.github.mizool.core.UrlRef;
 import com.github.mizool.core.exception.ConfigurationException;
 import com.google.common.collect.ImmutableList;
 
@@ -194,6 +195,12 @@ public class TestConfig
                 new ConversionSpec<>("some/path",
                     node -> node.urlValue(createUrl("https://example.org")),
                     createUrl("https://example.org/some/path"))
+            },
+            new Object[]{
+                "URL Ref",
+                new ConversionSpec<>("https://example.org",
+                    PropertyNode::urlRefValue,
+                    new UrlRef("https://example.org"))
             },
             new Object[]{
                 "Unix Timestamp",
