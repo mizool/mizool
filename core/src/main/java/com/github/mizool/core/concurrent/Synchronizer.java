@@ -46,8 +46,8 @@ import com.github.mizool.core.validation.Nullable;
  *             </li>
  *             <li>
  *                 By default, the condition will only be checked when a wake call happens. However, you can also
- *                 specify the duration of an interval after which the thread should check the condition on its own and
- *                 then stop/resume sleep as explained above.
+ *                 specify the duration of an interval after which the thread should re-check the condition on its own
+ *                 and then stop/resume sleep as explained above.
  *             </li>
  *             <li>
  *                 Can be used before ({@code sleepUntil}) and/or after ({@code thenSleepUntil}) the main action.
@@ -107,7 +107,7 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     /**
      * Specifies how to sleep. More precisely, it specifies when to stop sleeping (when, upon being {@linkplain
      * #wakeOthers() woken}, the condition returns {@code true}). Optionally, also specifies an amount of time after
-     * which the condition should be checked even if no {@link #wakeOthers()} call happens.
+     * which the condition should be re-checked even if no wake call happens.
      */
     @Getter
     private static final class SleepSpec
@@ -130,14 +130,14 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
 
         /**
          * @param condition the condition that must be {@code true} in order to stop sleeping
-         * @param interval how often the condition should be checked even if no wake call happens, or {@code null} to
-         * only check on wake calls
+         * @param checkInterval how often the condition should be re-checked even if no wake call happens, or
+         * {@code null} to only check on wake calls
          */
         @Builder
-        private SleepSpec(@NonNull BooleanSupplier condition, @Nullable Duration interval)
+        private SleepSpec(@NonNull BooleanSupplier condition, @Nullable Duration checkInterval)
         {
             this.condition = condition;
-            waitTimeoutMillis = toWaitTimeoutMillis(interval);
+            waitTimeoutMillis = toWaitTimeoutMillis(checkInterval);
         }
 
         /**
@@ -207,9 +207,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
 
         @Override
-        public SynchronizerApi.Run.Invoke thenSleepUntil(@NonNull BooleanSupplier state, Duration timeout)
+        public SynchronizerApi.Run.Invoke thenSleepUntil(@NonNull BooleanSupplier state, Duration checkInterval)
         {
-            return withSleepAfter(new SleepSpec(state, timeout));
+            return withSleepAfter(new SleepSpec(state, checkInterval));
         }
     }
 
@@ -275,9 +275,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
         }
 
         @Override
-        public SynchronizerApi.Get.Invoke<T> thenSleepUntil(@NonNull BooleanSupplier state, Duration timeout)
+        public SynchronizerApi.Get.Invoke<T> thenSleepUntil(@NonNull BooleanSupplier state, Duration checkInterval)
         {
-            return withSleepAfter(new SleepSpec(state, timeout));
+            return withSleepAfter(new SleepSpec(state, checkInterval));
         }
     }
 
@@ -370,9 +370,9 @@ public final class Synchronizer implements SynchronizerApi.SleepRunGet
     }
 
     @Override
-    public SynchronizerApi.RunGetInvoke sleepUntil(@NonNull BooleanSupplier state, Duration timeout)
+    public SynchronizerApi.RunGetInvoke sleepUntil(@NonNull BooleanSupplier state, Duration checkInterval)
     {
-        return runGetChoiceBuilder().sleepBefore(new SleepSpec(state, timeout))
+        return runGetChoiceBuilder().sleepBefore(new SleepSpec(state, checkInterval))
             .build();
     }
 
