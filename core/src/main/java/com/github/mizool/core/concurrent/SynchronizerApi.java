@@ -23,10 +23,19 @@ public interface SynchronizerApi
         /**
          * Adds sleeping to the action chain. <br>
          * <br>
-         * When performing this action, the chain will ensure the given condition is met before performing the next
-         * action. If the supplier returns {@code false}, this action chain sleeps until another chain wakes it up.
-         * Then, the supplier is called again and if it still returns {@code false}, the chain resumes sleeping.
-         * Otherwise, the chain proceeds to perform the next action.
+         * This action ensures the given condition is met before performing the next action. When this action begins,
+         * the supplier is called immediately.
+         * <dl>
+         *     <dt>Supplier returns {@code false}:</dt>
+         *     <dd>
+         *         The chain sleeps until either another chain wakes it up. The supplier is then called again and if
+         *         it still returns {@code false}, the chain resumes sleeping.
+         *     </dd>
+         *     <dt>Supplier returns {@code true}:</dt>
+         *     <dd>
+         *         The chain proceeds to perform the next action.
+         *     </dd>
+         * </dl>
          *
          * @param state the supplier that returns {@code true} if the action chain should continue, {@code false}
          * otherwise.
@@ -41,19 +50,30 @@ public interface SynchronizerApi
         /**
          * Adds sleeping to the action chain. <br>
          * <br>
-         * When performing this action, the chain will ensure the given condition is met before performing the next
-         * action. If the supplier returns {@code false}, this action chain sleeps until either another chain wakes it
-         * up or the timeout has passed. Then, the supplier is called again and if it still returns {@code false}, the
-         * chain resumes sleeping. Otherwise, the chain proceeds to perform the next action.
+         * This action ensures the given condition is met before performing the next action. When this action begins,
+         * the supplier is called immediately.
+         * <dl>
+         *     <dt>Supplier returns {@code false}:</dt>
+         *     <dd>
+         *         The chain sleeps until either another chain wakes it up or the {@code checkInterval} has passed.<br>
+         *         <br>
+         *         In both cases, the supplier is then called again and if it still returns {@code false}, the chain
+         *         resumes sleeping.
+         *     </dd>
+         *     <dt>Supplier returns {@code true}:</dt>
+         *     <dd>
+         *         The chain proceeds to perform the next action.
+         *     </dd>
+         * </dl>
          *
          * @param state the supplier that returns {@code true} if the action chain should continue, {@code false}
          * otherwise.
-         * @param timeout the maximum amount of time to sleep before re-checking the condition, or {@code null} to
-         * sleep indefinitely.
+         * @param checkInterval how often the condition should be re-checked even if no wake call happens, or
+         * {@code null} for "never".
          *
          * @throws NullPointerException if {@code state} is null
          */
-        RunGetInvoke sleepUntil(BooleanSupplier state, Duration timeout);
+        RunGetInvoke sleepUntil(BooleanSupplier state, Duration checkInterval);
 
         /**
          * Adds an action which wakes other chains.
@@ -115,7 +135,7 @@ public interface SynchronizerApi
             }
 
             @Override
-            Invoke thenSleepUntil(BooleanSupplier state, Duration timeout);
+            Invoke thenSleepUntil(BooleanSupplier state, Duration checkInterval);
         }
 
         interface Invoke extends Fluent
@@ -165,7 +185,7 @@ public interface SynchronizerApi
             }
 
             @Override
-            Invoke<T> thenSleepUntil(BooleanSupplier state, Duration timeout);
+            Invoke<T> thenSleepUntil(BooleanSupplier state, Duration checkInterval);
         }
 
         interface Invoke<T> extends Fluent
@@ -206,10 +226,19 @@ public interface SynchronizerApi
             /**
              * Adds sleeping to the action chain. <br>
              * <br>
-             * When performing this action, the chain will ensure the given condition is met before returning. If the
-             * supplier returns {@code false}, this action chain sleeps until another chain wakes it up. Then, the
-             * supplier is called again and if it still returns {@code false}, the chain resumes sleeping. Otherwise,
-             * the chain invocation finishes.
+             * This action ensures the given condition is met before performing the next action. When this action
+             * begins, the supplier is called immediately.
+             * <dl>
+             *     <dt>Supplier returns {@code false}:</dt>
+             *     <dd>
+             *         The chain sleeps until either another chain wakes it up. The supplier is then called again and if
+             *         it still returns {@code false}, the chain resumes sleeping.
+             *     </dd>
+             *     <dt>Supplier returns {@code true}:</dt>
+             *     <dd>
+             *         The chain proceeds to perform the next action.
+             *     </dd>
+             * </dl>
              *
              * @param state the supplier that returns {@code true} if the action chain should finish, {@code false}
              * otherwise.
@@ -224,19 +253,31 @@ public interface SynchronizerApi
             /**
              * Adds sleeping to the action chain. <br>
              * <br>
-             * When performing this action, the chain will ensure the given condition is met before returning. If the
-             * supplier returns {@code false}, this action chain sleeps until either another chain wakes it up or the
-             * timeout has passed. Then, the supplier is called again and if it still returns {@code false}, the chain
-             * resumes sleeping. Otherwise, the chain invocation finishes.
+             * This action ensures the given condition is met before performing the next action. When this action
+             * begins, the supplier is called immediately.
+             * <dl>
+             *     <dt>Supplier returns {@code false}:</dt>
+             *     <dd>
+             *         The chain sleeps until either another chain wakes it up or the {@code checkInterval} has
+             *         passed.<br>
+             *         <br>
+             *         In both cases, the supplier is then called again and if it still returns {@code false}, the chain
+             *         resumes sleeping.
+             *     </dd>
+             *     <dt>Supplier returns {@code true}:</dt>
+             *     <dd>
+             *         The chain proceeds to perform the next action.
+             *     </dd>
+             * </dl>
              *
              * @param state the supplier that returns {@code true} if the action chain should finish, {@code false}
              * otherwise.
-             * @param timeout the maximum amount of time to sleep before re-checking the condition, or {@code null} to
-             * sleep indefinitely.
+             * @param checkInterval how often the condition should be re-checked even if no wake call happens, or
+             * {@code null} for "never".
              *
              * @throws NullPointerException if {@code state} is null
              */
-            Object thenSleepUntil(BooleanSupplier state, Duration timeout);
+            Object thenSleepUntil(BooleanSupplier state, Duration checkInterval);
         }
     }
 }
