@@ -1,6 +1,6 @@
 package com.github.mizool.core.validation.dto;
 
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidatorContext;
 
 import com.github.mizool.core.validation.ConstraintValidatorAdapter;
 import com.github.mizool.core.validation.ConstraintValidators;

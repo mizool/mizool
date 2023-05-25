@@ -2,8 +2,8 @@ package com.github.mizool.core.validation;
 
 import java.util.TimeZone;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CheckTimeZoneValue implements ConstraintValidator<TimeZoneValue, Object>
 {

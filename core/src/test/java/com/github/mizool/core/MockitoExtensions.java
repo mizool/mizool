@@ -8,7 +8,7 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
-import javax.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Instance;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

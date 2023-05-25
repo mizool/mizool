@@ -2,7 +2,7 @@ package com.github.mizool.core.validation;
 
 import java.lang.annotation.Annotation;
 
-import javax.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidator;
 
 public abstract class ConstraintValidatorAdapter<A extends Annotation, T> implements ConstraintValidator<A, T>
 {

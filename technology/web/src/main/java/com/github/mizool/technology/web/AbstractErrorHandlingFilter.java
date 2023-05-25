@@ -2,7 +2,7 @@ package com.github.mizool.technology.web;
 
 import java.io.IOException;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

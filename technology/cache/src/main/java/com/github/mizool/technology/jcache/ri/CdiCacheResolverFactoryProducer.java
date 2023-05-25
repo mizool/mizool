@@ -2,9 +2,9 @@ package com.github.mizool.technology.jcache.ri;
 
 import javax.cache.CacheManager;
 import javax.cache.annotation.CacheResolverFactory;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.Specializes;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.inject.Inject;
 
 import org.jsr107.ri.annotations.DefaultCacheResolverFactory;
 import org.jsr107.ri.annotations.cdi.CacheResolverFactoryProducer;

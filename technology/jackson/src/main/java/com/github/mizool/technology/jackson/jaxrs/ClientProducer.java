@@ -1,8 +1,8 @@
 package com.github.mizool.technology.jackson.jaxrs;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
-import javax.ws.rs.client.Client;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
+import jakarta.ws.rs.client.Client;
 
 public class ClientProducer
 {

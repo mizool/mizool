@@ -1,6 +1,6 @@
 package com.github.mizool.technology.jackson.jaxrs;
 
-import javax.ws.rs.client.Client;
+import jakarta.ws.rs.client.Client;
 
 import org.kohsuke.MetaInfServices;
 

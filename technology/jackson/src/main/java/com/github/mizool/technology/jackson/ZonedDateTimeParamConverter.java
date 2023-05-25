@@ -2,7 +2,7 @@ package com.github.mizool.technology.jackson;
 
 import java.time.ZonedDateTime;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 import lombok.RequiredArgsConstructor;
 

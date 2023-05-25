@@ -2,8 +2,8 @@ package com.github.mizool.technology.jackson;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

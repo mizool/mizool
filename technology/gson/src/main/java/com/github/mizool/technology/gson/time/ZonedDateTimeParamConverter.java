@@ -2,7 +2,7 @@ package com.github.mizool.technology.gson.time;
 
 import java.time.ZonedDateTime;
 
-import javax.ws.rs.ext.ParamConverter;
+import jakarta.ws.rs.ext.ParamConverter;
 
 public class ZonedDateTimeParamConverter implements ParamConverter<ZonedDateTime>
 {
