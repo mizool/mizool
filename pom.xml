@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>0.51</version>
+    <version>0.52</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -549,6 +549,21 @@
             <build>
                 <pluginManagement>
                     <plugins>
+                        <plugin>
+                            <groupId>com.amashchenko.maven.plugin</groupId>
+                            <artifactId>gitflow-maven-plugin</artifactId>
+                            <version>1.19.0</version>
+                            <configuration>
+                                <commitDevelopmentVersionAtStart>true</commitDevelopmentVersionAtStart>
+                                <?SORTPOM IGNORE?>
+                                <commitMessagePrefix>[gitflow] </commitMessagePrefix>
+                                <?SORTPOM RESUME?>
+                                <pushRemote>true</pushRemote>
+                                <skipTestProject>true</skipTestProject>
+                                <useSnapshotInHotfix>true</useSnapshotInHotfix>
+                                <useSnapshotInRelease>true</useSnapshotInRelease>
+                            </configuration>
+                        </plugin>
                         <plugin>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-maven-plugin</artifactId>
