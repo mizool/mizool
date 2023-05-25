@@ -10,7 +10,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is the opposite of {@link javax.validation.constraints.NotNull} and is intended to document that a field is optional
+ * This annotation is the opposite of {@link jakarta.validation.constraints.NotNull} and is intended to document that a field is optional
  */
 @Target({ FIELD, PARAMETER, METHOD })
 @Retention(RUNTIME)

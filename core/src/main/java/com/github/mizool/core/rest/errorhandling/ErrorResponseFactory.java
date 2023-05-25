@@ -1,8 +1,8 @@
 package com.github.mizool.core.rest.errorhandling;
 
-import javax.inject.Inject;
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.ClientErrorException;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.ClientErrorException;
 
 import lombok.extern.slf4j.Slf4j;
 

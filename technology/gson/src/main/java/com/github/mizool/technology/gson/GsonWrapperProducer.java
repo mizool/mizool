@@ -1,8 +1,8 @@
 package com.github.mizool.technology.gson;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 public class GsonWrapperProducer
 {

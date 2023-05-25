@@ -2,8 +2,8 @@ package com.github.mizool.core.validation;
 
 import java.util.UUID;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CheckUuidValue implements ConstraintValidator<UuidValue, Object>
 {

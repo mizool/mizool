@@ -1,7 +1,7 @@
 package com.github.mizool.core.validation;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CheckNotEmpty implements ConstraintValidator<NotEmpty, Object>
 {

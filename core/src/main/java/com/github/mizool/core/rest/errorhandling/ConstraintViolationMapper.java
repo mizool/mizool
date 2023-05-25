@@ -1,8 +1,8 @@
 package com.github.mizool.core.rest.errorhandling;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Path;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

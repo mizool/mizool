@@ -1,7 +1,7 @@
 package com.github.mizool.core.password;
 
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

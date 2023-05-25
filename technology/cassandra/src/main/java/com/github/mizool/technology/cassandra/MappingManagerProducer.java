@@ -1,7 +1,7 @@
 package com.github.mizool.technology.cassandra;
 
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
 
 import com.datastax.driver.core.Session;
 import com.datastax.driver.mapping.MappingManager;

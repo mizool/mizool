@@ -10,7 +10,7 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.core.StreamingOutput;
+import jakarta.ws.rs.core.StreamingOutput;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;

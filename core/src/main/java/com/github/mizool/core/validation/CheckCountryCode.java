@@ -3,8 +3,8 @@ package com.github.mizool.core.validation;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 import com.google.common.collect.ImmutableSet;
 

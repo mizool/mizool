@@ -1,8 +1,8 @@
 package com.github.mizool.technology.jackson;
 
-import javax.inject.Inject;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.ws.rs.ext.Provider;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
