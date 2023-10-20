@@ -25,7 +25,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import org.testng.util.Strings;
 
 public class TestSynchronizer
 {
@@ -127,7 +126,7 @@ public class TestSynchronizer
         runAppenderTest(synchronizer, resultBuilder, appenders, initialChar);
 
         String result = resultBuilder.toString();
-        assertThat(result).isEqualTo(Strings.repeat(resultingPattern, 50));
+        assertThat(result).isEqualTo(resultingPattern.repeat(50));
     }
 
     private void runAppenderTest(
@@ -201,7 +200,7 @@ public class TestSynchronizer
         runAppenderTest(synchronizer, resultBuilder, appenders, initialChar);
 
         String result = resultBuilder.toString();
-        assertThat(result).isEqualTo(Strings.repeat(resultingPattern, 50));
+        assertThat(result).isEqualTo(resultingPattern.repeat(50));
     }
 
     @DataProvider
