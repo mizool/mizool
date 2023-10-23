@@ -96,6 +96,8 @@
 
     <properties>
         <aws.sdk.version>1.12.569</aws.sdk.version>
+        <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
+        <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
         <java.version>11</java.version>
@@ -127,9 +129,19 @@
                 <version>1.82</version>
             </dependency>
             <dependency>
-                <groupId>com.datastax.oss</groupId>
-                <artifactId>java-driver-core</artifactId>
-                <version>4.17.0</version>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-core</artifactId>
+                <version>${cassandra.driver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-extras</artifactId>
+                <version>${cassandra.driver.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.datastax.cassandra</groupId>
+                <artifactId>cassandra-driver-mapping</artifactId>
+                <version>${cassandra.driver.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
