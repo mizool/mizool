@@ -101,7 +101,6 @@
         <java.version>11</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
-        <jersey.version>2.34</jersey.version>
         <jooq.version>3.14.9</jooq.version>
         <lombok.core.version>1.18.24</lombok.core.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
@@ -321,7 +320,7 @@
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
-                <version>${jersey.version}</version>
+                <version>3.1.3</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
