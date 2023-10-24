@@ -274,6 +274,7 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <!-- We're currently stuck with version 4.0.4 until shiro-web 2.0.0 is released including switch from javax to jakarta -->
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
                 <version>4.0.4</version>
