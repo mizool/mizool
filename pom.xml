@@ -249,7 +249,7 @@
                 <!-- required for dependency convergence with transitive dependencies of jersey-media-jackson 2.34 (requires 1.2.2) -->
                 <groupId>jakarta.activation</groupId>
                 <artifactId>jakarta.activation-api</artifactId>
-                <version>2.1.1</version>
+                <version>2.1.2</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
