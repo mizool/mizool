@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.function.Supplier;
@@ -34,7 +34,7 @@ public class TestLazy
 
         new Lazy<>(supplier);
 
-        verifyZeroInteractions(supplier);
+        verifyNoInteractions(supplier);
     }
 
     @Test
