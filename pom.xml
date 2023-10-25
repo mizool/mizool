@@ -503,24 +503,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>3.0.0</version>
-                    <executions>
-                        <!--
-                            This is a workaround for https://issues.apache.org/jira/browse/MNG-5939.
-                            Configuring the jar-no-fork goal within the execution "attach-sources" would result in
-                            both jar and jar-no-fork being active on the release profile.
-                        -->
-                        <execution>
-                            <id>attach-sources</id>
-                            <phase/>
-                        </execution>
-                        <execution>
-                            <id>always-attach-sources</id>
-                            <goals>
-                                <goal>jar-no-fork</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
