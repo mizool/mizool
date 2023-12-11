@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-class AutoCloseableDecorator<T> implements AutoCloseable
+public final class AutoCloseableDecorator<T> implements AutoCloseable
 {
     public interface Closer<T>
     {
