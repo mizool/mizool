@@ -257,6 +257,13 @@
                 <version>3.0.0</version>
             </dependency>
             <dependency>
+                <!-- Dependency convergence as transitive dependency from: expressly (5.0.0) and jakarta.enterprise.cdi-api (4.1.0) -->
+                <groupId>jakarta.el</groupId>
+                <artifactId>jakarta.el-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>jakarta.enterprise</groupId>
                 <artifactId>jakarta.enterprise.cdi-api</artifactId>
                 <version>4.1.0</version>
@@ -276,13 +283,6 @@
             <dependency>
                 <groupId>jakarta.servlet</groupId>
                 <artifactId>jakarta.servlet-api</artifactId>
-                <version>6.0.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <!-- Dependency convergence as transitive dependency from: expressly (5.0.0) and jakarta.enterprise.cdi-api (4.1.0) -->
-                <groupId>jakarta.el</groupId>
-                <artifactId>jakarta.el-api</artifactId>
                 <version>6.0.0</version>
                 <scope>provided</scope>
             </dependency>
@@ -322,8 +322,8 @@
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-bom</artifactId>
                 <version>${shiro.version}</version>
-                <scope>import</scope>
                 <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -455,8 +455,8 @@
                     <version>3.4.1</version>
                     <configuration>
                         <rules>
-                            <requirePluginVersions />
-                            <dependencyConvergence />
+                            <requirePluginVersions/>
+                            <dependencyConvergence/>
                             <requireMavenVersion>
                                 <version>${maven.version.minimum}</version>
                             </requireMavenVersion>
