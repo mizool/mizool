@@ -1,6 +1,6 @@
 package com.github.mizool.core.rest.errorhandling;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import lombok.experimental.UtilityClass;
 

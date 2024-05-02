@@ -1,6 +1,6 @@
 package com.github.mizool.technology.gson.errorhandling.behavior;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.kohsuke.MetaInfServices;
 
