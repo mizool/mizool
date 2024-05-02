@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>3.1-SNAPSHOT</version>
+    <version>4.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -100,7 +100,7 @@
         <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
         <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
-        <java.version>11</java.version>
+        <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
@@ -352,10 +352,9 @@
                 <version>${hibernate-validator.version}</version>
             </dependency>
             <dependency>
-                <!-- Highest version available with Java 11 - further upgrades will happen after switch to Java 17 -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.15.12</version>
+                <version>3.19.7</version>
             </dependency>
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
@@ -455,8 +454,8 @@
                     <version>3.4.1</version>
                     <configuration>
                         <rules>
-                            <requirePluginVersions/>
-                            <dependencyConvergence/>
+                            <requirePluginVersions />
+                            <dependencyConvergence />
                             <requireMavenVersion>
                                 <version>${maven.version.minimum}</version>
                             </requireMavenVersion>
