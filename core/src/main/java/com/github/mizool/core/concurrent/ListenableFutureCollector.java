@@ -13,6 +13,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import com.github.mizool.core.exception.UncheckedInterruptedException;
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -127,9 +128,11 @@ public final class ListenableFutureCollector implements Collector<ListenableFutu
                     semaphore.wait();
                 }
             }
-            catch (@SuppressWarnings("java:S2142") InterruptedException e)
+            catch (InterruptedException e)
             {
-                Threads.rethrowInterrupt(e);
+                Thread.currentThread()
+                    .interrupt();
+                throw new UncheckedInterruptedException(e);
             }
         }
     }
