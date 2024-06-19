@@ -206,6 +206,7 @@
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
+                <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
                 <version>2.10.1</version>
             </dependency>
             <dependency>
