@@ -22,37 +22,21 @@
     <developers>
         <developer>
             <name>Jan Dörrenhaus</name>
-            <email>jandoerrenhaus@incub8.de</email>
-            <organization>incub8 Software Labs</organization>
-            <organizationUrl>http://www.incub8.de</organizationUrl>
+            <email>j.doerrenhaus@eurodata.de</email>
+            <organization>eurodata AG</organization>
+            <organizationUrl>https://www.eurodata.de</organizationUrl>
         </developer>
         <developer>
             <name>Jens Bannmann</name>
-            <email>jensbannmann@incub8.de</email>
-            <organization>incub8 Software Labs</organization>
-            <organizationUrl>http://www.incub8.de</organizationUrl>
+            <email>j.bannmann@eurodata.de</email>
+            <organization>eurodata AG</organization>
+            <organizationUrl>https://www.eurodata.de</organizationUrl>
         </developer>
         <developer>
             <name>Sven Haberer</name>
-            <email>svenhaberer@incub8.de</email>
-            <organization>incub8 Software Labs</organization>
-            <organizationUrl>http://www.incub8.de</organizationUrl>
-        </developer>
-        <developer>
-            <name>Sven Müller</name>
-            <email>svenmueller@incub8.de</email>
-            <organization>incub8 Software Labs</organization>
-            <organizationUrl>http://www.incub8.de</organizationUrl>
-        </developer>
-        <developer>
-            <name>Thomas Budde</name>
-            <email>mail@codingwombat.dev</email>
-        </developer>
-        <developer>
-            <name>Volker Ivens</name>
-            <email>volkerivens@incub8.de</email>
-            <organization>incub8 Software Labs</organization>
-            <organizationUrl>http://www.incub8.de</organizationUrl>
+            <email>s.haberer@eurodata.de</email>
+            <organization>eurodata AG</organization>
+            <organizationUrl>https://www.eurodata.de</organizationUrl>
         </developer>
     </developers>
 
