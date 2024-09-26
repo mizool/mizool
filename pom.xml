@@ -98,11 +98,6 @@
                 <version>${aws.sdk.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jcommander</groupId>
-                <artifactId>jcommander</artifactId>
-                <version>1.85</version>
-            </dependency>
-            <dependency>
                 <groupId>com.datastax.cassandra</groupId>
                 <artifactId>cassandra-driver-core</artifactId>
                 <version>${cassandra.driver.version}</version>
@@ -329,6 +324,11 @@
                 <version>${hibernate-validator.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.jcommander</groupId>
+                <artifactId>jcommander</artifactId>
+                <version>1.85</version>
+            </dependency>
+            <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
                 <version>3.19.12</version>
@@ -431,8 +431,8 @@
                     <version>3.5.0</version>
                     <configuration>
                         <rules>
-                            <requirePluginVersions />
-                            <dependencyConvergence />
+                            <requirePluginVersions/>
+                            <dependencyConvergence/>
                             <requireMavenVersion>
                                 <version>${maven.version.minimum}</version>
                             </requireMavenVersion>
