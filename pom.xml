@@ -534,6 +534,17 @@
                             </ignoreVersion>
                             <rules>
                                 <rule>
+                                    <groupId>com.datastax.cassandra</groupId>
+                                    <artifactId>cassandra-driver-core</artifactId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <type>range</type>
+                                            <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
+                                            <version>[4.0.0,)</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                                <rule>
                                     <groupId>com.google.code.gson</groupId>
                                     <artifactId>gson</artifactId>
                                     <ignoreVersions>
