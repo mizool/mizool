@@ -532,6 +532,18 @@
                             <ignoreVersion>
                                 <version>99.0-does-not-exist</version>
                             </ignoreVersion>
+                            <rules>
+                                <rule>
+                                    <groupId>com.google.code.gson</groupId>
+                                    <artifactId>gson</artifactId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
+                                            <version>2.11.0</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                            </rules>
                         </ruleSet>
                     </configuration>
                 </plugin>
