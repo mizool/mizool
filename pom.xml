@@ -71,7 +71,7 @@
     </distributionManagement>
 
     <properties>
-        <aws.sdk.version>1.12.772</aws.sdk.version>
+        <aws.sdk.version>1.12.777</aws.sdk.version>
         <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
         <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
@@ -80,7 +80,7 @@
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
-        <maven.version.minimum>3.2.2</maven.version.minimum>
+        <maven.version.minimum>3.6.3</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
         <ossrh.host>s01.oss.sonatype.org</ossrh.host>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
@@ -115,7 +115,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.17.2</version>
+                <version>2.18.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -232,7 +232,7 @@
                 <!-- Dependency convergence as transitive dependency from: expressly 5.0.0 (5.0.0) and jakarta.enterprise.cdi-api 4.1.0 (6.0.0)-->
                 <groupId>jakarta.el</groupId>
                 <artifactId>jakarta.el-api</artifactId>
-                <version>6.0.0</version>
+                <version>6.0.1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
@@ -277,7 +277,7 @@
                 <!-- possible dependency convergence problem with transitive dependencies of mockito-core 5.13.0 (1.15.1) and assertj-core 3.26.3 (1.14.18)-->
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.15.1</version>
+                <version>1.15.10</version>
             </dependency>
             <dependency>
                 <groupId>org.antlr</groupId>
@@ -311,7 +311,7 @@
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
-                <version>3.1.8</version>
+                <version>3.1.9</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
@@ -331,7 +331,7 @@
             <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.19.12</version>
+                <version>3.19.15</version>
             </dependency>
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
@@ -342,7 +342,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.13.0</version>
+                <version>5.14.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -460,7 +460,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.10.0</version>
+                    <version>3.11.1</version>
                     <configuration>
                         <sourcepath>${javadoc.sources.directory}</sourcepath>
                         <doclint>none</doclint>
@@ -482,7 +482,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
-                    <version>3.20.0</version>
+                    <version>3.21.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -492,7 +492,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.5.0</version>
+                    <version>3.5.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -512,6 +512,70 @@
                             </goals>
                         </execution>
                     </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>2.17.1</version>
+                    <configuration>
+                        <outputLineWidth>150</outputLineWidth>
+                        <processDependencyManagementTransitive>false</processDependencyManagementTransitive>
+                        <ruleSet>
+                            <ignoreVersion>
+                                <type>regex</type>
+                                <version>(?i).*\W(?:alpha|beta|m\d|mr)\W*.*</version>
+                            </ignoreVersion>
+                            <ignoreVersion>
+                                <type>regex</type>
+                                <version>(?i).*\W(?:redhat-\d+)\W*.*</version>
+                            </ignoreVersion>
+                            <ignoreVersion>
+                                <version>99.0-does-not-exist</version>
+                            </ignoreVersion>
+                            <rules>
+                                <rule>
+                                    <groupId>com.github.mizool</groupId>
+                                    <artifactId>mizool-core</artifactId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <type>range</type>
+                                            <version>(,${project.version}]</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                                <rule>
+                                    <groupId>com.github.mizool.technology</groupId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <type>range</type>
+                                            <version>(,${project.version}]</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                                <rule>
+                                    <groupId>com.datastax.cassandra</groupId>
+                                    <artifactId>cassandra-driver-core</artifactId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <type>range</type>
+                                            <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
+                                            <version>[4.0.0,)</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                                <rule>
+                                    <groupId>com.google.code.gson</groupId>
+                                    <artifactId>gson</artifactId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
+                                            <version>2.11.0</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                            </rules>
+                        </ruleSet>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
@@ -624,7 +688,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.6</version>
+                        <version>3.2.7</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
