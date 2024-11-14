@@ -1,0 +1,37 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+tab_width = 4
+
+[*.less]
+indent_size = 2
+
+[*.proto]
+indent_size = 2
+tab_width = 2
+
+[*.sass]
+indent_size = 2
+
+[*.scss]
+indent_size = 2
+
+[*.vue]
+indent_size = 2
+tab_width = 2
+
+[{*.htm,*.html,*.sht,*.shtm,*.shtml}]
+max_line_length = 1000
+
+[{*.pb,*.textproto,*.txtpb}]
+indent_size = 2
+tab_width = 2
+
+[{*.yaml,*.yml}]
+indent_size = 2
