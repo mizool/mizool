@@ -545,67 +545,6 @@
                                 </rule>
                                 <rule>
                                     <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-aws</artifactId>
-                                    <ignoreVersions>
-                                        <ignoreVersion>
-                                            <type>range</type>
-                                            <version>(,${project.version}]</version>
-                                        </ignoreVersion>
-                                    </ignoreVersions>
-                                </rule>
-                                <rule>
-                                    <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-cache</artifactId>
-                                    <ignoreVersions>
-                                        <ignoreVersion>
-                                            <type>range</type>
-                                            <version>(,${project.version}]</version>
-                                        </ignoreVersion>
-                                    </ignoreVersions>
-                                </rule>
-                                <rule>
-                                    <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-cassandra</artifactId>
-                                    <ignoreVersions>
-                                        <ignoreVersion>
-                                            <type>range</type>
-                                            <version>(,${project.version}]</version>
-                                        </ignoreVersion>
-                                    </ignoreVersions>
-                                </rule>
-                                <rule>
-                                    <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-gson</artifactId>
-                                    <ignoreVersions>
-                                        <ignoreVersion>
-                                            <type>range</type>
-                                            <version>(,${project.version}]</version>
-                                        </ignoreVersion>
-                                    </ignoreVersions>
-                                </rule>
-                                <rule>
-                                    <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-jackson</artifactId>
-                                    <ignoreVersions>
-                                        <ignoreVersion>
-                                            <type>range</type>
-                                            <version>(,${project.version}]</version>
-                                        </ignoreVersion>
-                                    </ignoreVersions>
-                                </rule>
-                                <rule>
-                                    <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-sql</artifactId>
-                                    <ignoreVersions>
-                                        <ignoreVersion>
-                                            <type>range</type>
-                                            <version>(,${project.version}]</version>
-                                        </ignoreVersion>
-                                    </ignoreVersions>
-                                </rule>
-                                <rule>
-                                    <groupId>com.github.mizool.technology</groupId>
-                                    <artifactId>technology-web</artifactId>
                                     <ignoreVersions>
                                         <ignoreVersion>
                                             <type>range</type>
