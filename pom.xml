@@ -523,7 +523,7 @@
                         <ruleSet>
                             <ignoreVersion>
                                 <type>regex</type>
-                                <version>(?i).*\W(?:alpha|beta|m\d|mr)\W*.*</version>
+                                <version>(?i).*\W(?:alpha|beta|m\d|mr|cr\d)\W*.*</version>
                             </ignoreVersion>
                             <ignoreVersion>
                                 <type>regex</type>
