@@ -71,11 +71,11 @@
     </distributionManagement>
 
     <properties>
-        <aws.sdk.version>1.12.777</aws.sdk.version>
+        <aws.sdk.version>1.12.780</aws.sdk.version>
         <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
         <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
-        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
+        <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
         <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
@@ -85,7 +85,7 @@
         <ossrh.host>s01.oss.sonatype.org</ossrh.host>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
-        <shiro.version>2.0.1</shiro.version>
+        <shiro.version>2.0.2</shiro.version>
         <slf4j.version>2.0.16</slf4j.version>
     </properties>
 
@@ -115,7 +115,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.18.1</version>
+                <version>2.18.2</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -277,7 +277,7 @@
                 <!-- possible dependency convergence problem with transitive dependencies of mockito-core 5.13.0 (1.15.1) and assertj-core 3.26.3 (1.14.18)-->
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
-                <version>1.15.10</version>
+                <version>1.15.11</version>
             </dependency>
             <dependency>
                 <groupId>org.antlr</groupId>
@@ -331,7 +331,7 @@
             <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.19.15</version>
+                <version>3.19.16</version>
             </dependency>
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
@@ -348,7 +348,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.34</version>
+                <version>1.18.36</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
