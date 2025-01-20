@@ -191,7 +191,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.3.1-jre</version>
+                <version>33.4.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>
@@ -288,7 +288,7 @@
             <dependency>
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
-                <version>3.26.3</version>
+                <version>3.27.3</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -299,7 +299,7 @@
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
                 <artifactId>jersey-media-json-jackson</artifactId>
-                <version>3.1.9</version>
+                <version>3.1.10</version>
             </dependency>
             <dependency>
                 <groupId>org.hibernate.validator</groupId>
@@ -319,7 +319,7 @@
             <dependency>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.19.16</version>
+                <version>3.19.18</version>
             </dependency>
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
@@ -330,7 +330,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.14.2</version>
+                <version>5.15.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
