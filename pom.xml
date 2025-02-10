@@ -204,13 +204,13 @@
                 <!-- force dependency convergence. 1.15 is intended for aws-java-sdk-dynamodb 1.12.780 -->
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.17.1</version>
+                <version>1.18.0</version>
             </dependency>
             <dependency>
                 <!-- force dependency convergence. 1.2 is intended for aws-java-sdk-dynamodb 1.12.780 -->
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>1.3.4</version>
+                <version>1.3.5</version>
             </dependency>
             <dependency>
                 <groupId>de.mkammerer</groupId>
@@ -255,7 +255,7 @@
             <dependency>
                 <groupId>jakarta.validation</groupId>
                 <artifactId>jakarta.validation-api</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.1</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.ws.rs</groupId>
@@ -557,7 +557,8 @@
                                     <ignoreVersions>
                                         <ignoreVersion>
                                             <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
-                                            <version>2.11.0</version>
+                                            <type>range</type>
+                                            <version>[2.11.0,2.12.1]</version>
                                         </ignoreVersion>
                                     </ignoreVersions>
                                 </rule>
