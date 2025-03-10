@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>6.4</version>
+    <version>6.5</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -71,7 +71,7 @@
     </distributionManagement>
 
     <properties>
-        <aws.sdk.version>1.12.780</aws.sdk.version>
+        <aws.sdk.version>1.12.782</aws.sdk.version>
         <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
         <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
@@ -86,7 +86,7 @@
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <shiro.version>2.0.2</shiro.version>
-        <slf4j.version>2.0.16</slf4j.version>
+        <slf4j.version>2.0.17</slf4j.version>
     </properties>
 
     <dependencyManagement>
@@ -115,7 +115,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.18.2</version>
+                <version>2.18.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -215,7 +215,7 @@
             <dependency>
                 <groupId>de.mkammerer</groupId>
                 <artifactId>argon2-jvm</artifactId>
-                <version>2.11</version>
+                <version>2.12</version>
             </dependency>
             <dependency>
                 <groupId>jakarta.annotation</groupId>
@@ -317,9 +317,10 @@
                 <version>2.0</version>
             </dependency>
             <dependency>
+                <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.19.18</version>
+                <version>3.19.20</version>
             </dependency>
             <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
@@ -330,7 +331,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.15.2</version>
+                <version>5.16.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -352,7 +353,7 @@
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
-                <version>7.10.2</version>
+                <version>7.11.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
