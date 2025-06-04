@@ -11,6 +11,8 @@
     <artifactId>bom</artifactId>
     <packaging>pom</packaging>
 
+    <name>${project.groupId}:${project.artifactId}</name>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
