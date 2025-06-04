@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" child.project.url.inherit.append.path="false">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>6.5</version>
+    <version>6.6</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -57,18 +57,11 @@
         <module>tool</module>
     </modules>
 
-    <scm>
+    <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
         <connection>scm:git:git://github.com/mizool/mizool.git</connection>
         <developerConnection>scm:git:ssh://github.com/mizool/mizool.git</developerConnection>
         <url>https://github.com/mizool/mizool/tree/master</url>
     </scm>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://${ossrh.host}/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <properties>
         <aws.sdk.version>1.12.782</aws.sdk.version>
@@ -82,7 +75,6 @@
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <maven.version.minimum>3.6.3</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
-        <ossrh.host>s01.oss.sonatype.org</ossrh.host>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
         <shiro.version>2.0.2</shiro.version>
@@ -568,14 +560,14 @@
                     </configuration>
                 </plugin>
                 <plugin>
-                    <groupId>org.sonatype.plugins</groupId>
-                    <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>1.7.0</version>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.7.0</version>
                     <extensions>true</extensions>
                     <configuration>
-                        <serverId>ossrh</serverId>
-                        <nexusUrl>https://${ossrh.host}/</nexusUrl>
-                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                        <autoPublish>true</autoPublish>
+                        <deploymentName>mizool ${project.version}</deploymentName>
+                        <publishingServerId>central</publishingServerId>
                     </configuration>
                 </plugin>
             </plugins>
@@ -595,8 +587,8 @@
                 <artifactId>maven-toolchains-plugin</artifactId>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
