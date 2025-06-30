@@ -72,6 +72,7 @@
         <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
+        <lombok.core.version>1.18.36</lombok.core.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <maven.version.minimum>3.6.3</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
@@ -329,7 +330,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.36</version>
+                <version>${lombok.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -609,6 +610,13 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-maven-plugin</artifactId>
                             <version>${lombok.plugin.version}</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>${lombok.core.version}</version>
+                                </dependency>
+                            </dependencies>
                             <executions>
                                 <execution>
                                     <goals>
