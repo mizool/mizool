@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" child.project.url.inherit.append.path="false">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" child.project.url.inherit.append.path="false" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>6.6</version>
+    <version>6.7</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -72,6 +72,7 @@
         <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
+        <lombok.core.version>1.18.36</lombok.core.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <maven.version.minimum>3.6.3</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
@@ -315,6 +316,11 @@
                 <version>3.19.20</version>
             </dependency>
             <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
                 <groupId>org.kohsuke.metainf-services</groupId>
                 <artifactId>metainf-services</artifactId>
                 <version>1.11</version>
@@ -329,7 +335,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.36</version>
+                <version>${lombok.core.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -412,8 +418,8 @@
                     <version>3.5.0</version>
                     <configuration>
                         <rules>
-                            <requirePluginVersions />
-                            <dependencyConvergence />
+                            <requirePluginVersions/>
+                            <dependencyConvergence/>
                             <requireMavenVersion>
                                 <version>${maven.version.minimum}</version>
                             </requireMavenVersion>
@@ -609,6 +615,13 @@
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok-maven-plugin</artifactId>
                             <version>${lombok.plugin.version}</version>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                    <version>${lombok.core.version}</version>
+                                </dependency>
+                            </dependencies>
                             <executions>
                                 <execution>
                                     <goals>
