@@ -32,9 +32,9 @@ updates:
       - dependency-name: "com.google.code.gson:gson"
         versions:
           # There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this
-          - 2.11.0
-          - 2.12.1
-          - 2.13.1
+          - "2.11.0"
+          - "2.12.1"
+          - "2.13.1"
       - dependency-name: "jakarta.inject:jakarta.inject-api"
         versions:
           - "2.0.1.MR"
