@@ -557,7 +557,7 @@
                                         <ignoreVersion>
                                             <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
                                             <type>range</type>
-                                            <version>[2.11.0,2.12.1]</version>
+                                            <version>[2.11.0,2.12.1,2.13.1]</version>
                                         </ignoreVersion>
                                     </ignoreVersions>
                                 </rule>
