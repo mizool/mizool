@@ -68,7 +68,7 @@
         <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
         <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
-        <hibernate-validator.version>8.0.2.Final</hibernate-validator.version>
+        <hibernate-validator.version>9.0.1.Final</hibernate-validator.version>
         <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
         <jcache.ri.version>0.6</jcache.ri.version>
@@ -287,7 +287,7 @@
             <dependency>
                 <groupId>org.glassfish.expressly</groupId>
                 <artifactId>expressly</artifactId>
-                <version>5.0.0</version>
+                <version>6.0.0</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.jersey.media</groupId>
