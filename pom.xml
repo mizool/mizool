@@ -313,7 +313,7 @@
                 <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.20.5</version>
+                <version>3.19.24</version>
             </dependency>
             <dependency>
                 <groupId>org.jspecify</groupId>
@@ -558,6 +558,17 @@
                                             <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
                                             <type>range</type>
                                             <version>[2.11.0,2.13.1]</version>
+                                        </ignoreVersion>
+                                    </ignoreVersions>
+                                </rule>
+                                <rule>
+                                    <groupId>org.jooq</groupId>
+                                    <artifactId>jooq</artifactId>
+                                    <ignoreVersions>
+                                        <ignoreVersion>
+                                            <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
+                                            <type>range</type>
+                                            <version>[3.20.0,)</version>
                                         </ignoreVersion>
                                     </ignoreVersions>
                                 </rule>
