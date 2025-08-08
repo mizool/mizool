@@ -21,3 +21,10 @@ updates:
           - "*"
         update-types:
           - "major"
+    ignore:
+      - dependency-name: "com.fasterxml.jackson:jackson-bom"
+        versions:
+          - "2.20.0-rc1"
+      - dependency-name: "jakarta.inject:jakarta.inject-api"
+        versions:
+          - "2.0.1.MR"
