@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.mizool.tool</groupId>
         <artifactId>tool</artifactId>
-        <version>6.8</version>
+        <version>6.9-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
