@@ -23,18 +23,13 @@ updates:
           - "major"
     ignore:
       - dependency-name: "com.datastax.cassandra:cassandra-driver-core"
-        versions:
-          # Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x)
-          - "[4.0.0,)"
+        # Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x)
+        versions: [ "[4.0.0,)" ]
       - dependency-name: "com.fasterxml.jackson:jackson-bom"
-        versions:
-          - "2.20.0-rc1"
+        versions: [ "2.20.0-rc1" ]
       - dependency-name: "com.google.code.gson:gson"
-        versions:
-          # There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this
-          - "2.11.0"
-          - "2.12.1"
-          - "2.13.1"
+        # There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this
+        versions: [ "[2.11.0,2.13.1]" ]
       - dependency-name: "jakarta.inject:jakarta.inject-api"
         versions:
           - "2.0.1.MR"
