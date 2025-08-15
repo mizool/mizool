@@ -184,7 +184,7 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.4.2-jre</version>
+                <version>33.4.8-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>
@@ -313,7 +313,7 @@
                 <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.19.24</version>
+                <version>3.19.25</version>
             </dependency>
             <dependency>
                 <groupId>org.jspecify</groupId>
@@ -329,7 +329,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>5.18.0</version>
+                <version>5.19.0</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
