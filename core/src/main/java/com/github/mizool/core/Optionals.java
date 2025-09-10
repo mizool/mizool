@@ -8,8 +8,8 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
 import com.github.mizool.core.exception.DataInconsistencyException;
+import com.github.mizool.core.exception.EntityReferenceException;
 import com.github.mizool.core.exception.ObjectNotFoundException;
-import com.github.mizool.core.exception.UnprocessableEntityException;
 
 @UtilityClass
 public class Optionals
@@ -31,22 +31,6 @@ public class Optionals
     }
 
     /**
-     * Used when a user directly requests an object, resulting in an ObjectNotFoundException if it does not exist.
-     *
-     * @deprecated Use {@link Optionals#unwrapUserRequestedObject(Optional, Class)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public <T> T unwrapUserRequestedObject(
-        @NonNull com.google.common.base.Optional<T> wrapped, @NonNull Class<T> classOfT)
-    {
-        if (!wrapped.isPresent())
-        {
-            throw new ObjectNotFoundException(classOfT.getSimpleName() + " not found");
-        }
-        return wrapped.get();
-    }
-
-    /**
      * Used when an object can be reasonably expected to exist, resulting in a DataInconsistencyException if it does not
      * exist.
      */
@@ -65,28 +49,12 @@ public class Optionals
     }
 
     /**
-     * Used when an object can be reasonably expected to exist, resulting in a DataInconsistencyException if it does not
-     * exist.
-     *
-     * @deprecated Use {@link Optionals#unwrapRequiredObject(Optional, Class)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public <T> T unwrapRequiredObject(@NonNull com.google.common.base.Optional<T> wrapped, @NonNull Class<T> classOfT)
-    {
-        if (!wrapped.isPresent())
-        {
-            throw new DataInconsistencyException(classOfT.getSimpleName() + " not found");
-        }
-        return wrapped.get();
-    }
-
-    /**
      * Used when a user-submitted entity refers to another object, resulting in a UnprocessableEntityException if that
      * object does not exist.
      */
     public <T> T unwrapUserMentionedObject(@NonNull Optional<T> wrapped, @NonNull Class<T> classOfT)
     {
-        return wrapped.orElseThrow(() -> new UnprocessableEntityException(classOfT.getSimpleName() + " not found"));
+        return wrapped.orElseThrow(() -> new EntityReferenceException(classOfT.getSimpleName() + " not found"));
     }
 
     /**
@@ -96,23 +64,6 @@ public class Optionals
     public <T> Function<Optional<T>, T> unwrapUserMentionedObject(@NonNull Class<T> classOfT)
     {
         return optional -> unwrapUserMentionedObject(optional, classOfT);
-    }
-
-    /**
-     * Used when a user-submitted entity refers to another object, resulting in a UnprocessableEntityException if that
-     * object does not exist.
-     *
-     * @deprecated Use {@link Optionals#unwrapUserMentionedObject(Optional, Class)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public <T> T unwrapUserMentionedObject(
-        @NonNull com.google.common.base.Optional<T> wrapped, @NonNull Class<T> classOfT)
-    {
-        if (!wrapped.isPresent())
-        {
-            throw new UnprocessableEntityException(classOfT.getSimpleName() + " not found");
-        }
-        return wrapped.get();
     }
 
     /**

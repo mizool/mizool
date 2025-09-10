@@ -186,17 +186,6 @@ public final class BufferedStreamAdapter<F, V>
         return new Completable();
     }
 
-    /**
-     * @deprecated Use {@link #listenable()} and {@link Listenable#adapt(Stream, int, ExecutorService)} instead.
-     */
-    @Deprecated(forRemoval = true)
-    public static <E> Stream<E> adapt(
-        Stream<ListenableFuture<E>> futures, int bufferSize, ExecutorService executorService)
-    {
-        return BufferedStreamAdapter.listenable()
-            .adapt(futures, bufferSize, executorService);
-    }
-
     private static void verifyBufferSize(int bufferSize)
     {
         if (bufferSize <= 0)
