@@ -23,19 +23,4 @@ public class Threads
             throw new UncheckedInterruptedException(e);
         }
     }
-
-    /**
-     * Wraps the given {@link InterruptedException} in an {@link UncheckedInterruptedException} and re-interrupts the
-     * thread.
-     *
-     * @throws UncheckedInterruptedException Wrapping the given {@link InterruptedException}.
-     * @deprecated at the usage site, the compiler/IDE can’t know that {@code rethrowInterrupt()} contains a {@code throw}, so it will complain that an exception was neither handled nor rethrown.
-     */
-    @Deprecated(forRemoval = true)
-    public void rethrowInterrupt(InterruptedException e)
-    {
-        Thread.currentThread()
-            .interrupt();
-        throw new UncheckedInterruptedException(e);
-    }
 }

@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -12,13 +13,86 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
 import com.github.mizool.core.exception.UncheckedInterruptedException;
+import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 
 @UtilityClass
 public class Futures
 {
+    private static class ResultVoidingListenableFuture implements ListenableFuture<Void>
+    {
+        private class Callback<V> implements FutureCallback<V>
+        {
+            @Override
+            public void onSuccess(V result)
+            {
+                target.set(null);
+            }
+
+            @Override
+            public void onFailure(Throwable t)
+            {
+                target.setException(t);
+            }
+        }
+
+        private final SettableFuture<Void> target = SettableFuture.create();
+
+        public <T> ResultVoidingListenableFuture(ListenableFuture<T> target)
+        {
+            com.google.common.util.concurrent.Futures.addCallback(target,
+                new Callback<>(),
+                MoreExecutors.directExecutor());
+        }
+
+        /*
+         * We don't use lombok for delegation as
+         * a) somehow, lombok 1.16.6 does not correctly generate delegate methods for the methods not directly defined in
+         * SettableFuture.
+         * b) we want to implement ListenableFuture, not be a SettableFuture.
+         */
+
+        @Override
+        public Void get(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException, ExecutionException
+        {
+            return target.get(timeout, unit);
+        }
+
+        @Override
+        public Void get() throws InterruptedException, ExecutionException
+        {
+            return target.get();
+        }
+
+        @Override
+        public boolean isDone()
+        {
+            return target.isDone();
+        }
+
+        @Override
+        public boolean isCancelled()
+        {
+            return target.isCancelled();
+        }
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning)
+        {
+            return target.cancel(mayInterruptIfRunning);
+        }
+
+        @Override
+        public void addListener(Runnable listener, Executor exec)
+        {
+            target.addListener(listener, exec);
+        }
+    }
+
     private interface Getter<V>
     {
         V call() throws ExecutionException, InterruptedException, TimeoutException;
@@ -80,10 +154,10 @@ public class Futures
 
     /**
      * Transforms any {@link ListenableFuture} into a {@link ListenableFuture} without result. Exceptions that are
-     * thrown by the original future are handled transparently.<br>
-     * <br>
-     * The returned future does not contain a reference to the original future. That allows to reduce the overall memory
-     * footprint when working with multiple futures at once without caring for the results.
+     * thrown by the original future are handled transparently.
+     *
+     * <p>The returned future does not contain a reference to the original future. That allows to reduce the overall
+     * memory footprint when working with multiple futures at once without caring for the results.
      *
      * @param future the future to wrap
      *
@@ -91,18 +165,17 @@ public class Futures
      *
      * @throws NullPointerException if {@code future} is {@code null}
      */
-    @SuppressWarnings("deprecation")
     public ListenableFuture<Void> toVoidResult(@NonNull ListenableFuture<?> future)
     {
-        return new ResultVoidingFuture(future);
+        return new ResultVoidingListenableFuture(future);
     }
 
     /**
      * Transforms any {@link CompletableFuture} into a {@link CompletableFuture} without result. Exceptions that are
-     * thrown by the original future are handled transparently.<br>
-     * <br>
-     * The returned future does not contain a reference to the original future. That allows to reduce the overall memory
-     * footprint when working with multiple futures at once without caring for the results.
+     * thrown by the original future are handled transparently.
+     *
+     * <p>The returned future does not contain a reference to the original future. That allows to reduce the overall
+     * memory footprint when working with multiple futures at once without caring for the results.
      *
      * @param future the future to wrap
      *
