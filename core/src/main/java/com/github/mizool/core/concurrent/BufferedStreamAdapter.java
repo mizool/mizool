@@ -197,11 +197,13 @@ public final class BufferedStreamAdapter<F, V>
     private final class BlockingSpliterator implements Spliterator<V>
     {
         @Override
+        @SuppressWarnings("java:S2589") // Sonar thinks valueHolder local variable is non-nullable
         public boolean tryAdvance(Consumer<? super V> action)
         {
-            ValueHolder<V> valueHolder = synchronizer.sleepUntil(resultOrCompletion())
+            ValueHolder<V> valueHolder = synchronizer.define()
+                .sleepUntil(resultOrCompletion())
                 .get(this::getResultOrNull)
-                .andWakeOthersIf(Objects::nonNull)
+                .wakeOthersIf(Objects::nonNull)
                 .invoke();
 
             boolean valueEmitted = false;
@@ -264,7 +266,7 @@ public final class BufferedStreamAdapter<F, V>
     private final UnaryOperator<Throwable> exceptionUnwrapper;
 
     private final Queue<ValueHolder<V>> results = new LinkedList<>();
-    private final Synchronizer synchronizer = new Synchronizer();
+    private final FluentSynchronizer synchronizer = new FluentSynchronizer();
     private final AtomicInteger runningFutures = new AtomicInteger();
     private final AtomicBoolean streamDepleted = new AtomicBoolean();
 
@@ -286,20 +288,23 @@ public final class BufferedStreamAdapter<F, V>
              * Unlike convertFutureResultToValueHolder(), we are dealing with "synchronous" exceptions here that we
              * don't need to unwrap.
              */
-            synchronizer.run(() -> results.add(new ValueHolder<>(throwable)))
-                .andWakeOthers()
+            synchronizer.define()
+                .run(() -> results.add(new ValueHolder<>(throwable)))
+                .wakeOthers()
                 .invoke();
         }
 
-        synchronizer.run(() -> streamDepleted.set(true))
-            .andWakeOthers()
+        synchronizer.define()
+            .run(() -> streamDepleted.set(true))
+            .wakeOthers()
             .invoke();
     }
 
     private void consumeFuture(F future)
     {
-        synchronizer.run(runnableConsumeFuture(future))
-            .thenSleepUntil(capacityAvailable())
+        synchronizer.define()
+            .run(runnableConsumeFuture(future))
+            .sleepUntil(capacityAvailable())
             .invoke();
     }
 
@@ -313,8 +318,9 @@ public final class BufferedStreamAdapter<F, V>
 
     private void handleFutureResult(V value, Throwable throwable)
     {
-        synchronizer.run(runnableHandleFutureResult(value, throwable))
-            .andWakeOthers()
+        synchronizer.define()
+            .run(runnableHandleFutureResult(value, throwable))
+            .wakeOthers()
             .invoke();
     }
 
