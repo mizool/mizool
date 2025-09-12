@@ -159,7 +159,7 @@ public class TestFluentSynchronizer
 
         var completableFutures = runnables.stream()
             .map(runnable -> CompletableFuture.runAsync(runnable, executorService))
-            .collect(Collectors.toList())
+            .toList()
             .toArray(new CompletableFuture<?>[]{});
 
         return CompletableFuture.allOf(completableFutures);
@@ -308,7 +308,7 @@ public class TestFluentSynchronizer
                     return true;
                 })
                 .invoke())
-            .collect(Collectors.toList());
+            .toList();
 
         submitAndWaitForCompletion(() -> {
             ready.set(true);

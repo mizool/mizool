@@ -226,6 +226,7 @@ public final class FluentSynchronizer
     {
         private final Function<@Nullable Object, @Nullable Object> function;
 
+        @SuppressWarnings("java:S4276") // Can't use UnaryOperator here: the two type args can be distinct at runtime
         public MappingElement(
             Lock lock,
             @Nullable Element previous,
@@ -350,9 +351,10 @@ public final class FluentSynchronizer
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "java:S4276"})
         public <R> FluentSynchronizerApi.Value<R> map(Function<Object, R> function)
         {
+            // S4276 recommends UnaryOperator, but we can't use that here as the type args can be distinct at runtime
             var uncheckedFunction = (Function<@Nullable Object, @Nullable Object>) function;
 
             var element = new MappingElement(lock, tailElement, uncheckedFunction);

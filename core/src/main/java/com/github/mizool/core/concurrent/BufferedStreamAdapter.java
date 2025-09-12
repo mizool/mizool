@@ -197,6 +197,7 @@ public final class BufferedStreamAdapter<F, V>
     private final class BlockingSpliterator implements Spliterator<V>
     {
         @Override
+        @SuppressWarnings("java:S2589") // Sonar thinks valueHolder local variable is non-nullable
         public boolean tryAdvance(Consumer<? super V> action)
         {
             ValueHolder<V> valueHolder = synchronizer.define()
