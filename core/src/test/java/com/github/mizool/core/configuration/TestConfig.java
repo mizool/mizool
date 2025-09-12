@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -27,7 +26,6 @@ import org.testng.annotations.Test;
 
 import com.github.mizool.core.UrlRef;
 import com.github.mizool.core.exception.ConfigurationException;
-import com.google.common.collect.ImmutableList;
 
 public class TestConfig
 {
@@ -248,7 +246,7 @@ public class TestConfig
             .stringsValue()
             .read()
             .orElseThrow(AssertionError::new)
-            .collect(Collectors.toList());
+            .toList();
 
         assertThat(result).isEqualTo(expectedResult);
     }
@@ -257,15 +255,15 @@ public class TestConfig
     protected Object[][] stringLists()
     {
         return new Object[][]{
-            new Object[]{ "basic", "foo,bar,quux", ImmutableList.of("foo", "bar", "quux") },
-            new Object[]{ "trims spaces", "foo, bar, quux", ImmutableList.of("foo", "bar", "quux") },
-            new Object[]{ "trailing comma ignored", "foo,bar,quux,", ImmutableList.of("foo", "bar", "quux") },
-            new Object[]{ "leading comma ignored", ",foo,bar,quux", ImmutableList.of("foo", "bar", "quux") },
-            new Object[]{ "empty element skipped", "foo,bar,,quux", ImmutableList.of("foo", "bar", "quux") },
+            new Object[]{ "basic", "foo,bar,quux", List.of("foo", "bar", "quux") },
+            new Object[]{ "trims spaces", "foo, bar, quux", List.of("foo", "bar", "quux") },
+            new Object[]{ "trailing comma ignored", "foo,bar,quux,", List.of("foo", "bar", "quux") },
+            new Object[]{ "leading comma ignored", ",foo,bar,quux", List.of("foo", "bar", "quux") },
+            new Object[]{ "empty element skipped", "foo,bar,,quux", List.of("foo", "bar", "quux") },
             new Object[]{
-                "whitespace-only element skipped", "foo,bar,   ,quux", ImmutableList.of("foo", "bar", "quux")
+                "whitespace-only element skipped", "foo,bar,   ,quux", List.of("foo", "bar", "quux")
             },
-            new Object[]{ "singleton", "baz", ImmutableList.of("baz") },
+            new Object[]{ "singleton", "baz", List.of("baz") },
             };
     }
 
@@ -380,7 +378,7 @@ public class TestConfig
                 .stringValue()
                 .read()
                 .orElseThrow(() -> new AssertionError("no value")))
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public RootNode readNodeReferencesTestData()

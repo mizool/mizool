@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestDatabaseIdentifierAnnotation
 {
     @AllArgsConstructor
@@ -67,18 +65,16 @@ public class TestDatabaseIdentifierAnnotation
     private Object[][] acceptableListValues()
     {
         return new Object[][]{
-            { null }, { ImmutableList.of("login") }, {
-            ImmutableList.of("login_", "LogIN", "LoremIpsumDolorSitAmetConseteturSadipscingElitrS")
-        }
+            { null },
+            { List.of("login") },
+            { List.of("login_", "LogIN", "LoremIpsumDolorSitAmetConseteturSadipscingElitrS") }
         };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("_login") }, { ImmutableList.of("login", "log(in") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("_login") }, { List.of("login", "log(in") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -108,7 +104,7 @@ public class TestDatabaseIdentifierAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)),
             DatabaseIdentifier.class);
     }
 }

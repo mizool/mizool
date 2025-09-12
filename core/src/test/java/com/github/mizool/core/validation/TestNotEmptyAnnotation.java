@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestNotEmptyAnnotation
 {
     @AllArgsConstructor
@@ -36,33 +34,25 @@ public class TestNotEmptyAnnotation
     @DataProvider(name = "acceptableValues")
     public Object[][] createAcceptableValues()
     {
-        return new Object[][]{
-            { "blah" }, { "moep" }
-        };
+        return new Object[][]{ { "blah" }, { "moep" } };
     }
 
     @DataProvider(name = "unacceptableValues")
     public Object[][] createUnacceptableValues()
     {
-        return new Object[][]{
-            { null }, { "" }
-        };
+        return new Object[][]{ { null }, { "" } };
     }
 
     @DataProvider
     private Object[][] acceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("blah") }, { ImmutableList.of("blah", "moep") }
-        };
+        return new Object[][]{ { List.of("blah") }, { List.of("blah", "moep") } };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { null }, { ImmutableList.of("") }, { ImmutableList.of("blah", "") }
-        };
+        return new Object[][]{ { null }, { List.of("") }, { List.of("blah", "") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -92,6 +82,6 @@ public class TestNotEmptyAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)), NotEmpty.class);
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)), NotEmpty.class);
     }
 }
