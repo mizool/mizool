@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestTimeZoneValueAnnotation
 {
     @RequiredArgsConstructor
@@ -36,32 +34,31 @@ public class TestTimeZoneValueAnnotation
     private Object[][] acceptableValues()
     {
         return new Object[][]{
-            { null }, { "Europe/Paris" }, { "Europe/Berlin" }, { "Asia/Tokyo" }, { "UTC" }, { "GMT" }
+            { null },
+            { "Europe/Paris" },
+            { "Europe/Berlin" },
+            { "Asia/Tokyo" },
+            { "UTC" },
+            { "GMT" }
         };
     }
 
     @DataProvider
     private Object[][] unacceptableValues()
     {
-        return new Object[][]{
-            { "" }, { "UT" }, { "+2:00" }, { "GMT+2" }, { "UTC-01:00" }, { "Europe/Dortmund" }
-        };
+        return new Object[][]{ { "" }, { "UT" }, { "+2:00" }, { "GMT+2" }, { "UTC-01:00" }, { "Europe/Dortmund" } };
     }
 
     @DataProvider
     private Object[][] acceptableListValues()
     {
-        return new Object[][]{
-            { null }, { ImmutableList.of("Europe/Paris") }, { ImmutableList.of("Asia/Tokyo", "UTC") }
-        };
+        return new Object[][]{ { null }, { List.of("Europe/Paris") }, { List.of("Asia/Tokyo", "UTC") } };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("Asia/Tokyo", "+2:00") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("Asia/Tokyo", "+2:00") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -91,7 +88,7 @@ public class TestTimeZoneValueAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)),
             TimeZoneValue.class);
     }
 }

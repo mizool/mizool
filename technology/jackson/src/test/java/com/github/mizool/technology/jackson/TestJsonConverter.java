@@ -3,6 +3,7 @@ package com.github.mizool.technology.jackson;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import lombok.Builder;
@@ -14,7 +15,6 @@ import org.testng.annotations.Test;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 public class TestJsonConverter
@@ -87,7 +87,7 @@ public class TestJsonConverter
     @Test
     public void testCollectionToRecord()
     {
-        Collection<Integer> pojo = ImmutableList.of(1, 3, 3, 7);
+        Collection<Integer> pojo = List.of(1, 3, 3, 7);
         String expected = "[1,3,3,7]";
 
         String actual = jsonConverter.toRecord(pojo);
@@ -154,7 +154,7 @@ public class TestJsonConverter
     public void testCollectionToPojo()
     {
         String record = "[ 1, 3, 3, 7 ]";
-        Collection<Integer> expected = ImmutableList.of(1, 3, 3, 7);
+        Collection<Integer> expected = List.of(1, 3, 3, 7);
 
         TypeReference<Collection<Integer>> typeReference = new TypeReference<Collection<Integer>>()
         {

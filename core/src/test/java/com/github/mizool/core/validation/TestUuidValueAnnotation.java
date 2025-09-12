@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestUuidValueAnnotation
 {
     @RequiredArgsConstructor
@@ -49,17 +47,15 @@ public class TestUuidValueAnnotation
     {
         return new Object[][]{
             { null },
-            { ImmutableList.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a") },
-            { ImmutableList.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a", "abc12370-0000-aaaa-bbbb-2ba9ffd55e4a") }
+            { List.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a") },
+            { List.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a", "abc12370-0000-aaaa-bbbb-2ba9ffd55e4a") }
         };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a", "MOEP") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("ddae0767-6dbc-4d6f-8fbe-2ba9ffd55e4a", "MOEP") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -89,7 +85,7 @@ public class TestUuidValueAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)),
             UuidValue.class);
     }
 }

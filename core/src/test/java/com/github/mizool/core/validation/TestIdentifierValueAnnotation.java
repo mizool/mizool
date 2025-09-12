@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestIdentifierValueAnnotation
 {
     @AllArgsConstructor
@@ -48,15 +46,13 @@ public class TestIdentifierValueAnnotation
     @DataProvider
     private Object[][] acceptableListValues()
     {
-        return new Object[][]{ { ImmutableList.of("FOO") }, { ImmutableList.of("FOO", "BAR") } };
+        return new Object[][]{ { List.of("FOO") }, { List.of("FOO", "BAR") } };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("FOO", "") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("FOO", "") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -86,7 +82,7 @@ public class TestIdentifierValueAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)),
             IdentifierValue.class);
     }
 }
