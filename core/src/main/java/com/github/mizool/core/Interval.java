@@ -2,12 +2,11 @@ package com.github.mizool.core;
 
 import java.time.Duration;
 
-import javax.annotation.concurrent.ThreadSafe;
-
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
 
 import com.google.common.base.Stopwatch;
+import net.jcip.annotations.ThreadSafe;
 
 /**
  * Helper class to allow for something to happen at regular intervals. A common use case might be invalidation of
