@@ -101,7 +101,10 @@ import com.github.mizool.core.validation.Nullable;
  * This class intentionally uses the verbs "sleep" and "wake". If it used "wait" and "notify" instead, its methods would
  * all too easily be confused with methods in java.lang.Object which, if invoked on the objects returned by chained
  * methods, could cause deadlocks.
+ *
+ * @deprecated This class does not offer enough flexibility and will be removed. Use {@link FluentSynchronizer} instead.
  */
+@Deprecated(forRemoval = true)
 public final class Synchronizer implements SynchronizerApi.SleepRunGet
 {
     /**
