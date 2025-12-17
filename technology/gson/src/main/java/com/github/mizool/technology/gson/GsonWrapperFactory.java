@@ -1,12 +1,14 @@
 package com.github.mizool.technology.gson;
 
-import com.github.mizool.core.MetaInfServices;
+import java.util.ServiceLoader;
+
 import com.google.gson.GsonBuilder;
 
 public class GsonWrapperFactory
 {
-    private static final Iterable<GsonBuilderListener> GSON_BUILDER_LISTENERS = MetaInfServices.instances(
-        GsonBuilderListener.class);
+    private static final Iterable<GsonBuilderListener>
+        GSON_BUILDER_LISTENERS
+        = ServiceLoader.load(GsonBuilderListener.class);
 
     public GsonWrapper create()
     {
