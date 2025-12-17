@@ -3,13 +3,12 @@ package com.github.mizool.core.rest.errorhandling;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import jakarta.inject.Singleton;
+import java.util.ServiceLoader;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.github.mizool.core.MetaInfServices;
 import com.google.common.collect.ImmutableMap;
+import jakarta.inject.Singleton;
 
 @Singleton
 @Slf4j
@@ -22,7 +21,7 @@ class ErrorHandlingBehaviorCatalog
 
     public ErrorHandlingBehaviorCatalog()
     {
-        Iterable<ErrorHandlingBehavior> behaviors = MetaInfServices.instances(ErrorHandlingBehavior.class);
+        Iterable<ErrorHandlingBehavior> behaviors = ServiceLoader.load(ErrorHandlingBehavior.class);
         catalog = buildCatalog(behaviors);
     }
 
