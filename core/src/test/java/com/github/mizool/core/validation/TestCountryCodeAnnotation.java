@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestCountryCodeAnnotation
 {
     @AllArgsConstructor
@@ -36,31 +34,25 @@ public class TestCountryCodeAnnotation
     @DataProvider(name = "acceptableValues")
     public Object[][] createAcceptableValues()
     {
-        return new Object[][]{
-            { null }, { "DE" }, { "US" }, { "AU" }, { "FR" }
-        };
+        return new Object[][]{ { null }, { "DE" }, { "US" }, { "AU" }, { "FR" } };
     }
 
     @DataProvider(name = "unacceptableValues")
     public Object[][] createUnacceptableValues()
     {
-        return new Object[][]{
-            { "foo" }, { "germany" }, { "usa" }, { "france" }, { "EN" }
-        };
+        return new Object[][]{ { "foo" }, { "germany" }, { "usa" }, { "france" }, { "EN" } };
     }
 
     @DataProvider
     private Object[][] acceptableListValues()
     {
-        return new Object[][]{ { null }, { ImmutableList.of("DE") }, { ImmutableList.of("DE", "US", "AU", "FR") } };
+        return new Object[][]{ { null }, { List.of("DE") }, { List.of("DE", "US", "AU", "FR") } };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("foo") }, { ImmutableList.of("DE", "germany") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("foo") }, { List.of("DE", "germany") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -90,7 +82,7 @@ public class TestCountryCodeAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)),
             CountryCode.class);
     }
 }

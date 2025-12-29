@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestEnumValueAnnotation
 {
     private static enum TestEnum
@@ -53,15 +51,13 @@ public class TestEnumValueAnnotation
     @DataProvider
     private Object[][] acceptableListValues()
     {
-        return new Object[][]{ { null }, { ImmutableList.of("FOO") }, { ImmutableList.of("FOO", "BAR") } };
+        return new Object[][]{ { null }, { List.of("FOO") }, { List.of("FOO", "BAR") } };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("MOEP") }, { ImmutableList.of("FOO", "MOEP") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("MOEP") }, { List.of("FOO", "MOEP") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -91,7 +87,6 @@ public class TestEnumValueAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)),
-            EnumValue.class);
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)), EnumValue.class);
     }
 }

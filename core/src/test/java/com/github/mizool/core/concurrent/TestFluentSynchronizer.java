@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,7 +16,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -26,8 +30,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-@SuppressWarnings("removal")
-public class TestSynchronizer
+public class TestFluentSynchronizer
 {
     private static final Predicate<Character> IS_LETTER = Character::isLetter;
     private static final Predicate<Character> IS_DIGIT = Character::isDigit;
@@ -36,7 +39,7 @@ public class TestSynchronizer
     @Builder
     private static class Appender implements Runnable
     {
-        private final Synchronizer synchronizer;
+        private final FluentSynchronizer synchronizer;
         private final StringBuilder target;
         private final int limit;
         private final Predicate<Character> predicate;
@@ -48,9 +51,10 @@ public class TestSynchronizer
             boolean keepRunning;
             do
             {
-                keepRunning = synchronizer.sleepUntil(this::shouldWake)
+                keepRunning = synchronizer.define()
+                    .sleepUntil(this::shouldWake)
                     .get(this::doAppend)
-                    .andWakeOthers()
+                    .wakeOthers()
                     .invoke();
             }
             while (keepRunning);
@@ -85,12 +89,12 @@ public class TestSynchronizer
         }
     }
 
-    private Synchronizer synchronizer;
+    private FluentSynchronizer synchronizer;
 
     @BeforeMethod
     private void setUp()
     {
-        synchronizer = new Synchronizer();
+        synchronizer = new FluentSynchronizer();
     }
 
     @DataProvider
@@ -131,10 +135,14 @@ public class TestSynchronizer
     }
 
     private void runAppenderTest(
-        Synchronizer synchronizer, StringBuilder target, List<Appender> appenders, char initialChar)
+        FluentSynchronizer synchronizer,
+        StringBuilder target,
+        List<Appender> appenders,
+        char initialChar)
     {
-        submitAndWaitForCompletion(() -> synchronizer.run(() -> target.append(initialChar))
-            .andWakeOthers()
+        submitAndWaitForCompletion(() -> synchronizer.define()
+            .run(() -> target.append(initialChar))
+            .wakeOthers()
             .invoke(), appenders);
     }
 
@@ -151,7 +159,7 @@ public class TestSynchronizer
 
         var completableFutures = runnables.stream()
             .map(runnable -> CompletableFuture.runAsync(runnable, executorService))
-            .collect(Collectors.toList())
+            .toList()
             .toArray(new CompletableFuture<?>[]{});
 
         return CompletableFuture.allOf(completableFutures);
@@ -283,7 +291,8 @@ public class TestSynchronizer
         AtomicBoolean ready = new AtomicBoolean(false);
 
         List<Runnable> runnables = integers.stream()
-            .map(value -> (Runnable) () -> synchronizer.sleepUntil(() -> {
+            .map(value -> (Runnable) () -> synchronizer.define()
+                .sleepUntil(() -> {
                     /*
                      * As the condition is checked immediately when invoking the chain, we must return false to even
                      * begin sleeping.
@@ -299,11 +308,12 @@ public class TestSynchronizer
                     return true;
                 })
                 .invoke())
-            .collect(Collectors.toList());
+            .toList();
 
         submitAndWaitForCompletion(() -> {
             ready.set(true);
-            synchronizer.wakeOthers()
+            synchronizer.define()
+                .wakeOthers()
                 .invoke();
         }, runnables);
 
@@ -315,7 +325,8 @@ public class TestSynchronizer
     {
         AtomicBoolean conditionChecked = new AtomicBoolean(false);
 
-        submit(() -> synchronizer.sleepUntil(() -> {
+        submit(() -> synchronizer.define()
+            .sleepUntil(() -> {
                 // Track that this chain woke to check its condition
                 conditionChecked.set(true);
 
@@ -324,7 +335,8 @@ public class TestSynchronizer
             .run(() -> fail("Main action is not supposed to run when condition is false"))
             .invoke());
 
-        synchronizer.wakeOthers()
+        synchronizer.define()
+            .wakeOthers()
             .invoke();
 
         Threads.sleep(200);
@@ -342,7 +354,8 @@ public class TestSynchronizer
     {
         AtomicBoolean conditionChecked = new AtomicBoolean(false);
 
-        CompletableFuture<Void> future = submit(() -> synchronizer.sleepUntil(() -> {
+        CompletableFuture<Void> future = submit(() -> synchronizer.define()
+            .sleepUntil(() -> {
                 conditionChecked.set(true);
                 return true;
             })
@@ -363,7 +376,8 @@ public class TestSynchronizer
         Duration interval = Duration.ofMillis(200);
         int intervalCount = 2;
 
-        CompletableFuture<Void> future = submit(() -> synchronizer.sleepUntil(() -> {
+        CompletableFuture<Void> future = submit(() -> synchronizer.define()
+            .sleepUntil(() -> {
                 conditionCheckCount.incrementAndGet();
                 return finishing.get();
             }, interval)
@@ -372,7 +386,8 @@ public class TestSynchronizer
         Threads.sleep((long) (interval.toMillis() * (intervalCount + 0.5)));
 
         finishing.set(true);
-        synchronizer.wakeOthers()
+        synchronizer.define()
+            .wakeOthers()
             .invoke();
 
         Futures.get(future, interval.dividedBy(4));
@@ -391,21 +406,24 @@ public class TestSynchronizer
         AtomicBoolean firstCompleted = new AtomicBoolean(false);
         AtomicBoolean secondCompleted = new AtomicBoolean(false);
 
-        Runnable first = () -> synchronizer.sleepUntil(ready::get)
+        Runnable first = () -> synchronizer.define()
+            .sleepUntil(ready::get)
             .get(() -> {
                 firstCompleted.set(true);
                 return "indeed";
             })
-            .andWakeOthersIf(s -> s.equals("indeed"))
+            .wakeOthersIf(s -> s.equals("indeed"))
             .invoke();
 
-        Runnable second = () -> synchronizer.sleepUntil(() -> ready.get() && firstCompleted.get())
+        Runnable second = () -> synchronizer.define()
+            .sleepUntil(() -> ready.get() && firstCompleted.get())
             .run(() -> secondCompleted.set(true))
             .invoke();
 
         submitAndWaitForCompletion(() -> {
             ready.set(true);
-            synchronizer.wakeOthers()
+            synchronizer.define()
+                .wakeOthers()
                 .invoke();
         }, first, second);
 
@@ -415,5 +433,251 @@ public class TestSynchronizer
     private void submitAndWaitForCompletion(Runnable initialAction, Runnable... runnables)
     {
         submitAndWaitForCompletion(initialAction, Arrays.asList(runnables));
+    }
+
+    public void testCompilationOfRenamedChains()
+    {
+        var fluentSynchronizer = new FluentSynchronizer();
+        Runnable runnable = null;
+        BooleanSupplier state = null;
+        Duration checkInterval = null;
+        Supplier<String> supplier = null;
+        Predicate<String> predicate = null;
+
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthers()
+            .invoke();
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthers()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthers()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .invoke();
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .sleepUntil(state, checkInterval)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .run(runnable)
+            .wakeOthers()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .run(runnable)
+            .wakeOthers()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .run(runnable)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .run(runnable)
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .run(runnable)
+            .sleepUntil(state, checkInterval)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .get(supplier)
+            .wakeOthers()
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .get(supplier)
+            .wakeOthers()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .get(supplier)
+            .wakeOthers()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .run(runnable)
+            .wakeOthers()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .run(runnable)
+            .wakeOthers()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .run(runnable)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .run(runnable)
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state)
+            .run(runnable)
+            .sleepUntil(state, checkInterval)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .get(supplier)
+            .wakeOthers()
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .get(supplier)
+            .wakeOthers()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .get(supplier)
+            .wakeOthers()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .run(runnable)
+            .wakeOthers()
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .run(runnable)
+            .wakeOthers()
+            .sleepUntil(state, checkInterval)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .run(runnable)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .run(runnable)
+            .sleepUntil(state)
+            .invoke();
+        fluentSynchronizer.define()
+            .sleepUntil(state, checkInterval)
+            .run(runnable)
+            .sleepUntil(state, checkInterval)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .wakeOthers()
+            .invoke();
+    }
+
+    public void testCompilationOfFlexibleChains()
+    {
+        var fluentSynchronizer = new FluentSynchronizer();
+
+        Runnable runnable = null;
+        Runnable otherRunnable = null;
+        BooleanSupplier state = null;
+        Duration checkInterval = null;
+        Supplier<String> supplier = null;
+        Predicate<String> predicate = null;
+        Supplier<BigDecimal> otherSupplier = null;
+        Predicate<BigDecimal> otherPredicate = null;
+        Function<String, BigDecimal> stringToBigDecimal = val -> val != null
+            ? new BigDecimal(val)
+            : null;
+
+        fluentSynchronizer.define()
+            .wakeOthers()
+            .get(supplier)
+            .wakeOthers()
+            .invoke();
+
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .discardResult()
+            .get(otherSupplier)
+            .wakeOthersIf(otherPredicate)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .run(runnable)
+            .sleepUntil(state, checkInterval)
+            .run(otherRunnable)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .get(supplier)
+            .wakeOthersIf(predicate)
+            .discardResult()
+            .run(runnable)
+            .invoke();
+
+        fluentSynchronizer.define()
+            .get(supplier)
+            .map(stringToBigDecimal)
+            .wakeOthersIf(otherPredicate)
+            .invoke();
     }
 }

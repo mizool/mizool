@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>8.0</version>
+        <version>8.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -49,6 +49,10 @@
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.jcip</groupId>
+            <artifactId>jcip-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.antlr</groupId>

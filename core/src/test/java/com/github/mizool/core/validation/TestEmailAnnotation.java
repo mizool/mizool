@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 public class TestEmailAnnotation
 {
     @AllArgsConstructor
@@ -64,17 +62,13 @@ public class TestEmailAnnotation
     @DataProvider
     private Object[][] acceptableListValues()
     {
-        return new Object[][]{
-            { null }, { ImmutableList.of("b@b.de") }, { ImmutableList.of("b@b.de", "bob@example.com") }
-        };
+        return new Object[][]{ { null }, { List.of("b@b.de") }, { List.of("b@b.de", "bob@example.com") } };
     }
 
     @DataProvider
     private Object[][] unacceptableListValues()
     {
-        return new Object[][]{
-            { ImmutableList.of("") }, { ImmutableList.of("b") }, { ImmutableList.of("bob@example.com", "b@") }
-        };
+        return new Object[][]{ { List.of("") }, { List.of("b") }, { List.of("bob@example.com", "b@") } };
     }
 
     @Test(dataProvider = "acceptableValues")
@@ -104,6 +98,6 @@ public class TestEmailAnnotation
     @Test
     public void testHandlesWrongDataType()
     {
-        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(ImmutableList.of(1, 5)), Email.class);
+        BeanValidation.assertUnacceptableValue(new WrongDataTypeList(List.of(1, 5)), Email.class);
     }
 }

@@ -11,8 +11,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * This test is structured differently because we need to pass the clock into the constructor for more precise testing
  */
@@ -42,10 +40,10 @@ public class TestCheckPast
     public Object[][] listDateTimeVariants()
     {
         return new Object[][]{
-            { "now", ImmutableList.of(NOW), false },
-            { "future", ImmutableList.of(NOW.plus(1, ChronoUnit.MILLIS)), false },
-            { "past", ImmutableList.of(NOW.minus(1, ChronoUnit.MILLIS)), true },
-            { "mixed", ImmutableList.of(NOW.minus(1, ChronoUnit.MILLIS), NOW.plus(1, ChronoUnit.MILLIS)), false }
+            { "now", List.of(NOW), false },
+            { "future", List.of(NOW.plus(1, ChronoUnit.MILLIS)), false },
+            { "past", List.of(NOW.minus(1, ChronoUnit.MILLIS)), true },
+            { "mixed", List.of(NOW.minus(1, ChronoUnit.MILLIS), NOW.plus(1, ChronoUnit.MILLIS)), false }
         };
     }
 
