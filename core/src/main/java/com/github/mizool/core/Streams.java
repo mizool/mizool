@@ -7,8 +7,11 @@ import java.util.stream.StreamSupport;
 
 import lombok.experimental.UtilityClass;
 
+import org.jspecify.annotations.NullMarked;
+
 import com.github.mizool.core.exception.ReductionException;
 
+@NullMarked
 @UtilityClass
 public class Streams
 {

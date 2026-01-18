@@ -8,9 +8,15 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import org.jspecify.annotations.NullMarked;
+
+import com.google.errorprone.annotations.Immutable;
+
+@Immutable
+@NullMarked
 @Data
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class Identifier<T> implements Serializable
+public final class Identifier<T> implements Serializable
 {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class IdentifierBuilder<T>
@@ -57,6 +63,7 @@ public class Identifier<T> implements Serializable
 
     @NonNull
     private final Class<T> pojoClass;
+
     @NonNull
     private final String value;
 
