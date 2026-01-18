@@ -1,6 +1,13 @@
 package com.github.mizool.core;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
+@NullMarked
 public interface Identifiable<T extends Identifiable<T>>
 {
-    Identifier<T> getId();
+    /**
+     * @return the ID, may be {@code null} (e.g. because the Identifiable is in the process of being created)
+     */
+    @Nullable Identifier<T> getId();
 }
