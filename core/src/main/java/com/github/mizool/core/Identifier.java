@@ -8,9 +8,12 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
+import com.google.errorprone.annotations.Immutable;
+
+@Immutable
 @Data
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class Identifier<T> implements Serializable
+public final class Identifier<T> implements Serializable
 {
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
     public static class IdentifierBuilder<T>

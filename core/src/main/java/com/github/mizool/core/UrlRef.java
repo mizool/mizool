@@ -9,6 +9,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 
 import com.github.mizool.core.exception.CodeInconsistencyException;
+import com.google.errorprone.annotations.Immutable;
 
 /**
  * Safely stores a reference to a URL and allows conversion to {@link URI} and {@link URL} at any time. <br>
@@ -34,6 +35,7 @@ import com.github.mizool.core.exception.CodeInconsistencyException;
  *     </li>
  * </ul>
  */
+@Immutable
 @EqualsAndHashCode
 public final class UrlRef
 {
