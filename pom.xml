@@ -4,7 +4,7 @@
 
     <groupId>com.github.mizool</groupId>
     <artifactId>mizool</artifactId>
-    <version>8.1</version>
+    <version>8.2</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -180,6 +180,11 @@
                 <artifactId>gson</artifactId>
                 <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
                 <version>2.10.1</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.46.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.github.mizool</groupId>
         <artifactId>mizool</artifactId>
-        <version>8.1</version>
+        <version>8.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,6 +19,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
