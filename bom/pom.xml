@@ -54,6 +54,11 @@
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-rest</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-sql</artifactId>
                 <version>${project.version}</version>
             </dependency>
