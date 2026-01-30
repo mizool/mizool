@@ -22,22 +22,6 @@ public class Config
     }
 
     /**
-     * Creates a root node without any properties. Usually used as a starting point followed by multiple {@code
-     * RootNode.add()} calls.
-     *
-     * @deprecated Use {@link Sources#blank()} instead.
-     *
-     * @see RootNode#add(Reader)
-     * @see RootNode#add(InputStream, Charset)
-     */
-    @Deprecated(since = "8.3", forRemoval = true)
-    public RootNode blank()
-    {
-        var source = Sources.blank();
-        return from(source);
-    }
-
-    /**
      * Creates a root node encapsulating access to the current system properties.
      */
     public RootNode systemProperties()

@@ -3,6 +3,9 @@ package com.github.mizool.core.configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -381,10 +384,15 @@ public class TestConfig
             .toList();
     }
 
-    @SuppressWarnings("removal")
     public RootNode readNodeReferencesTestData()
     {
-        return Config.blank()
-            .add(getClass().getResourceAsStream("TestConfigNodeReferences.properties"), StandardCharsets.UTF_8);
+        try (InputStream resourceAsStream = getClass().getResourceAsStream("TestConfigNodeReferences.properties"))
+        {
+            return Config.from(resourceAsStream, StandardCharsets.UTF_8);
+        }
+        catch (IOException e)
+        {
+            throw new UncheckedIOException(e);
+        }
     }
 }
