@@ -14,15 +14,27 @@ import lombok.experimental.UtilityClass;
 public class Config
 {
     /**
+     * Creates a root node encapsulating access to the given {@link Source} instance.
+     */
+    public RootNode from(Source source)
+    {
+        return new RootNode(source);
+    }
+
+    /**
      * Creates a root node without any properties. Usually used as a starting point followed by multiple {@code
      * RootNode.add()} calls.
+     *
+     * @deprecated Use {@link Sources#blank()} instead.
      *
      * @see RootNode#add(Reader)
      * @see RootNode#add(InputStream, Charset)
      */
+    @Deprecated(since = "8.3", forRemoval = true)
     public RootNode blank()
     {
-        return RootNode.createFrom(new Properties());
+        var source = Sources.blank();
+        return from(source);
     }
 
     /**
@@ -30,7 +42,8 @@ public class Config
      */
     public RootNode systemProperties()
     {
-        return RootNode.createFrom(System.getProperties());
+        var source = Sources.systemProperties();
+        return from(source);
     }
 
     /**
@@ -38,6 +51,28 @@ public class Config
      */
     public RootNode from(Properties properties)
     {
-        return RootNode.createFrom(properties);
+        var source = Sources.from(properties);
+        return from(source);
+    }
+
+    /**
+     * Consumes the given reader and returns a root node encapsulating access to its properties.
+     */
+    public RootNode from(Reader reader)
+    {
+        var source = Sources.from(reader);
+        return from(source);
+    }
+
+    /**
+     * Consumes the input stream and returns a root node encapsulating access to its properties.
+     *
+     * @param inputStream the input stream to load from
+     * @param charset the charset to use
+     */
+    public RootNode from(InputStream inputStream, Charset charset)
+    {
+        var source = Sources.from(inputStream, charset);
+        return from(source);
     }
 }

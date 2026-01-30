@@ -381,6 +381,7 @@ public class TestConfig
             .toList();
     }
 
+    @SuppressWarnings("removal")
     public RootNode readNodeReferencesTestData()
     {
         return Config.blank()

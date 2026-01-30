@@ -18,7 +18,7 @@ public class TestValue
     @Test
     public void testConversionSuccess()
     {
-        Properties properties = singletonProperty("The quick brown fox jumped over the lazy dog.");
+        PropertySource properties = singletonProperty("The quick brown fox jumped over the lazy dog.");
 
         Value<Integer> value = new Value<>(properties, KEY, String::length);
 
@@ -28,7 +28,7 @@ public class TestValue
     @Test
     public void testConversionFailure()
     {
-        Properties properties = singletonProperty("41.9");
+        PropertySource properties = singletonProperty("41.9");
 
         // Instantiating the Value will not fail as the conversion was not called yet
         Value<Integer> value = new Value<>(properties, KEY, Integer::parseInt);
@@ -43,14 +43,16 @@ public class TestValue
     @Test
     public void testConversionSkippedForMissingKey()
     {
-        Value<String> value = new Value<>(new Properties(), KEY, s -> fail("conversion was called for missing key"));
+        Value<String> value = new Value<>(new PropertySource(new Properties()),
+            KEY,
+            s -> fail("conversion was called for missing key"));
 
         // Ignore the result of 'read' as that is covered elsewhere
         value.read();
     }
 
     @Test(dataProvider = "absentValues")
-    public void testAbsentValues(String remark, Properties properties)
+    public void testAbsentValues(String remark, Source properties)
     {
         Value<String> value = new Value<>(properties, KEY, s -> s);
         assertThat(value.read()).isNotPresent();
@@ -60,7 +62,7 @@ public class TestValue
     public Object[][] absentValues()
     {
         return new Object[][]{
-            new Object[]{ "unset", new Properties() },
+            new Object[]{ "unset", new PropertySource(new Properties()) },
             new Object[]{ "set to empty string", singletonProperty("") }
         };
     }
@@ -68,7 +70,7 @@ public class TestValue
     @Test(dataProvider = "presentValues")
     public void testPresentValues(String remark, String rawPropertyValue)
     {
-        Properties properties = singletonProperty(rawPropertyValue);
+        PropertySource properties = singletonProperty(rawPropertyValue);
 
         Value<String> value = new Value<>(properties, KEY, s -> s);
 
@@ -88,10 +90,10 @@ public class TestValue
         };
     }
 
-    private Properties singletonProperty(String value)
+    private PropertySource singletonProperty(String value)
     {
         Properties properties = new Properties();
         properties.setProperty(KEY, value);
-        return properties;
+        return new PropertySource(properties);
     }
 }
