@@ -4,18 +4,17 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.time.ZonedDateTime;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+import com.github.mizool.core.converter.ZonedDateTimeConverter;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ext.ParamConverter;
 import jakarta.ws.rs.ext.ParamConverterProvider;
 import jakarta.ws.rs.ext.Provider;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
-import com.github.mizool.core.converter.ZonedDateTimeConverter;
-
 @Provider
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class ZonedDateTimeParamConverterProvider implements ParamConverterProvider
 {
     private final ZonedDateTimeConverter zonedDateTimeConverter;

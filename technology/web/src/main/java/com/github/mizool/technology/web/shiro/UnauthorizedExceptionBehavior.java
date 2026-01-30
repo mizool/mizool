@@ -3,9 +3,9 @@ package com.github.mizool.technology.web.shiro;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.kohsuke.MetaInfServices;
 
-import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
-import com.github.mizool.core.rest.errorhandling.HttpStatus;
-import com.github.mizool.core.rest.errorhandling.LogLevel;
+import com.github.mizool.technology.rest.errorhandling.ErrorHandlingBehavior;
+import com.github.mizool.technology.rest.errorhandling.HttpStatus;
+import com.github.mizool.technology.rest.errorhandling.LogLevel;
 
 @MetaInfServices
 public class UnauthorizedExceptionBehavior implements ErrorHandlingBehavior

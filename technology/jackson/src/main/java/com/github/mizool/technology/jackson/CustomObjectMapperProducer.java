@@ -1,9 +1,8 @@
 package com.github.mizool.technology.jackson;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class CustomObjectMapperProducer
 {

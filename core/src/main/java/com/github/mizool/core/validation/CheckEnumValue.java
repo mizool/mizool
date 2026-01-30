@@ -1,9 +1,8 @@
 package com.github.mizool.core.validation;
 
+import com.google.common.base.Enums;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import com.google.common.base.Enums;
 
 public class CheckEnumValue implements ConstraintValidator<EnumValue, Object>
 {

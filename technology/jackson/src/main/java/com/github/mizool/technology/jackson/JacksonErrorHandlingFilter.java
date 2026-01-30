@@ -2,14 +2,13 @@ package com.github.mizool.technology.jackson;
 
 import java.nio.charset.StandardCharsets;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mizool.core.exception.CodeInconsistencyException;
-import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
+import com.github.mizool.technology.rest.errorhandling.ErrorMessageDto;
 import com.github.mizool.technology.web.AbstractErrorHandlingFilter;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 @Singleton
 public class JacksonErrorHandlingFilter extends AbstractErrorHandlingFilter

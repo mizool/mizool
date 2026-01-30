@@ -10,13 +10,12 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.core.StreamingOutput;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.google.common.io.ByteStreams;
 import com.google.gson.JsonIOException;
+import jakarta.ws.rs.core.StreamingOutput;
 
 public class TestGsonMessageBodyHandler
 {

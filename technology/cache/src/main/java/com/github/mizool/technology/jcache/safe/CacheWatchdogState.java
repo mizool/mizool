@@ -3,9 +3,9 @@ package com.github.mizool.technology.jcache.safe;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import jakarta.inject.Singleton;
-
 import lombok.Data;
+
+import jakarta.inject.Singleton;
 
 @Singleton
 @Data

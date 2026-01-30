@@ -1,12 +1,11 @@
 package com.github.mizool.technology.gson.errorhandling.behavior;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.kohsuke.MetaInfServices;
 
-import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
-import com.github.mizool.core.rest.errorhandling.LogLevel;
+import com.github.mizool.technology.rest.errorhandling.ErrorHandlingBehavior;
+import com.github.mizool.technology.rest.errorhandling.LogLevel;
 import com.google.gson.JsonSyntaxException;
+import jakarta.servlet.http.HttpServletResponse;
 
 @MetaInfServices
 public class JsonSyntaxExceptionBehavior implements ErrorHandlingBehavior

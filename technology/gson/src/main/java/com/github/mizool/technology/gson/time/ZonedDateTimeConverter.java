@@ -4,7 +4,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 
 import com.github.mizool.core.exception.BadRequestException;
-import com.github.mizool.core.rest.time.RestDateTimeFormat;
+import com.github.mizool.technology.rest.time.RestDateTimeFormat;
 
 public class ZonedDateTimeConverter
 {

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" child.project.url.inherit.append.path="false" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.mizool</groupId>
-    <artifactId>mizool</artifactId>
-    <version>8.4</version>
+    <artifactId>mizool-bom</artifactId>
+    <version>9.0</version>
     <packaging>pom</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -22,21 +23,21 @@
     <developers>
         <developer>
             <name>Jan Dörrenhaus</name>
-            <email>j.doerrenhaus@eurodata.de</email>
-            <organization>eurodata AG</organization>
-            <organizationUrl>https://www.eurodata.de</organizationUrl>
+            <email>j.doerrenhaus@disphere.com</email>
+            <organization>disphere Interactive GmbH</organization>
+            <organizationUrl>https://www.disphere.com/</organizationUrl>
         </developer>
         <developer>
             <name>Jens Bannmann</name>
-            <email>j.bannmann@eurodata.de</email>
-            <organization>eurodata AG</organization>
-            <organizationUrl>https://www.eurodata.de</organizationUrl>
+            <email>j.bannmann@disphere.com</email>
+            <organization>disphere Interactive GmbH</organization>
+            <organizationUrl>https://www.disphere.com/</organizationUrl>
         </developer>
         <developer>
             <name>Sven Haberer</name>
-            <email>s.haberer@eurodata.de</email>
-            <organization>eurodata AG</organization>
-            <organizationUrl>https://www.eurodata.de</organizationUrl>
+            <email>s.haberer@disphere.com</email>
+            <organization>disphere Interactive GmbH</organization>
+            <organizationUrl>https://www.disphere.com/</organizationUrl>
         </developer>
     </developers>
 
@@ -51,8 +52,8 @@
     </prerequisites>
 
     <modules>
-        <module>bom</module>
         <module>core</module>
+        <module>parent</module>
         <module>technology</module>
         <module>tool</module>
     </modules>
@@ -64,74 +65,30 @@
     </scm>
 
     <properties>
-        <aws.sdk.version>1.12.797</aws.sdk.version>
-        <!-- Only upgrade cassandra driver to most recent version fitting our productive cassandras (currently 3.x.x) -->
-        <cassandra.driver.version>3.11.5</cassandra.driver.version>
         <encoding>UTF-8</encoding>
-        <hibernate-validator.version>9.1.0.Final</hibernate-validator.version>
         <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
-        <jcache.ri.version>0.6</jcache.ri.version>
         <lombok.core.version>1.18.42</lombok.core.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <maven.version.minimum>3.6.3</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
         <project.build.sourceEncoding>${encoding}</project.build.sourceEncoding>
         <project.reporting.outputEncoding>${encoding}</project.reporting.outputEncoding>
-        <shiro.version>2.0.6</shiro.version>
-        <slf4j.version>2.0.17</slf4j.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <!-- don't forget to check commons-logging version when updating -->
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-dynamodb</artifactId>
-                <version>${aws.sdk.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-core</artifactId>
-                <version>${cassandra.driver.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-extras</artifactId>
-                <version>${cassandra.driver.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.datastax.cassandra</groupId>
-                <artifactId>cassandra-driver-mapping</artifactId>
-                <version>${cassandra.driver.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson</groupId>
-                <artifactId>jackson-bom</artifactId>
-                <version>2.21.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
             <dependency>
                 <groupId>com.github.mizool</groupId>
                 <artifactId>mizool-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.jcache</groupId>
-                <artifactId>cache-annotations-ri-cdi</artifactId>
-                <version>${jcache.ri.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>jakarta.enterprise</groupId>
-                        <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.github.mizool.jcache</groupId>
-                <artifactId>cache-annotations-ri-common</artifactId>
-                <version>${jcache.ri.version}</version>
+                <groupId>com.github.mizool</groupId>
+                <artifactId>mizool-core</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
@@ -160,7 +117,17 @@
             </dependency>
             <dependency>
                 <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-rest</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
                 <artifactId>technology-sql</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.mizool.technology</groupId>
+                <artifactId>technology-web</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -171,198 +138,9 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
-                <groupId>com.github.mizool.technology</groupId>
-                <artifactId>technology-web</artifactId>
+                <groupId>com.github.mizool.tool</groupId>
+                <artifactId>tool-password</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.code.gson</groupId>
-                <artifactId>gson</artifactId>
-                <!-- There are breaking changes in 2.11.0, so don't try to update this until we decided how to solve this -->
-                <version>2.10.1</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.errorprone</groupId>
-                <artifactId>error_prone_annotations</artifactId>
-                <version>2.46.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice-bom</artifactId>
-                <version>7.0.0</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <!-- force dependency convergence. 1.15 is intended for aws-java-sdk-dynamodb 1.12.780 -->
-                <groupId>commons-codec</groupId>
-                <artifactId>commons-codec</artifactId>
-                <version>1.21.0</version>
-            </dependency>
-            <dependency>
-                <!-- force dependency convergence. 1.2 is intended for aws-java-sdk-dynamodb 1.12.780 -->
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.3.5</version>
-            </dependency>
-            <dependency>
-                <groupId>de.mkammerer</groupId>
-                <artifactId>argon2-jvm</artifactId>
-                <version>2.12</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.annotation</groupId>
-                <artifactId>jakarta.annotation-api</artifactId>
-                <version>3.0.0</version>
-            </dependency>
-            <dependency>
-                <!-- Dependency convergence as transitive dependency from: expressly 5.0.0 (5.0.0) and jakarta.enterprise.cdi-api 4.1.0 (6.0.0)-->
-                <groupId>jakarta.el</groupId>
-                <artifactId>jakarta.el-api</artifactId>
-                <version>6.0.1</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                <version>4.1.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.inject</groupId>
-                <artifactId>jakarta.inject-api</artifactId>
-                <version>2.0.1</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.mail</groupId>
-                <artifactId>jakarta.mail-api</artifactId>
-                <version>2.1.5</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>jakarta.servlet-api</artifactId>
-                <version>6.1.0</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>3.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>jakarta.ws.rs</groupId>
-                <artifactId>jakarta.ws.rs-api</artifactId>
-                <version>4.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.cache</groupId>
-                <artifactId>cache-api</artifactId>
-                <version>1.1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>net.jcip</groupId>
-                <artifactId>jcip-annotations</artifactId>
-                <version>1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.antlr</groupId>
-                <artifactId>ST4</artifactId>
-                <version>4.3.4</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.bval</groupId>
-                <artifactId>bval-jsr</artifactId>
-                <version>3.0.2</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-bom</artifactId>
-                <version>${shiro.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.assertj</groupId>
-                <artifactId>assertj-core</artifactId>
-                <version>3.27.7</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.expressly</groupId>
-                <artifactId>expressly</artifactId>
-                <version>6.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.jersey.media</groupId>
-                <artifactId>jersey-media-json-jackson</artifactId>
-                <version>3.1.11</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator</artifactId>
-                <version>${hibernate-validator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hibernate.validator</groupId>
-                <artifactId>hibernate-validator-cdi</artifactId>
-                <version>${hibernate-validator.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jcommander</groupId>
-                <artifactId>jcommander</artifactId>
-                <version>2.0</version>
-            </dependency>
-            <dependency>
-                <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
-                <groupId>org.jooq</groupId>
-                <artifactId>jooq</artifactId>
-                <version>3.19.30</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jspecify</groupId>
-                <artifactId>jspecify</artifactId>
-                <version>1.0.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.kohsuke.metainf-services</groupId>
-                <artifactId>metainf-services</artifactId>
-                <version>1.11</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>5.21.0</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.projectlombok</groupId>
-                <artifactId>lombok</artifactId>
-                <version>${lombok.core.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.testng</groupId>
-                <artifactId>testng</artifactId>
-                <version>7.12.0</version>
-                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -719,4 +497,5 @@
             </build>
         </profile>
     </profiles>
+
 </project>

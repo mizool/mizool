@@ -2,13 +2,14 @@ package com.github.mizool.technology.jcache.ri;
 
 import javax.cache.CacheManager;
 import javax.cache.annotation.CacheResolverFactory;
-import jakarta.enterprise.inject.Produces;
-import jakarta.enterprise.inject.Specializes;
-import jakarta.inject.Inject;
 
 import org.jsr107.ri.annotations.DefaultCacheResolverFactory;
 import org.jsr107.ri.annotations.cdi.CacheResolverFactoryProducer;
 import org.jsr107.ri.annotations.cdi.UsedByDefault;
+
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.Specializes;
+import jakarta.inject.Inject;
 
 /**
  * Allows to plug a CDI built {@link CacheManager} into the reference implementation.<br>

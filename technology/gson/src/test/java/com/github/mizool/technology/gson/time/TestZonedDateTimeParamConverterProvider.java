@@ -4,10 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.ZonedDateTime;
 
-import jakarta.ws.rs.ext.ParamConverter;
-
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+
+import jakarta.ws.rs.ext.ParamConverter;
 
 public class TestZonedDateTimeParamConverterProvider
 {

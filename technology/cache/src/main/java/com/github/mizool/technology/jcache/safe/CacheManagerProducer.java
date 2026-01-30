@@ -3,15 +3,15 @@ package com.github.mizool.technology.jcache.safe;
 import javax.cache.CacheManager;
 import javax.cache.Caching;
 import javax.cache.spi.CachingProvider;
-import jakarta.enterprise.inject.Disposes;
-import jakarta.enterprise.inject.Produces;
-import jakarta.inject.Singleton;
 
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.NonDefault;
 import com.github.mizool.technology.jcache.config.ConfigurableCacheManager;
 import com.github.mizool.technology.jcache.timeouting.TimeoutingCacheManager;
+import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Singleton;
 
 @Slf4j
 class CacheManagerProducer

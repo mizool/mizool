@@ -1,15 +1,14 @@
 package com.github.mizool.core.password;
 
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
 import com.github.mizool.core.configuration.Config;
 import com.google.common.collect.Iterables;
+import jakarta.enterprise.inject.Instance;
+import jakarta.inject.Inject;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class PasswordHasherRegistry
 {
     private static final String DEFAULT_HASHING_ALGORITHM = Config.systemProperties()

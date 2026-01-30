@@ -3,9 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.mizool</groupId>
-        <artifactId>mizool</artifactId>
-        <version>8.4</version>
-        <relativePath>../pom.xml</relativePath>
+        <artifactId>mizool-parent</artifactId>
+        <version>9.0</version>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <groupId>com.github.mizool.technology</groupId>
@@ -20,6 +20,7 @@
         <module>cassandra</module>
         <module>gson</module>
         <module>jackson</module>
+        <module>rest</module>
         <module>sql</module>
         <module>web</module>
     </modules>

@@ -5,9 +5,9 @@
 
     <parent>
         <groupId>com.github.mizool</groupId>
-        <artifactId>mizool</artifactId>
-        <version>8.4</version>
-        <relativePath>../pom.xml</relativePath>
+        <artifactId>mizool-parent</artifactId>
+        <version>9.0</version>
+        <relativePath>../parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>mizool-core</artifactId>
@@ -16,22 +16,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>com.google.errorprone</groupId>
             <artifactId>error_prone_annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>de.mkammerer</groupId>
@@ -43,16 +33,8 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.ws.rs</groupId>
-            <artifactId>jakarta.ws.rs-api</artifactId>
         </dependency>
         <dependency>
             <groupId>net.jcip</groupId>

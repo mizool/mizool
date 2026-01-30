@@ -3,9 +3,9 @@ package com.github.mizool.technology.jackson.behavior;
 import org.kohsuke.MetaInfServices;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.github.mizool.core.rest.errorhandling.ErrorHandlingBehavior;
-import com.github.mizool.core.rest.errorhandling.HttpStatus;
-import com.github.mizool.core.rest.errorhandling.LogLevel;
+import com.github.mizool.technology.rest.errorhandling.ErrorHandlingBehavior;
+import com.github.mizool.technology.rest.errorhandling.HttpStatus;
+import com.github.mizool.technology.rest.errorhandling.LogLevel;
 
 @MetaInfServices
 public class UnrecognizedPropertyExceptionBehavior implements ErrorHandlingBehavior
