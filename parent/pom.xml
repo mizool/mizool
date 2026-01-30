@@ -269,7 +269,7 @@
             <dependency>
                 <groupId>org.jcommander</groupId>
                 <artifactId>jcommander</artifactId>
-                <version>2.0</version>
+                <version>3.0</version>
             </dependency>
             <dependency>
                 <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
