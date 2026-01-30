@@ -3,9 +3,8 @@ package com.github.mizool.technology.jackson;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-import jakarta.ws.rs.ext.ParamConverter;
-
 import com.google.common.base.Strings;
+import jakarta.ws.rs.ext.ParamConverter;
 
 class LocalTimeParamConverter implements ParamConverter<LocalTime>
 {

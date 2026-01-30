@@ -4,9 +4,9 @@ import java.io.IOException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.github.mizool.core.rest.errorhandling.ErrorMessageDto;
-import com.github.mizool.core.rest.errorhandling.ErrorResponse;
-import com.github.mizool.core.rest.errorhandling.ErrorResponseFactory;
+import com.github.mizool.technology.rest.errorhandling.ErrorMessageDto;
+import com.github.mizool.technology.rest.errorhandling.ErrorResponse;
+import com.github.mizool.technology.rest.errorhandling.ErrorResponseFactory;
 import jakarta.inject.Inject;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

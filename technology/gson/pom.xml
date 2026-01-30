@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.mizool.technology</groupId>
         <artifactId>technology</artifactId>
-        <version>8.5-SNAPSHOT</version>
+        <version>9.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -16,6 +16,10 @@
         <dependency>
             <groupId>com.github.mizool</groupId>
             <artifactId>mizool-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.mizool.technology</groupId>
+            <artifactId>technology-rest</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>

@@ -8,12 +8,11 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 
-import jakarta.enterprise.inject.Instance;
-
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import com.google.common.base.Optional;
+import jakarta.enterprise.inject.Instance;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MockitoExtensions

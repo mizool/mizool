@@ -9,6 +9,10 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+import com.google.gson.stream.JsonWriter;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
@@ -17,14 +21,9 @@ import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
 
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-
-import com.google.gson.stream.JsonWriter;
-
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class JsonStreamWriter implements MessageBodyWriter<Stream<?>>
 {
     private final GsonWrapper gsonWrapper;

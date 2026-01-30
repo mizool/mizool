@@ -16,7 +16,7 @@ import com.datastax.driver.mapping.Mapper.Option;
 import com.datastax.driver.mapping.MappingManager;
 import com.github.mizool.technology.cassandra.DefaultConsistencyLevel;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 class $className$MapperProducer
 {
     private final MappingManager mappingManager;
