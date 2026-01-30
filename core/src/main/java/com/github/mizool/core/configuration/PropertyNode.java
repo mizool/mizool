@@ -8,7 +8,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -26,7 +25,7 @@ public final class PropertyNode implements HasChildren
 {
     private static final String SEPARATOR = ".";
 
-    private final Properties properties;
+    private final Source source;
     private final String key;
 
     /**
@@ -44,7 +43,7 @@ public final class PropertyNode implements HasChildren
             throw new IllegalArgumentException("Reference must not be blank");
         }
 
-        return new PropertyNode(this.properties, this.key + SEPARATOR + reference);
+        return new PropertyNode(source, key + SEPARATOR + reference);
     }
 
     /**
@@ -250,7 +249,7 @@ public final class PropertyNode implements HasChildren
             }
             else
             {
-                return new PropertyNode(this.properties, reference);
+                return new PropertyNode(source, reference);
             }
         });
     }
@@ -262,7 +261,7 @@ public final class PropertyNode implements HasChildren
      */
     public <T> Value<T> convertedValue(Function<String, T> valueConversionFunction)
     {
-        return new Value<>(properties, key, valueConversionFunction);
+        return new Value<>(source, key, valueConversionFunction);
     }
 
     private Stream<String> parseCommaSeparatedList(String string)
