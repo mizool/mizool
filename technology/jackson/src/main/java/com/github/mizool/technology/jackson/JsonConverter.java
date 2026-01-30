@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mizool.core.exception.StoreLayerException;
 import jakarta.inject.Inject;
 
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class JsonConverter
 {
     private final ObjectMapper objectMapper;

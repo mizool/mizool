@@ -23,7 +23,7 @@ import jakarta.ws.rs.ext.Provider;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class JsonStreamWriter implements MessageBodyWriter<Stream<?>>
 {
     private final GsonWrapper gsonWrapper;

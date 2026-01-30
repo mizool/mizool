@@ -14,7 +14,7 @@ import jakarta.ws.rs.ext.ParamConverterProvider;
 import jakarta.ws.rs.ext.Provider;
 
 @Provider
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class ZonedDateTimeParamConverterProvider implements ParamConverterProvider
 {
     private final ZonedDateTimeConverter zonedDateTimeConverter;

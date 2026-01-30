@@ -15,7 +15,7 @@ import jakarta.ws.rs.ext.Provider;
  * See <a href="https://stackoverflow.com/questions/38681986/how-to-override-a-built-in-exception-mapper-in-jersey-2-23#comment64768295_38681986">here</a> for more details.
  */
 @Provider
-@RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(onConstructor_ = @Inject, access = AccessLevel.PROTECTED)
 public class ConstraintViolationExceptionMapper implements ExceptionMapper<ConstraintViolationException>
 {
     private final RestExceptionMapper restExceptionMapper;
