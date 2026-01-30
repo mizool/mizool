@@ -12,6 +12,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
+import lombok.RequiredArgsConstructor;
+
+import com.google.common.annotations.VisibleForTesting;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.Produces;
@@ -21,10 +24,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 import jakarta.ws.rs.ext.MessageBodyReader;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
-
-import lombok.RequiredArgsConstructor;
-
-import com.google.common.annotations.VisibleForTesting;
 
 @Provider
 @Produces(MediaType.APPLICATION_JSON)

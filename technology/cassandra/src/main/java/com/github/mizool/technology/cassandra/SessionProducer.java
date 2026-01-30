@@ -1,11 +1,10 @@
 package com.github.mizool.technology.cassandra;
 
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.Session;
 import jakarta.enterprise.inject.Disposes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
-
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
 
 class SessionProducer
 {

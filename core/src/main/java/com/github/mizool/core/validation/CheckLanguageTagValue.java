@@ -3,10 +3,9 @@ package com.github.mizool.core.validation;
 import java.util.Locale;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import com.google.common.collect.ImmutableSet;
 
 public class CheckLanguageTagValue implements ConstraintValidator<LanguageTagValue, Object>
 {

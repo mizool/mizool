@@ -1,13 +1,13 @@
 package com.github.mizool.technology.jcache.safe;
 
 import javax.cache.CacheManager;
-import jakarta.inject.Inject;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.configuration.Config;
+import jakarta.inject.Inject;
 
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Inject), access = AccessLevel.PROTECTED)

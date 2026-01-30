@@ -1,9 +1,8 @@
 package com.github.mizool.core.validation.dto;
 
-import jakarta.validation.ConstraintValidatorContext;
-
 import com.github.mizool.core.validation.ConstraintValidatorAdapter;
 import com.github.mizool.core.validation.ConstraintValidators;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CheckPostDto extends ConstraintValidatorAdapter<PostDto, Dto>
 {

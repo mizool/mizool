@@ -4,13 +4,13 @@ import java.util.concurrent.Callable;
 
 import javax.cache.Cache;
 import javax.cache.configuration.Configuration;
-import jakarta.inject.Inject;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 import com.github.mizool.core.NonDefault;
 import com.github.mizool.technology.jcache.common.AbstractDelegatingCacheManager;
+import jakarta.inject.Inject;
 
 @Slf4j
 @NonDefault
