@@ -68,7 +68,7 @@
         <encoding>UTF-8</encoding>
         <java.version>17</java.version>
         <javadoc.sources.directory>${project.build.directory}/generated-sources/delombok-for-javadoc</javadoc.sources.directory>
-        <lombok.core.version>1.18.44</lombok.core.version>
+        <lombok.core.version>1.18.46</lombok.core.version>
         <lombok.plugin.version>1.18.20.0</lombok.plugin.version>
         <maven.version.minimum>3.6.3</maven.version.minimum>
         <origin>git@github.com:mizool/mizool.git</origin>
