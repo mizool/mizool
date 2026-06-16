@@ -22,8 +22,8 @@
         <hibernate-validator.version>9.1.0.Final</hibernate-validator.version>
         <java.version>17</java.version>
         <jcache.ri.version>0.6</jcache.ri.version>
-        <shiro.version>2.1.0</shiro.version>
-        <slf4j.version>2.0.17</slf4j.version>
+        <shiro.version>2.2.0</shiro.version>
+        <slf4j.version>2.0.18</slf4j.version>
     </properties>
 
     <dependencyManagement>
@@ -52,7 +52,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.21.2</version>
+                <version>2.22.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -133,12 +133,12 @@
             <dependency>
                 <groupId>com.google.errorprone</groupId>
                 <artifactId>error_prone_annotations</artifactId>
-                <version>2.48.0</version>
+                <version>2.50.0</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>33.5.0-jre</version>
+                <version>33.6.0-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.google.inject</groupId>
@@ -151,7 +151,7 @@
                 <!-- force dependency convergence. 1.15 is intended for aws-java-sdk-dynamodb 1.12.780 -->
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.21.0</version>
+                <version>1.22.0</version>
             </dependency>
             <dependency>
                 <!-- force dependency convergence. 1.2 is intended for aws-java-sdk-dynamodb 1.12.780 -->
@@ -275,7 +275,7 @@
                 <!-- Dependency not brought to 3.20 or higher since java 21 is needed for open source variant -->
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq</artifactId>
-                <version>3.19.31</version>
+                <version>3.19.36</version>
             </dependency>
             <dependency>
                 <groupId>org.jspecify</groupId>
